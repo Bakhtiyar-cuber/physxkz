@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhysX - Орта деңгей 26-сабақ · Тербеліс энергиясы</title>
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/dropdown.css">
+<link rel="stylesheet" href="../../css/responsive.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#fbfdff,#eef5ff);color:#071837}
+.header{height:68px;background:#fff;border-bottom:1px solid #d6e6fb;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}
+.logo{font-size:30px;font-weight:900;color:#0d47a1;text-decoration:none}
+.nav{display:flex;gap:20px}.nav a{text-decoration:none;color:#06205b;font-weight:800}.nav .active{color:#0d47a1}
+.lesson-page{width:min(100% - 18px,1480px);margin:0 auto;padding:8px 0 24px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px}
+.lesson-sidebar{position:sticky;top:78px;height:calc(100vh - 90px);background:linear-gradient(180deg,#0f5cff,#022a83);border-radius:18px;color:#fff;padding:12px 10px;overflow:auto}
+.sidebar-head{display:flex;justify-content:space-between;align-items:center}.sidebar-title{font-size:20px;font-weight:900;display:flex;gap:10px;align-items:center}
+.sidebar-title i,.side-menu-btn i{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.sidebar-small{font-size:13px;color:#dbeafe;font-weight:800;margin:10px 0}
+.side-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px;margin-bottom:9px}
+.circle-row{display:flex;align-items:center;gap:10px}.circle{width:46px;height:46px;border-radius:50%;background:conic-gradient(#38bdf8 0deg,rgba(255,255,255,.22) 0deg);display:grid;place-items:center;position:relative;font-weight:900}.circle::after{content:"";position:absolute;width:34px;height:34px;border-radius:50%;background:#0943b6}.circle span{position:relative;z-index:1;font-size:12px}
+.side-progress-bar{height:6px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden;margin:9px 0}.side-progress-bar div{height:100%;width:0%;background:#38bdf8}
+.side-menu{display:grid;gap:7px;margin-top:8px}.side-menu-btn{height:42px;border:none;border-radius:12px;background:rgba(255,255,255,.10);color:#fff;display:flex;align-items:center;gap:9px;padding:0 10px;font-weight:900;cursor:pointer;text-decoration:none}.side-menu-btn.active{background:rgba(255,255,255,.24)}.finish-side{background:linear-gradient(135deg,#12b76a,#22c55e)!important}
+.lesson-main{min-width:0}.main-card,.content-card{background:#fff;border:1px solid #dbe7f5;border-radius:17px;box-shadow:0 18px 40px rgba(13,71,161,.10);padding:12px 16px;margin-bottom:10px}
+.lesson-title h1{font-size:23px;margin:0 0 4px}.lesson-title p{font-size:13px;margin:0;color:#334155;font-weight:700}
+.lesson-mini-pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.lesson-mini-pills span{height:28px;padding:0 10px;border-radius:999px;background:#eef6ff;border:1px solid #d6e6fb;color:#0d47a1;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:900}
+.content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.content-header h2{font-size:20px;color:#061b55;margin:0}.content-badge{border-radius:999px;background:#eaf3ff;color:#145cff;padding:7px 11px;font-size:11.5px;font-weight:900}
+.infographic-frame{padding:8px;background:#fff;border:1px solid #d6e6fb;border-radius:18px;display:flex;justify-content:center;align-items:center;overflow:hidden}.lesson-infographic-img{width:100%;max-height:calc(100vh - 170px);object-fit:contain;border-radius:14px}
+.tab-next-step-card{margin-top:10px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fff,#f0f7ff);border:1px solid #d6e6fb;display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center}.tab-next-icon{width:42px;height:42px;border-radius:13px;background:#145cff;color:#fff;display:grid;place-items:center}.tab-next-text h3{margin:0 0 3px;color:#0d47a1;font-size:17px}.tab-next-text p{margin:0;font-size:12.5px;color:#475569;font-weight:700}.tab-next-actions{display:flex;gap:9px;flex-wrap:wrap}.tab-next-actions button{height:38px;padding:0 14px;border:none;border-radius:11px;color:white;font-weight:900;cursor:pointer}.tab-next-primary{background:#145cff}.tab-next-finish,.tab-section-complete.done{background:linear-gradient(135deg,#12b76a,#22c55e)!important}.tab-section-complete{background:linear-gradient(135deg,#f59e0b,#ff7a2f)}
+.answer-sheet{margin-top:14px;background:linear-gradient(135deg,#fff,#f0f7ff);border:1px solid #d6e6fb;border-radius:18px;padding:16px}.answer-sheet-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px}.answer-sheet h3{margin:0;color:#0d47a1}.answer-sheet p{margin:4px 0 0;color:#475569;font-size:13px;font-weight:700}.answer-score{min-width:70px;height:38px;border-radius:12px;background:#145cff;color:white;display:grid;place-items:center;font-weight:900}.answer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.answer-row{display:grid;grid-template-columns:34px repeat(4,1fr);gap:6px;align-items:center;padding:8px;border-radius:14px;background:#fff;border:1px solid #d6e6fb}.question-number{width:30px;height:30px;border-radius:10px;background:#eef6ff;color:#145cff;display:grid;place-items:center;font-weight:900}.answer-row button{height:30px;border:none;border-radius:9px;background:#eef6ff;color:#0d47a1;font-weight:900;cursor:pointer}.answer-row button.selected{background:#145cff;color:#fff}.answer-row button.correct{background:#22c55e;color:#fff}.answer-row button.wrong{background:#ef4444;color:#fff}.answer-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}.answer-actions button{height:40px;padding:0 16px;border:none;border-radius:12px;font-weight:900;cursor:pointer}.check-answers-btn{background:#145cff;color:#fff}.reset-answers-btn{background:#eef6ff;color:#0d47a1}.answer-feedback{margin-top:12px;padding:12px 14px;border-radius:14px;font-weight:900;display:none}.answer-feedback.success{display:block;background:#ecfdf5;border:1px solid #bbf7d0;color:#059669}.answer-feedback.error{display:block;background:#fff1f2;border:1px solid #fecdd3;color:#e11d48}
+.lesson-result-box{margin-top:12px;padding:14px 16px;border-radius:16px;border:1px solid #d6e6fb;background:linear-gradient(135deg,#fff,#f0f7ff);display:none;align-items:center;justify-content:space-between;gap:12px}.lesson-result-box.show{display:flex}.lesson-result-stars{font-size:24px;letter-spacing:2px;color:#f59e0b}.lesson-result-xp{min-width:88px;height:44px;border-radius:14px;display:grid;place-items:center;background:#145cff;color:#fff;font-size:18px;font-weight:900}.finish-locked,.locked-answer-btn{opacity:.58;cursor:not-allowed!important;background:#94a3b8!important}.finish-locked.unlocked,.locked-answer-btn.unlocked{opacity:1!important;cursor:pointer!important;background:#145cff!important}.finish-side.unlocked,.tab-next-finish.unlocked{background:linear-gradient(135deg,#12b76a,#22c55e)!important}
+.side-menu-btn.section-done::after{content:"✓";margin-left:auto;background:#22c55e;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:11px}
+@media(max-width:900px){.lesson-page{grid-template-columns:1fr}.lesson-sidebar{position:relative;top:0;height:auto;width:100%}.answer-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* ==================================================
+   FULLSCREEN BUTTON
+   Толық экран / Шығу батырмасы
+================================================== */
+
+.fullscreen-top-row{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.lesson-fullscreen-btn,
+.control-fullscreen-btn{
+  height:38px;
+  padding:0 14px;
+  border:none;
+  border-radius:13px;
+  background:#145cff;
+  color:#ffffff;
+  font-weight:900;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;
+  transition:.2s;
+  box-shadow:0 10px 20px rgba(20,92,255,.18);
+}
+
+.lesson-fullscreen-btn:hover,
+.control-fullscreen-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 26px rgba(20,92,255,.24);
+}
+
+body.is-fullscreen-mode .header{
+  display:none !important;
+}
+
+body.is-fullscreen-mode .lesson-page,
+body.is-fullscreen-mode .page{
+  width:calc(100% - 16px) !important;
+  max-width:none !important;
+  padding-top:8px !important;
+}
+
+body.is-fullscreen-mode .lesson-sidebar{
+  top:8px !important;
+  height:calc(100vh - 16px) !important;
+  max-height:calc(100vh - 16px) !important;
+}
+
+body.is-fullscreen-mode .lesson-fullscreen-btn,
+body.is-fullscreen-mode .control-fullscreen-btn{
+  background:#ef4444 !important;
+}
+
+body.is-fullscreen-mode .lesson-infographic-img,
+body.is-fullscreen-mode img{
+  max-height:calc(100vh - 90px) !important;
+}
+
+@media(max-width:760px){
+  .fullscreen-top-row{
+    justify-content:stretch;
+  }
+  .lesson-fullscreen-btn,
+  .control-fullscreen-btn{
+    width:100%;
+    justify-content:center;
+  }
+}
+
+
+/* ==================================================
+   HELPER TOOLS PANEL
+   Калькулятор · Жазу · Сызу тақтасы · Таймер
+================================================== */
+
+.helper-tools-btn{
+  min-height:72px !important;
+  height:auto !important;
+  padding:12px 10px !important;
+  align-items:center !important;
+}
+
+.helper-tools-btn .helper-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+
+.helper-tools-btn .helper-text b{
+  font-size:13px;
+  color:#ffffff;
+}
+
+.helper-tools-btn .helper-text small{
+  font-size:10.5px;
+  color:#dbeafe;
+  font-weight:900;
+  margin-top:3px;
+}
+
+.helper-modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  backdrop-filter:blur(3px);
+  z-index:5000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+
+.helper-modal-backdrop.show{
+  display:flex;
+}
+
+.helper-modal{
+  width:min(760px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#ffffff;
+  border:1px solid #d6e6fb;
+  border-radius:22px;
+  box-shadow:0 30px 70px rgba(15,23,42,.25);
+  padding:18px;
+}
+
+.helper-modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+.helper-modal-head h2{
+  margin:0 0 5px;
+  color:#061b55;
+  font-size:24px;
+  font-weight:900;
+}
+
+.helper-modal-head p{
+  margin:0;
+  color:#64748b;
+  font-weight:800;
+  font-size:13px;
+}
+
+.helper-close{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:14px;
+  background:#eef6ff;
+  color:#145cff;
+  font-size:18px;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+}
+
+.helper-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin-bottom:14px;
+}
+
+.helper-tab{
+  height:42px;
+  border:none;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#0d47a1;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+
+.helper-tab.active{
+  background:#145cff;
+  color:#ffffff;
+}
+
+.helper-panel{
+  display:none;
+  border:1px solid #d6e6fb;
+  border-radius:18px;
+  background:#f8fbff;
+  padding:14px;
+}
+
+.helper-panel.active{
+  display:block;
+}
+
+.calc-display{
+  width:100%;
+  height:54px;
+  border:1px solid #d6e6fb;
+  border-radius:14px;
+  background:#ffffff;
+  color:#061b55;
+  font-size:24px;
+  font-weight:900;
+  padding:0 14px;
+  text-align:right;
+  margin-bottom:10px;
+}
+
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.calc-grid button{
+  height:44px;
+  border:none;
+  border-radius:12px;
+  background:#ffffff;
+  color:#0d47a1;
+  font-size:17px;
+  font-weight:900;
+  cursor:pointer;
+  border:1px solid #d6e6fb;
+}
+
+.calc-grid button.op{
+  background:#eaf3ff;
+}
+
+.calc-grid button.equal{
+  background:#145cff;
+  color:#ffffff;
+}
+
+.helper-note{
+  width:100%;
+  min-height:220px;
+  border:1px solid #d6e6fb;
+  border-radius:14px;
+  background:#ffffff;
+  padding:14px;
+  resize:vertical;
+  font-size:15px;
+  font-weight:700;
+  color:#071837;
+  outline:none;
+}
+
+.note-actions,
+.draw-actions,
+.timer-actions{
+  display:flex;
+  gap:9px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.tool-action{
+  height:38px;
+  padding:0 14px;
+  border:none;
+  border-radius:12px;
+  background:#145cff;
+  color:#ffffff;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.tool-action.secondary{
+  background:#eef6ff;
+  color:#0d47a1;
+}
+
+.draw-board{
+  width:100%;
+  height:320px;
+  background:#ffffff;
+  border:1px solid #d6e6fb;
+  border-radius:14px;
+  touch-action:none;
+  display:block;
+}
+
+.timer-screen{
+  height:130px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#145cff,#1fb4ff);
+  color:#ffffff;
+  display:grid;
+  place-items:center;
+  font-size:54px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.timer-presets{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.timer-presets button{
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:#eef6ff;
+  color:#0d47a1;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.floating-timer{
+  position:fixed;
+  top:78px;
+  right:18px;
+  z-index:4200;
+  height:42px;
+  padding:0 14px;
+  border-radius:14px;
+  background:#145cff;
+  color:#ffffff;
+  display:none;
+  align-items:center;
+  gap:8px;
+  font-weight:900;
+  box-shadow:0 14px 28px rgba(20,92,255,.25);
+}
+
+.floating-timer.show{
+  display:flex;
+}
+
+body.is-fullscreen-mode .floating-timer{
+  top:12px;
+  right:160px;
+}
+
+@media(max-width:760px){
+  .helper-tabs{
+    grid-template-columns:repeat(2,1fr);
+  }
+  .timer-presets{
+    grid-template-columns:1fr;
+  }
+  .floating-timer{
+    right:10px;
+    top:64px;
+  }
+}
+
+
+/* ==================================================
+   SIDEBAR COLLAPSE FIX
+   Сол жақ көк панель жиналып/ашылады
+================================================== */
+
+.lesson-page{
+  transition:grid-template-columns .25s ease, gap .25s ease !important;
+}
+
+.sidebar-toggle{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,.16);
+  color:#ffffff;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:.25s ease;
+  flex-shrink:0;
+}
+
+.sidebar-toggle:hover{
+  background:rgba(255,255,255,.26);
+  transform:translateY(-1px);
+}
+
+.sidebar-toggle i{
+  transition:transform .25s ease;
+}
+
+body.lesson-sidebar-collapsed .lesson-page{
+  grid-template-columns:72px minmax(0,1fr) !important;
+  gap:14px !important;
+}
+
+body.lesson-sidebar-collapsed .lesson-sidebar{
+  width:72px !important;
+  min-width:72px !important;
+  max-width:72px !important;
+  padding:9px 7px !important;
+}
+
+body.lesson-sidebar-collapsed .sidebar-toggle i{
+  transform:rotate(180deg);
+}
+
+body.lesson-sidebar-collapsed .sidebar-title span,
+body.lesson-sidebar-collapsed .sidebar-small,
+body.lesson-sidebar-collapsed .side-card,
+body.lesson-sidebar-collapsed .side-menu-btn span,
+body.lesson-sidebar-collapsed .helper-text{
+  display:none !important;
+}
+
+body.lesson-sidebar-collapsed .sidebar-head{
+  flex-direction:column;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+body.lesson-sidebar-collapsed .sidebar-title{
+  justify-content:center;
+}
+
+body.lesson-sidebar-collapsed .sidebar-title i{
+  width:48px !important;
+  height:48px !important;
+  border-radius:16px !important;
+}
+
+body.lesson-sidebar-collapsed .side-menu{
+  margin-top:10px !important;
+  gap:10px !important;
+}
+
+body.lesson-sidebar-collapsed .side-menu-btn{
+  width:50px !important;
+  height:50px !important;
+  min-height:50px !important;
+  padding:0 !important;
+  justify-content:center !important;
+  border-radius:15px !important;
+}
+
+body.lesson-sidebar-collapsed .side-menu-btn i{
+  width:36px !important;
+  height:36px !important;
+  font-size:16px !important;
+}
+
+body.lesson-sidebar-collapsed .helper-tools-btn{
+  min-height:50px !important;
+}
+
+@media(max-width:900px){
+  body.lesson-sidebar-collapsed .lesson-page,
+  .lesson-page{
+    grid-template-columns:1fr !important;
+  }
+
+  body.lesson-sidebar-collapsed .lesson-sidebar,
+  .lesson-sidebar{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+
+  .sidebar-toggle{
+    display:none !important;
+  }
+
+  body.lesson-sidebar-collapsed .sidebar-title span,
+  body.lesson-sidebar-collapsed .sidebar-small,
+  body.lesson-sidebar-collapsed .side-card,
+  body.lesson-sidebar-collapsed .side-menu-btn span,
+  body.lesson-sidebar-collapsed .helper-text{
+    display:inline-flex !important;
+  }
+}
+
+
+/* ==================================================
+   LESSON MODE HEADER — PhysX сабақ режимі
+   Бастапқы деңгей 1-сабақ үлгісіне сәйкес
+================================================== */
+
+.lesson-mode-header{
+  height:58px !important;
+  background:rgba(255,255,255,.96) !important;
+  border-bottom:1px solid #cfe0f4 !important;
+  padding:0 30px !important;
+  box-shadow:0 4px 22px rgba(15,23,42,.045) !important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.lesson-logo{
+  font-size:28px !important;
+  letter-spacing:-.045em !important;
+  color:#0d47a1 !important;
+}
+
+.lesson-header-center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  min-height:38px;
+  padding:0 16px;
+  border-radius:999px;
+  background:#eef6ff;
+  border:1px solid #d6e6fb;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#0b2f77;
+  white-space:nowrap;
+}
+
+.lesson-header-center span{
+  font-size:12px;
+  font-weight:850;
+  color:#64748b;
+}
+
+.lesson-header-center b{
+  font-size:13px;
+  font-weight:950;
+  color:#061b55;
+}
+
+.lesson-header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:auto;
+}
+
+.lesson-top-btn{
+  min-height:38px;
+  padding:0 13px;
+  border-radius:13px;
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(20,92,255,.18);
+  color:#145cff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(13,71,161,.06);
+  transition:.2s ease;
+  white-space:nowrap;
+}
+
+.lesson-top-btn:hover{
+  background:#145cff;
+  color:#ffffff;
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(20,92,255,.18);
+}
+
+.teacher-mode-badge{
+  display:none;
+  min-height:38px;
+  padding:0 13px;
+  border-radius:999px;
+  background:#ecfdf5;
+  border:1px solid #bbf7d0;
+  color:#059669;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+body.teacher-mode .teacher-mode-badge{
+  display:inline-flex;
+}
+
+/* Толық экран батырмасы керек емес */
+.floating-fullscreen-btn,
+.lesson-fullscreen-btn,
+.fullscreen-side-btn{
+  display:none !important;
+}
+
+.lesson-sidebar{
+  top:72px !important;
+  height:calc(100vh - 84px) !important;
+}
+
+body.is-fullscreen-mode .header{
+  display:flex !important;
+}
+
+body.is-fullscreen-mode .lesson-mode-header{
+  display:flex !important;
+}
+
+@media(max-width:980px){
+  .lesson-header-center{
+    display:none;
+  }
+
+  .lesson-mode-header{
+    padding:0 14px !important;
+  }
+
+  .lesson-header-actions{
+    gap:8px;
+  }
+
+  .profile-top-btn{
+    display:none;
+  }
+}
+
+@media(max-width:760px){
+  .lesson-top-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    font-size:0;
+  }
+
+  .lesson-top-btn i{
+    font-size:14px;
+  }
+}
+
+</style>
+
+
+<style id="physx-helper-tools-compact-side-final">
+.lesson-helper-tools{margin:8px 0;border-radius:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);overflow:hidden}
+.lesson-helper-title{width:100%;height:42px;border:none;background:transparent;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px;font-size:12.5px;font-weight:900;cursor:pointer}
+.helper-title-left{display:flex;align-items:center;gap:8px}.helper-title-left i{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.15);display:grid;place-items:center;color:#fbbf24}.helper-chevron{transition:.2s}
+.lesson-helper-grid{display:none;padding:0 8px 8px;gap:7px}.lesson-helper-tools.open .helper-chevron{transform:rotate(180deg)}.lesson-helper-tools.open .lesson-helper-grid{display:grid}
+.lesson-helper-grid button{height:36px;border:none;border-radius:10px;background:rgba(255,255,255,.13);color:#fff;display:flex;align-items:center;gap:8px;padding:0 9px;font-size:12px;font-weight:900;cursor:pointer}.lesson-helper-grid button:hover{background:rgba(255,255,255,.22)}.lesson-helper-grid button i{width:25px;height:25px;border-radius:8px;background:rgba(255,255,255,.15);display:grid;place-items:center}
+body.lesson-sidebar-collapsed .lesson-helper-tools{background:transparent;border:none}body.lesson-sidebar-collapsed .lesson-helper-title{width:48px;height:48px;padding:0;justify-content:center}body.lesson-sidebar-collapsed .lesson-helper-title span span,body.lesson-sidebar-collapsed .helper-chevron,body.lesson-sidebar-collapsed .lesson-helper-grid button span{display:none!important}body.lesson-sidebar-collapsed .lesson-helper-grid{padding:0;gap:8px}body.lesson-sidebar-collapsed .lesson-helper-grid button{width:48px;height:48px;padding:0;justify-content:center}
+.tool-modal-backdrop{position:fixed;right:20px;top:84px;z-index:2200;width:min(360px,calc(100vw - 32px));display:none;pointer-events:none}.tool-modal-backdrop.show{display:block}.tool-modal{pointer-events:auto;background:#fff;border:1px solid #dbe7f5;border-radius:18px;box-shadow:0 22px 55px rgba(15,23,42,.20);overflow:hidden}.tool-modal-head{height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #dbe7f5}.tool-modal-title{display:flex;align-items:center;gap:9px;color:#061b55;font-weight:900}.tool-modal-title i{width:32px;height:32px;border-radius:10px;background:#145cff;color:#fff;display:grid;place-items:center}.tool-close-btn{width:32px;height:32px;border:none;border-radius:10px;background:#eef6ff;color:#145cff;cursor:pointer}.tool-panel{display:none;padding:12px}.tool-panel.active{display:block}
+.calc-display{width:100%;height:40px;border:1px solid #cfe0f5;border-radius:12px;background:#f8fbff;color:#061b55;font-size:20px;font-weight:900;text-align:right;padding:0 12px;margin-bottom:9px}.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.calc-grid button,.tool-action-btn{height:38px;border:none;border-radius:11px;background:#eef6ff;color:#0d47a1;font-weight:900;cursor:pointer}.calc-grid .op{background:#145cff;color:#fff}.calc-grid .danger{background:#fff1f2;color:#e11d48}.calc-grid .equal{grid-column:auto!important;background:#12b76a;color:#fff}
+.board-toolbar,.timer-toolbar,.timer-input-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.board-wrap{border:1px solid #d6e6fb;border-radius:14px;overflow:hidden;background:#fff}#helperBoardCanvas{width:100%;height:260px;display:block;background:linear-gradient(#eef4ff 1px,transparent 1px),linear-gradient(90deg,#eef4ff 1px,transparent 1px),#fff;background-size:24px 24px;touch-action:none}.timer-display{font-size:46px;font-weight:900;text-align:center;color:#061b55;margin:12px 0}.timer-input-row input{width:95px;height:38px;border:1px solid #d6e6fb;border-radius:11px;padding:0 8px;font-weight:900}.tool-action-btn.success{background:#12b76a;color:#fff}.tool-action-btn.warning{background:#f59e0b;color:#fff}.tool-action-btn.primary{background:#145cff;color:#fff}
+.floating-timer-widget{position:fixed;right:18px;bottom:18px;z-index:2300;display:none;align-items:center;gap:10px;background:#fff;border:1px solid #dbe7f5;border-radius:16px;box-shadow:0 18px 42px rgba(15,23,42,.16);padding:10px}.floating-timer-widget.show{display:flex}.floating-timer-icon{width:38px;height:38px;border-radius:12px;background:#145cff;color:#fff;display:grid;place-items:center}.floating-timer-info span{display:block;font-size:11px;color:#64748b;font-weight:800}.floating-timer-info b{display:block;color:#061b55;font-size:18px;font-weight:900}.floating-timer-widget button{width:30px;height:30px;border:none;border-radius:9px;background:#eef6ff;color:#145cff;cursor:pointer}
+@media(max-width:760px){.tool-modal-backdrop{left:12px;right:12px;top:76px;width:auto}.floating-timer-widget{left:12px;right:12px;bottom:12px}}
+</style>
+
+
+<style id="physx-lesson-clean-result-final">
+.lesson-result-box{margin-top:12px;background:linear-gradient(135deg,#ffffff,#f0f7ff);border:1px solid #d6e6fb;border-radius:16px;padding:13px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.lesson-result-title{color:#0d47a1;font-weight:900;margin-bottom:5px}.lesson-result-stars{font-size:20px;letter-spacing:1px;color:#f59e0b}.lesson-result-sub{margin-top:4px;color:#334155;font-size:12.5px;font-weight:800;line-height:1.35}.lesson-result-xp{min-width:58px;height:38px;border-radius:12px;background:#145cff;color:#fff;display:grid;place-items:center;font-weight:900}.restart-lesson-btn{background:linear-gradient(135deg,#f59e0b,#ff7a2f)!important;color:#fff!important;box-shadow:0 10px 20px rgba(245,158,11,.20)}.answer-row.locked button{cursor:not-allowed;opacity:.92}.check-answers-btn.is-disabled,.reset-answers-btn.is-disabled{opacity:.55;cursor:not-allowed!important;background:#94a3b8!important;color:#fff!important}
+</style>
+
+<style id="intermediate-clean-donebadge-patch">
+/* ==================================================
+   Intermediate clean done badge
+   Екінші скриндегідей жасыл ✅ бейдж стилі
+   - батырма көк күйінде қалады
+   - галочка оң жақта жасыл дөңгелек болып тұрады
+   - ашық/жинақы sidebar режимінде дұрыс көрінеді
+================================================== */
+.side-menu-btn,
+.side-btn{
+  position:relative !important;
+  overflow:visible !important;
+}
+.side-menu-btn[data-tab]{
+  padding-right:40px !important;
+}
+.side-menu-btn.section-done{
+  border-color:rgba(255,255,255,.18) !important;
+}
+.side-menu-btn.section-done:not(.active):not(:hover):not(.finish-side){
+  background:rgba(255,255,255,.10) !important;
+}
+.side-menu-btn.section-done.active,
+.side-menu-btn.section-done:hover{
+  background:rgba(255,255,255,.22) !important;
+}
+.side-menu-btn.section-done::after{
+  content:"✓" !important;
+  position:absolute !important;
+  top:50% !important;
+  right:9px !important;
+  transform:translateY(-50%) !important;
+  margin-left:0 !important;
+  width:22px !important;
+  height:22px !important;
+  border-radius:999px !important;
+  background:#22c55e !important;
+  color:#fff !important;
+  display:grid !important;
+  place-items:center !important;
+  font-weight:950 !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  box-shadow:0 6px 14px rgba(34,197,94,.32) !important;
+  border:2px solid rgba(255,255,255,.88) !important;
+  z-index:6 !important;
+}
+body.lesson-sidebar-collapsed .side-menu-btn[data-tab]{
+  padding-right:0 !important;
+}
+body.lesson-sidebar-collapsed .side-menu-btn.section-done::after{
+  top:5px !important;
+  right:5px !important;
+  transform:none !important;
+  width:18px !important;
+  height:18px !important;
+  font-size:10px !important;
+  border-width:2px !important;
+}
+body.lesson-sidebar-collapsed .side-menu-btn.section-done{
+  background:rgba(255,255,255,.12) !important;
+}
+body.lesson-sidebar-collapsed .side-menu-btn.section-done.active,
+body.lesson-sidebar-collapsed .side-menu-btn.section-done:hover{
+  background:rgba(255,255,255,.24) !important;
+}
+/* Қайта белгілеу батырмасын алып тастау */
+.reset-answers-btn,
+.action-btn.reset{
+  display:none !important;
+}
+/* Нәтиже тек тексеруден кейін ғана көрінуі керек */
+.lesson-result-box:not(.show),
+.result-box:not(.show){
+  display:none !important;
+}
+.answer-row.locked button,
+.answer-row.checked button{
+  cursor:not-allowed !important;
+  opacity:.92 !important;
+}
+</style>
+
+<style id="lesson26-answer-sheet-full-v2">
+/* ==================================================
+   Lesson 26 answer sheet — толық 10 сұрақ
+   Біркелкі, көзге жеңіл шрифт және кең карточка
+================================================== */
+.answer-sheet,
+.answer-sheet *{
+  font-family:"Segoe UI", Arial, sans-serif !important;
+  box-sizing:border-box;
+}
+.answer-sheet{
+  padding:18px !important;
+  background:linear-gradient(135deg,#ffffff,#f4f8ff) !important;
+}
+.answer-sheet-head{
+  align-items:center !important;
+  border-bottom:1px solid #dbe7f5;
+  padding-bottom:12px;
+}
+.answer-sheet h3{
+  font-size:21px !important;
+  letter-spacing:.01em;
+}
+.answer-sheet p{
+  line-height:1.45 !important;
+}
+.answer-score{
+  min-width:84px !important;
+  height:42px !important;
+  font-size:15px !important;
+}
+.answer-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+.answer-row{
+  display:block !important;
+  padding:14px !important;
+  border-radius:18px !important;
+  background:#ffffff !important;
+  border:1px solid #d9e8fb !important;
+  box-shadow:0 10px 22px rgba(13,71,161,.055);
+}
+.answer-question-head{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin-bottom:10px;
+}
+.answer-question-title{
+  margin:0;
+  color:#061b55;
+  font-size:14.5px;
+  font-weight:900;
+  line-height:1.42;
+}
+.answer-options{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.answer-row .question-number{
+  flex:0 0 auto;
+  width:32px !important;
+  height:32px !important;
+  border-radius:11px !important;
+  background:#145cff !important;
+  color:#ffffff !important;
+  font-size:14px;
+}
+.answer-row button{
+  width:100% !important;
+  min-height:38px !important;
+  height:auto !important;
+  border:1px solid #dbe7f5 !important;
+  border-radius:13px !important;
+  background:#f3f8ff !important;
+  color:#09276c !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:9px !important;
+  padding:8px 10px !important;
+  text-align:left !important;
+  font-size:13.5px !important;
+  font-weight:850 !important;
+  line-height:1.35 !important;
+}
+.answer-row button:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 8px 16px rgba(20,92,255,.10);
+}
+.answer-row button .option-letter{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  background:#ffffff;
+  border:1px solid #aac7ff;
+  color:#145cff;
+  font-weight:950;
+}
+.answer-row button .option-text{
+  flex:1;
+}
+.answer-row button.selected{
+  background:#145cff !important;
+  color:#ffffff !important;
+  border-color:#145cff !important;
+}
+.answer-row button.selected .option-letter{
+  background:#ffffff;
+  color:#145cff;
+}
+.answer-row button.correct{
+  background:#16a34a !important;
+  color:#ffffff !important;
+  border-color:#16a34a !important;
+}
+.answer-row button.wrong{
+  background:#ef4444 !important;
+  color:#ffffff !important;
+  border-color:#ef4444 !important;
+}
+.answer-row button.correct .option-letter,
+.answer-row button.wrong .option-letter{
+  background:rgba(255,255,255,.95);
+}
+.answer-feedback.warning{
+  display:block;
+  background:#fffbeb;
+  border:1px solid #fde68a;
+  color:#b45309;
+}
+.solution-summary{
+  margin:0 0 12px;
+  padding:14px 16px;
+  border:1px solid #dbe7f5;
+  border-radius:18px;
+  background:linear-gradient(135deg,#ffffff,#f3f8ff);
+}
+.solution-summary h3{
+  margin:0 0 10px;
+  color:#0d47a1;
+  font-size:18px;
+  font-weight:950;
+}
+.solution-key-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:10px;
+}
+.solution-key-grid span{
+  min-height:36px;
+  border-radius:12px;
+  background:#eef6ff;
+  border:1px solid #d6e6fb;
+  color:#061b55;
+  display:grid;
+  place-items:center;
+  font-weight:950;
+}
+.solution-summary p{
+  margin:0;
+  color:#334155;
+  font-size:13px;
+  line-height:1.55;
+  font-weight:750;
+}
+@media(max-width:1100px){
+  .answer-grid{grid-template-columns:1fr !important;}
+  .solution-key-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+</style>
+
+</head>
+<body>
+<header class="header lesson-mode-header">
+  <a href="../../index.html" class="logo lesson-logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <div class="lesson-header-center">
+    <span>Орта деңгей · Механика</span>
+    <b>26-сабақ</b>
+  </div>
+
+  <div class="lesson-header-actions">
+    <span class="teacher-mode-badge" id="teacherModeBadge">
+      <i class="fa-solid fa-unlock"></i>
+      Мұғалім режимі
+    </span>
+
+    <a href="../../levels_map.html" class="lesson-top-btn">
+      <i class="fa-solid fa-arrow-left"></i>
+      Оқу картасына қайту
+    </a>
+
+    <a href="../../profile.html" class="lesson-top-btn profile-top-btn">
+      <i class="fa-solid fa-user"></i>
+      Профиль
+    </a>
+  </div>
+</header>
+<main class="lesson-page">
+<aside class="lesson-sidebar">
+<div class="sidebar-head"><div class="sidebar-title"><i class="fa-solid fa-book-open"></i><span>Сабақ</span></div>
+<button class="sidebar-toggle" type="button" onclick="toggleLessonSidebar()" title="Панельді жинау/ашу">
+  <i class="fa-solid fa-chevron-left"></i>
+</button></div>
+<div class="sidebar-small">Орта деңгей · Механика</div>
+<div class="side-card"><h3>Сабақ прогресі</h3><div class="circle-row"><div class="circle"><span>0%</span></div><div><div style="font-size:24px;font-weight:900;">0%</div><div style="font-size:11.5px;color:#dbeafe;font-weight:800;">0 / 4 бөлім</div></div></div><div class="side-progress-bar"><div></div></div></div>
+<div class="side-menu">
+<button class="side-menu-btn active" data-tab="theory" onclick="showTab('theory',this)"><i class="fa-solid fa-book-open"></i><span>Теория</span></button>
+<button class="side-menu-btn" data-tab="examples" onclick="showTab('examples',this)"><i class="fa-solid fa-flask"></i><span>Мысалдар</span></button>
+<button class="side-menu-btn" data-tab="tasks" onclick="showTab('tasks',this)"><i class="fa-solid fa-calculator"></i><span>Есептер</span></button>
+<button class="side-menu-btn" data-tab="answers" onclick="goAnswersIfChecked()"><i class="fa-solid fa-circle-check"></i><span>Жауаптары</span></button>
+<div class="lesson-helper-tools" id="lessonHelperTools">
+  <button class="lesson-helper-title" type="button" onclick="toggleHelperTools()" aria-expanded="false" title="Көмекші құралдар">
+    <span class="helper-title-left"><i class="fa-solid fa-toolbox"></i><span>Көмекші құралдар</span></span>
+    <i class="fa-solid fa-chevron-down helper-chevron"></i>
+  </button>
+  <div class="lesson-helper-grid" id="lessonHelperGrid">
+    <button type="button" onclick="openTool('calculator')" title="Калькулятор"><i class="fa-solid fa-calculator"></i><span>Калькулятор</span></button>
+    <button type="button" onclick="openTool('board')" title="Жазу тақтасы"><i class="fa-solid fa-pen-ruler"></i><span>Тақта</span></button>
+    <button type="button" onclick="openTool('timer')" title="Таймер"><i class="fa-solid fa-clock"></i><span>Таймер</span></button>
+  </div>
+</div>
+<button class="side-menu-btn finish-side finish-locked" onclick="finishLessonIfChecked()"><i class="fa-solid fa-flag-checkered"></i><span>Аяқтау</span></button>
+<a class="side-menu-btn" href="../../levels_map.html"><i class="fa-solid fa-map"></i><span>Оқу картасы</span></a>
+</div>
+</aside>
+<section class="lesson-main">
+<div class="fullscreen-top-row">
+
+</div>
+<section class="main-card lesson-hero-card"><div class="lesson-title"><h1>26-сабақ. Тербеліс энергиясы</h1><p>Орта деңгейге арналған механика сабағы.</p><div class="lesson-mini-pills"><span><i class="fa-solid fa-layer-group"></i> 26 / 30</span><span><i class="fa-solid fa-star"></i> 5 жұлдыз</span><span><i class="fa-solid fa-bolt"></i> +10 XP</span></div></div></section>
+<div class="content-card tab-content" id="theory"><div class="content-header"><h2>Теориялық бөлім</h2><div class="content-badge"><i class="fa-solid fa-book-open"></i> Негізгі ұғымдар</div></div><div class="infographic-frame image-mode"><img src="../../image/intermediate/26/26.1.jpg" class="lesson-infographic-img" alt="26-сабақ теория"></div><div class="tab-next-step-card"><div class="tab-next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="tab-next-text"><h3>Келесі қадам</h3><p>Теорияны оқып шықсаң, мысалдарға өт.</p></div><div class="tab-next-actions"><button class="tab-section-complete" onclick="completeSection('theory')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="tab-next-primary" onclick="showTab('examples',document.querySelector('.side-menu-btn[data-tab=examples]'))">Мысалдарға өту <i class="fa-solid fa-arrow-right"></i></button></div></div></div>
+<div class="content-card tab-content" id="examples" style="display:none;"><div class="content-header"><h2>Есеп шығару мысалдары</h2><div class="content-badge"><i class="fa-solid fa-flask"></i> Дайын шешім</div></div><div class="infographic-frame image-mode"><img src="../../image/intermediate/26/26.2.jpg" class="lesson-infographic-img" alt="26-сабақ мысалдар"></div><div class="tab-next-step-card"><div class="tab-next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="tab-next-text"><h3>Келесі қадам</h3><p>Мысалдарды түсінсең, есептерді орында.</p></div><div class="tab-next-actions"><button class="tab-section-complete" onclick="completeSection('examples')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="tab-next-primary" onclick="showTab('tasks',document.querySelector('.side-menu-btn[data-tab=tasks]'))">Есептерге өту <i class="fa-solid fa-arrow-right"></i></button></div></div></div>
+<div class="content-card tab-content" id="tasks" style="display:none;"><div class="content-header"><h2>Есептер</h2><div class="content-badge"><i class="fa-solid fa-calculator"></i> Өзің орында</div></div><div class="infographic-frame image-mode"><img src="../../image/intermediate/26/26.3.jpg" class="lesson-infographic-img" alt="26-сабақ есептер"></div><div class="answer-sheet"><div class="answer-sheet-head"><div><h3>Жауап парағы</h3><p>10 сұраққа A/B/C/D жауаптарын белгіле. Барлық сұрақтың мәтіні мен варианттары төменде толық берілген.</p></div><div class="answer-score" id="answerScore">0 / 10</div></div><div class="answer-grid" id="answerGrid"></div><div class="answer-actions"><button class="check-answers-btn" id="checkAnswersBtn" onclick="checkAnswers()" type="button">Жауаптарды тексеру <i class="fa-solid fa-check"></i></button><button class="reset-answers-btn" id="resetAnswersBtn" onclick="resetAnswers()" type="button">Қайта белгілеу <i class="fa-solid fa-rotate-right"></i></button><button class="restart-lesson-btn" id="restartLessonBtn" onclick="restartLessonAttempt()" type="button" style="display:none;">Сабақты қайта өту <i class="fa-solid fa-rotate-right"></i></button></div><div class="answer-feedback" id="answerFeedback"></div><div class="lesson-result-box" id="lessonResultBox"><div><div style="font-weight:900;color:#0d47a1;margin-bottom:5px;">Сабақ нәтижесі</div><div class="lesson-result-stars" id="lessonResultStars">☆☆☆☆☆</div><div style="font-size:13px;color:#475569;font-weight:800;" id="lessonResultSub">Жауаптарды тексергеннен кейін нәтиже шығады.</div></div><div class="lesson-result-xp" id="lessonResultXp">+0 XP</div></div></div><div class="tab-next-step-card"><div class="tab-next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="tab-next-text"><h3>Келесі қадам</h3><p>Жауаптарды тексергеннен кейін жауап парағы ашылады.</p></div><div class="tab-next-actions"><button class="tab-section-complete" onclick="completeTasksSectionByCheck()">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button id="viewAnswersBtn" class="tab-next-primary locked-answer-btn" onclick="goAnswersIfChecked()">Жауаптарын көру <i class="fa-solid fa-arrow-right"></i></button></div></div></div>
+<div class="content-card tab-content" id="answers" style="display:none;"><div class="content-header"><h2>Шығарылу жолы мен жауаптары</h2><div class="content-badge"><i class="fa-solid fa-circle-check"></i> Өзіңді тексер</div></div><div class="solution-summary">
+  <h3>Дұрыс жауаптар кілті</h3>
+  <div class="solution-key-grid">
+    <span>1 — B</span><span>2 — B</span><span>3 — C</span><span>4 — B</span><span>5 — C</span>
+    <span>6 — A</span><span>7 — B</span><span>8 — D</span><span>9 — D</span><span>10 — B немесе D</span>
+  </div>
+  <p><b>10-сұрақ бойынша ескерту:</b> берілген формулаларға сүйенсек, серіппелі тербелісте массаның артуы периодты үлкейтеді, ал математикалық маятникте ауырлық үдеуінің кемуі периодты үлкейтеді. Сондықтан кодта B және D нұсқаларының екеуі де дұрыс деп қабылданады.</p>
+</div><div class="infographic-frame image-mode"><img src="../../image/intermediate/26/26.4.jpg" class="lesson-infographic-img" alt="26-сабақ жауаптары"></div><div class="tab-next-step-card"><div class="tab-next-icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="tab-next-text"><h3>Сабақты аяқтау</h3><p>Жауаптарды тексердің. Енді сабақты аяқтауға болады.</p></div><div class="tab-next-actions"><button class="tab-next-finish finish-locked" onclick="finishLessonIfChecked()">Сабақты аяқтау <i class="fa-solid fa-check"></i></button></div></div></div>
+</section>
+</main>
+
+<div class="floating-timer-widget" id="floatingTimerWidget" aria-live="polite">
+  <div class="floating-timer-icon"><i class="fa-solid fa-clock"></i></div>
+  <div class="floating-timer-info"><span>Таймер</span><b id="floatingTimerDisplay">12:00</b></div>
+  <button type="button" onclick="pauseTimer()" title="Тоқтату"><i class="fa-solid fa-pause"></i></button>
+  <button type="button" onclick="resetTimer()" title="Қайта қою"><i class="fa-solid fa-rotate-right"></i></button>
+  <button type="button" onclick="hideFloatingTimer()" title="Жасыру"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="tool-modal-backdrop" id="helperToolModal" aria-hidden="true">
+  <div class="tool-modal" role="dialog" aria-modal="false" aria-labelledby="helperToolTitle">
+    <div class="tool-modal-head">
+      <div class="tool-modal-title" id="helperToolTitle"><i class="fa-solid fa-toolbox" id="helperToolIcon"></i><span id="helperToolName">Көмекші құрал</span></div>
+      <button class="tool-close-btn" type="button" onclick="closeTool()" title="Жабу"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <section class="tool-panel" id="toolCalculatorPanel">
+      <input class="calc-display" id="calcDisplay" type="text" value="" placeholder="0" readonly>
+      <div class="calc-grid">
+        <button class="danger" type="button" onclick="clearCalc()">C</button><button type="button" onclick="backspaceCalc()">⌫</button><button class="op" type="button" onclick="appendCalc('(')">(</button><button class="op" type="button" onclick="appendCalc(')')">)</button>
+        <button type="button" onclick="appendCalc('7')">7</button><button type="button" onclick="appendCalc('8')">8</button><button type="button" onclick="appendCalc('9')">9</button><button class="op" type="button" onclick="appendCalc('/')">÷</button>
+        <button type="button" onclick="appendCalc('4')">4</button><button type="button" onclick="appendCalc('5')">5</button><button type="button" onclick="appendCalc('6')">6</button><button class="op" type="button" onclick="appendCalc('*')">×</button>
+        <button type="button" onclick="appendCalc('1')">1</button><button type="button" onclick="appendCalc('2')">2</button><button type="button" onclick="appendCalc('3')">3</button><button class="op" type="button" onclick="appendCalc('-')">−</button>
+        <button type="button" onclick="appendCalc('0')">0</button><button type="button" onclick="appendCalc('.')">.</button><button class="equal" type="button" onclick="calculateCalc()">=</button><button class="op" type="button" onclick="appendCalc('+')">+</button>
+      </div>
+    </section>
+    <section class="tool-panel" id="toolBoardPanel">
+      <div class="board-toolbar"><button class="tool-action-btn primary" type="button" onclick="setBoardColor('#145cff')">Көк</button><button class="tool-action-btn success" type="button" onclick="setBoardColor('#12b76a')">Жасыл</button><button class="tool-action-btn warning" type="button" onclick="setBoardColor('#f59e0b')">Сары</button><button class="tool-action-btn" type="button" onclick="setBoardColor('#111827')">Қара</button><button class="tool-action-btn" type="button" onclick="clearBoard()">Тазалау</button></div>
+      <div class="board-wrap"><canvas id="helperBoardCanvas"></canvas></div>
+    </section>
+    <section class="tool-panel" id="toolTimerPanel">
+      <div class="timer-input-row"><input id="timerMinutes" type="number" min="1" max="180" value="12" onchange="setTimerFromInput()"><button class="tool-action-btn" type="button" onclick="setQuickTimer(5)">5 мин</button><button class="tool-action-btn" type="button" onclick="setQuickTimer(12)">12 мин</button><button class="tool-action-btn" type="button" onclick="setQuickTimer(20)">20 мин</button></div>
+      <div class="timer-display" id="timerDisplay">12:00</div>
+      <div class="timer-toolbar" style="justify-content:center"><button class="tool-action-btn success" type="button" onclick="startTimer()">Бастау</button><button class="tool-action-btn warning" type="button" onclick="pauseTimer()">Тоқтату</button><button class="tool-action-btn" type="button" onclick="resetTimer()">Қайта қою</button></div>
+    </section>
+  </div>
+</div>
+
+
+<script>
+const LESSON_LEVEL = "intermediate";
+const LESSON_NUMBER = 26;
+const LESSON_ID_FIXED = `${LESSON_LEVEL}-lesson-${LESSON_NUMBER}`;
+const TEST_ANSWERS_KEY = `${LESSON_ID_FIXED}_answers`;
+const TEST_SCORE_KEY = `${LESSON_ID_FIXED}_score`;
+const LESSON_CHECKED_KEY = `${LESSON_ID_FIXED}_checked`;
+const LESSON_SCORE_KEY = `${LESSON_ID_FIXED}_score`;
+const LESSON_STARS_KEY = `${LESSON_ID_FIXED}_stars`;
+const LESSON_XP_KEY = `${LESSON_ID_FIXED}_xp`;
+const SECTION_PROGRESS_KEY = `${LESSON_ID_FIXED}_sections_done`;
+const LESSON_BEST_SCORE_KEY = `${LESSON_ID_FIXED}_best_score`;
+const LESSON_BEST_STARS_KEY = `${LESSON_ID_FIXED}_best_stars`;
+const LESSON_BEST_XP_KEY = `${LESSON_ID_FIXED}_best_xp`;
+const LESSON_ATTEMPT_KEY = `${LESSON_ID_FIXED}_attempt`;
+const LESSON_AWARDED_XP_KEY = `${LESSON_ID_FIXED}_awarded_xp`;
+const LESSON_CONTENT_VERSION = "lesson25-period-10q-v2";
+const LESSON_VERSION_KEY = `${LESSON_ID_FIXED}_content_version`;
+const lessonTabs = ["theory","examples","tasks","answers"];
+let currentLessonTab = "theory";
+const lessonQuestions = [
+  {
+    number: 1,
+    text: "Массасы 0,2 кг дене серіппеге ілінген және тепе-теңдік күйінде тербеледі. Дененің жылдамдығы 0,5 м/с болғандағы кинетикалық энергиясы қандай?",
+    options: {
+      A: "0,025 Дж",
+      B: "0,05 Дж",
+      C: "0,1 Дж",
+      D: "0,25 Дж"
+    }
+  },
+  {
+    number: 2,
+    text: "Қатаңдығы 100 Н/м серіппе 0,04 м-ге созылған. Серіппенің потенциалдық энергиясы қандай?",
+    options: {
+      A: "0,04 Дж",
+      B: "0,08 Дж",
+      C: "0,16 Дж",
+      D: "0,32 Дж"
+    }
+  },
+  {
+    number: 3,
+    text: "Серіппелі тербеліс кезінде дененің тепе-теңдіктен ауытқуы 0,03 м, жылдамдығы 0,4 м/с, массасы 0,2 кг болса, серіппенің қатаңдығы қандай?",
+    options: {
+      A: "20 Н/м",
+      B: "40 Н/м",
+      C: "60 Н/м",
+      D: "80 Н/м"
+    }
+  },
+  {
+    number: 4,
+    text: "Амплитудасы 0,05 м болатын тербелістің толық энергиясы 0,125 Дж. Серіппенің қатаңдығы қандай?",
+    options: {
+      A: "50 Н/м",
+      B: "100 Н/м",
+      C: "150 Н/м",
+      D: "200 Н/м"
+    }
+  },
+  {
+    number: 5,
+    text: "Массасы 0,3 кг дене тербеліс кезінде тепе-теңдік күйінде максимал жылдамдыққа ие. Осы кезде оның толық энергиясы 0,135 Дж болса, максимал жылдамдығы қандай?",
+    options: {
+      A: "0,3 м/с",
+      B: "0,6 м/с",
+      C: "0,9 м/с",
+      D: "1,2 м/с"
+    }
+  },
+  {
+    number: 6,
+    text: "Тербеліс кезінде дененің орын ауыстыруына тәуелді кинетикалық энергияның графигі қалай болады?",
+    options: {
+      A: "Жоғары қарай ашылған парабола",
+      B: "Төмен қарай ашылған парабола",
+      C: "Тура өсетін сызық",
+      D: "Тура кемитін сызық"
+    }
+  },
+  {
+    number: 7,
+    text: "Массасы 0,2 кг дене үшін серіппе қатаңдығы 50 Н/м. Амплитудасы 0,04 м. Тепе-теңдік күйінен 0,02 м қашықтықта дененің кинетикалық энергиясы қандай?",
+    options: {
+      A: "0,015 Дж",
+      B: "0,03 Дж",
+      C: "0,04 Дж",
+      D: "0,06 Дж"
+    }
+  },
+  {
+    number: 8,
+    text: "Серіппелі тербелісте дененің толық механикалық энергиясы 0,2 Дж. Потенциалдық энергиясы 0,05 Дж болған сәттегі кинетикалық энергиясы қандай?",
+    options: {
+      A: "0,05 Дж",
+      B: "0,1 Дж",
+      C: "0,15 Дж",
+      D: "0,2 Дж"
+    }
+  },
+  {
+    number: 9,
+    text: "Маятниктің максимал биіктігі h. Шеткі нүктеде потенциалдық энергиясы Ep. Маятник тепе-теңдік күйіне өткенде кинетикалық энергиясы қандай?",
+    options: {
+      A: "Ep / 2",
+      B: "Ep",
+      C: "2Ep",
+      D: "0"
+    }
+  },
+  {
+    number: 10,
+    text: "Тербеліс кезінде дененің кинетикалық энергиясы максимум мәнінің жартысына тең болған сәттегі орын ауытқуы қандай?",
+    options: {
+      A: "A / 2",
+      B: "A / √2",
+      C: "√3A / 2",
+      D: "√2A / 2"
+    }
+  }
+];
+
+const correctAnswers = {
+  1: "A",
+  2: "B",
+  3: "B",
+  4: "B",
+  5: "C",
+  6: "B",
+  7: "B",
+  8: "C",
+  9: "B",
+  10: "D"
+};
+let LESSON_TOTAL = Object.keys(correctAnswers).length;
+let studentAnswers = JSON.parse(localStorage.getItem(TEST_ANSWERS_KEY) || "{}");
+function getLessonTotal(){return lessonQuestions.length;}
+function getLessonStarRating(score,total=getLessonTotal()){const p=total?score/total*100:0;if(p>=90)return 5;if(p>=70)return 4;if(p>=50)return 3;if(p>=25)return 2;if(p>0)return 1;return 0;}
+function getLessonXPByStars(stars){return [0,2,4,6,8,10][Number(stars)]||0;}
+function starText(stars){let s="";for(let i=1;i<=5;i++)s+=i<=stars?"⭐":"☆";return s;}
+function isLessonChecked(){return localStorage.getItem(LESSON_CHECKED_KEY)==="1";}
+function getCorrectList(q){const value=correctAnswers[String(q)]??correctAnswers[q];return Array.isArray(value)?value:[value];}
+function isCorrectChoice(q,answer){return getCorrectList(q).includes(answer);}
+function renderAnswerGrid(){
+  const grid=document.getElementById("answerGrid")||document.querySelector(".answer-grid");
+  if(!grid)return;
+  LESSON_TOTAL=getLessonTotal();
+  grid.innerHTML="";
+  lessonQuestions.forEach(item=>{
+    const q=item.number;
+    const row=document.createElement("div");
+    row.className="answer-row";
+    row.dataset.question=String(q);
+    const optionButtons=Object.entries(item.options).map(([letter, optionText])=>{
+      return `<button onclick="selectAnswer(${q}, '${letter}')" type="button" aria-label="${q}-сұрақ ${letter} нұсқа"><span class="option-letter">${letter}</span><span class="option-text">${optionText}</span></button>`;
+    }).join("");
+    row.innerHTML=`<div class="answer-question-head"><span class="question-number">${q}</span><p class="answer-question-title">${item.text}</p></div><div class="answer-options">${optionButtons}</div>`;
+    grid.appendChild(row);
+  });
+  updateScoreBox();
+}
+function updateScoreBox(score=null){const box=document.getElementById("answerScore");if(box)box.textContent=(score===null?Number(localStorage.getItem(LESSON_SCORE_KEY)||0):score)+" / "+getLessonTotal();}
+function showTab(id,btn){if(id==="answers"&&!isLessonChecked()){goAnswersIfChecked();return;}document.querySelectorAll(".tab-content").forEach(t=>{t.style.display="none";t.classList.remove("active");});const tab=document.getElementById(id);if(tab){tab.style.display="block";tab.classList.add("active");}document.querySelectorAll(".side-menu-btn").forEach(b=>b.classList.remove("active"));const side=document.querySelector('.side-menu-btn[data-tab="'+id+'"]');if(side)side.classList.add("active");if(btn)btn.classList.add("active");currentLessonTab=id;updatePrevButtonState();updateSectionProgressUI();updateLessonGateButtons();}
+function goPrevStep(){const i=lessonTabs.indexOf(currentLessonTab);if(i>0)showTab(lessonTabs[i-1]);}
+function updatePrevButtonState(){document.querySelectorAll(".tab-prev-btn").forEach(btn=>btn.classList.toggle("is-disabled",currentLessonTab==="theory"));}
+function toggleLessonSidebar(){document.body.classList.toggle("lesson-sidebar-collapsed");localStorage.setItem("lessonSidebarCollapsed",document.body.classList.contains("lesson-sidebar-collapsed")?"yes":"no");}
+function getLessonProgress(){return {completedSections: JSON.parse(localStorage.getItem(SECTION_PROGRESS_KEY)||"[]")};}
+function saveLessonProgress(progress){localStorage.setItem(SECTION_PROGRESS_KEY,JSON.stringify([...new Set(progress.completedSections)]));}
+function updateSectionProgressUI(){const progress=getLessonProgress().completedSections;const percent=Math.round(progress.length/lessonTabs.length*100);const circle=document.querySelector(".circle");if(circle)circle.style.background=`conic-gradient(#38bdf8 ${percent*3.6}deg, rgba(255,255,255,.22) 0deg)`;document.querySelectorAll(".circle span").forEach(i=>i.textContent=percent+"%");const big=document.querySelector(".circle-row > div:last-child div:first-child");if(big)big.textContent=percent+"%";const small=document.querySelector(".circle-row > div:last-child div:last-child");if(small)small.textContent=progress.length+" / 4 бөлім";const fill=document.querySelector(".side-progress-bar div");if(fill)fill.style.width=percent+"%";lessonTabs.forEach(sec=>{document.querySelectorAll('.side-menu-btn[data-tab="'+sec+'"]').forEach(b=>b.classList.toggle("section-done",progress.includes(sec)));const completeBtn=document.querySelector('#'+sec+' .tab-section-complete');if(completeBtn){const done=progress.includes(sec);completeBtn.classList.toggle("done",done);completeBtn.innerHTML=done?'Орындалды <i class="fa-solid fa-check"></i>':'Бөлімді аяқтау <i class="fa-solid fa-check"></i>';}});}
+function completeSection(sectionId){const progress=getLessonProgress();if(!progress.completedSections.includes(sectionId))progress.completedSections.push(sectionId);saveLessonProgress(progress);updateSectionProgressUI();if(sectionId==="theory")showTab("examples");else if(sectionId==="examples")showTab("tasks");}
+function selectAnswer(question,answer){if(isLessonChecked())return;studentAnswers[String(question)]=answer;localStorage.setItem(TEST_ANSWERS_KEY,JSON.stringify(studentAnswers));renderAnswers(false);}
+function renderAnswers(showMarks=isLessonChecked()){
+  document.querySelectorAll(".answer-row").forEach(row=>{
+    const q=String(row.dataset.question);
+    const selected=studentAnswers[q];
+    const correctList=getCorrectList(q);
+    row.classList.toggle("locked",isLessonChecked());
+    row.querySelectorAll("button").forEach(btn=>{
+      const letterEl=btn.querySelector(".option-letter");
+      const v=(letterEl?letterEl.textContent:btn.textContent).trim().charAt(0);
+      btn.classList.remove("selected","correct","wrong");
+      btn.disabled=isLessonChecked();
+      if(v===selected)btn.classList.add("selected");
+      if(showMarks&&correctList.includes(v))btn.classList.add("correct");
+      if(showMarks&&v===selected&&!correctList.includes(selected))btn.classList.add("wrong");
+    });
+  });
+}
+function saveLessonResult(score){const total=getLessonTotal();const stars=getLessonStarRating(score,total);const xp=getLessonXPByStars(stars);const prevBestScore=Number(localStorage.getItem(LESSON_BEST_SCORE_KEY)||localStorage.getItem(`lesson${LESSON_NUMBER}_score`)||0);const prevBestStars=Number(localStorage.getItem(LESSON_BEST_STARS_KEY)||localStorage.getItem(`lesson${LESSON_NUMBER}_stars`)||0);localStorage.setItem(LESSON_CHECKED_KEY,"1");localStorage.setItem(LESSON_SCORE_KEY,String(score));localStorage.setItem(LESSON_STARS_KEY,String(stars));localStorage.setItem(LESSON_XP_KEY,String(xp));let bestScore=prevBestScore,bestStars=prevBestStars;if(stars>prevBestStars||(stars===prevBestStars&&score>prevBestScore)){bestScore=score;bestStars=stars;localStorage.setItem(LESSON_BEST_SCORE_KEY,String(bestScore));localStorage.setItem(LESSON_BEST_STARS_KEY,String(bestStars));localStorage.setItem(LESSON_BEST_XP_KEY,String(getLessonXPByStars(bestStars)));localStorage.setItem(`lesson${LESSON_NUMBER}_score`,String(bestScore));localStorage.setItem(`lesson${LESSON_NUMBER}_stars`,String(bestStars));localStorage.setItem(`lesson${LESSON_NUMBER}_xp`,String(getLessonXPByStars(bestStars)));}else{localStorage.setItem(LESSON_BEST_SCORE_KEY,String(bestScore));localStorage.setItem(LESSON_BEST_STARS_KEY,String(bestStars));localStorage.setItem(LESSON_BEST_XP_KEY,String(getLessonXPByStars(bestStars)));}return {score,stars,xp,bestScore,bestStars,bestXp:getLessonXPByStars(bestStars)};}
+function checkAnswers(){if(isLessonChecked()){const f=document.getElementById("answerFeedback");if(f){f.className="answer-feedback warning";f.textContent="Нәтиже бекітілген. Жаңа әрекет үшін «Сабақты қайта өту» батырмасын бас.";}renderAnswers(true);updateLessonGateButtons();return;}let score=0,answered=0;document.querySelectorAll(".answer-row").forEach(row=>{const q=String(row.dataset.question);if(studentAnswers[q])answered++;if(studentAnswers[q]&&isCorrectChoice(q,studentAnswers[q]))score++;});const totalQuestions=getLessonTotal();if(answered<totalQuestions){const f=document.getElementById("answerFeedback");if(f){f.className="answer-feedback error";f.textContent="Алдымен барлық сұраққа жауап белгіле. Белгіленгені: "+answered+" / "+totalQuestions+".";}renderAnswers(false);updateLessonGateButtons();return;}const result=saveLessonResult(score);updateScoreBox(score);const f=document.getElementById("answerFeedback");if(f){f.className="answer-feedback";f.textContent="";}renderAnswers(true);renderLessonResult(result);updateLessonGateButtons();}
+function resetAnswers(){if(isLessonChecked())return;studentAnswers={};localStorage.removeItem(TEST_ANSWERS_KEY);localStorage.removeItem(TEST_SCORE_KEY);updateScoreBox(0);const f=document.getElementById("answerFeedback");if(f){f.className="answer-feedback";f.textContent="";}renderAnswers(false);}
+function restartLessonAttempt(){if(!confirm("Сабақты қайта бастайсың ба? Ең жақсы нәтиже сақталады, қазіргі жауаптарың өшеді."))return;const attempt=Number(localStorage.getItem(LESSON_ATTEMPT_KEY)||1)+1;localStorage.setItem(LESSON_ATTEMPT_KEY,String(attempt));[TEST_ANSWERS_KEY,TEST_SCORE_KEY,LESSON_CHECKED_KEY,LESSON_SCORE_KEY,LESSON_STARS_KEY,LESSON_XP_KEY].forEach(k=>localStorage.removeItem(k));studentAnswers={};renderAnswerGrid();renderAnswers(false);renderLessonResult();updateLessonGateButtons();showTab("theory");}
+function renderLessonResult(result=null){const box=document.getElementById("lessonResultBox"),starsEl=document.getElementById("lessonResultStars"),subEl=document.getElementById("lessonResultSub"),xpEl=document.getElementById("lessonResultXp");if(!box||!starsEl||!subEl||!xpEl)return;if(!isLessonChecked()){starsEl.textContent="☆☆☆☆☆";subEl.textContent="Жауаптарды тексергеннен кейін нәтиже шығады.";xpEl.textContent="+0 XP";return;}const score=Number(localStorage.getItem(LESSON_SCORE_KEY)||0);const stars=Number(localStorage.getItem(LESSON_STARS_KEY)||0);const xp=Number(localStorage.getItem(LESSON_XP_KEY)||0);const bestScore=Number(localStorage.getItem(LESSON_BEST_SCORE_KEY)||localStorage.getItem(`lesson${LESSON_NUMBER}_score`)||score);const bestStars=Number(localStorage.getItem(LESSON_BEST_STARS_KEY)||localStorage.getItem(`lesson${LESSON_NUMBER}_stars`)||stars);const percent=Math.round(score/getLessonTotal()*100);starsEl.textContent=starText(stars);subEl.textContent=`Осы әрекет: ${score}/${getLessonTotal()} (${percent}%) • ${stars}/5 ⭐. Ең жақсы нәтиже: ${bestScore}/${getLessonTotal()} (${bestStars}/5 ⭐).`;xpEl.textContent=`+${xp} XP`;}
+function updateLessonGateButtons(){const checked=isLessonChecked();document.querySelectorAll(".locked-answer-btn").forEach(view=>{view.classList.toggle("unlocked",checked);view.title=checked?"Ашық":"Алдымен жауаптарды тексер";});const check=document.getElementById("checkAnswersBtn")||document.querySelector(".check-answers-btn");if(check){check.classList.toggle("is-disabled",checked);check.disabled=checked;check.innerHTML=checked?'Нәтиже бекітілді <i class="fa-solid fa-lock"></i>':'Жауаптарды тексеру <i class="fa-solid fa-check"></i>';}const reset=document.getElementById("resetAnswersBtn")||document.querySelector(".reset-answers-btn");if(reset){reset.style.display=checked?"none":"flex";}const restart=document.getElementById("restartLessonBtn");if(restart)restart.style.display=checked?"flex":"none";document.querySelectorAll(".finish-locked,.tab-next-finish").forEach(b=>b.classList.toggle("unlocked",checked));}
+function goAnswersIfChecked(){if(!isLessonChecked()){const f=document.getElementById("answerFeedback");if(f){f.className="answer-feedback error";f.textContent="Жауаптарды көру үшін алдымен жауаптарды тексер.";}showTab("tasks");return;}const progress=getLessonProgress();if(!progress.completedSections.includes("tasks")){progress.completedSections.push("tasks");saveLessonProgress(progress);updateSectionProgressUI();}showTab("answers");}
+function completeTasksSectionByCheck(){if(!isLessonChecked()){const f=document.getElementById("answerFeedback");if(f){f.className="answer-feedback error";f.textContent="Бөлімді аяқтау үшін алдымен жауаптарды тексер.";}showTab("tasks");return;}completeSection("tasks");}
+function finishLessonIfChecked(){if(!isLessonChecked()){alert("Сабақты аяқтау үшін алдымен жауаптарды тексер.");showTab("tasks");return;}finishLesson();}
+function finishLesson(){const progress=getLessonProgress();lessonTabs.forEach(s=>{if(!progress.completedSections.includes(s))progress.completedSections.push(s);});saveLessonProgress(progress);const bestStars=Number(localStorage.getItem(LESSON_BEST_STARS_KEY)||localStorage.getItem(`lesson${LESSON_NUMBER}_stars`)||0);const bestXp=getLessonXPByStars(bestStars);const awarded=Number(localStorage.getItem(LESSON_AWARDED_XP_KEY)||0);let user=JSON.parse(localStorage.getItem("physxUser")||"{}");if(!user.studyLevel)user.studyLevel="intermediate";if(!user.progress)user.progress={points:0,lessonsCompleted:[]};if(!Array.isArray(user.progress.lessonsCompleted))user.progress.lessonsCompleted=[];if(!user.progress.lessonsCompleted.includes(LESSON_ID_FIXED))user.progress.lessonsCompleted.push(LESSON_ID_FIXED);if(bestXp>awarded){user.progress.points=Number(user.progress.points||0)+(bestXp-awarded);localStorage.setItem(LESSON_AWARDED_XP_KEY,String(bestXp));}localStorage.setItem("physxUser",JSON.stringify(user));window.location.href="../../levels_map.html";}
+function toggleFullscreen(){return false;}
+function resetLessonAttemptIfContentUpdated(){
+  const currentVersion=localStorage.getItem(LESSON_VERSION_KEY);
+  if(currentVersion!==LESSON_CONTENT_VERSION){
+    [TEST_ANSWERS_KEY,TEST_SCORE_KEY,LESSON_CHECKED_KEY,LESSON_SCORE_KEY,LESSON_STARS_KEY,LESSON_XP_KEY].forEach(k=>localStorage.removeItem(k));
+    localStorage.setItem(LESSON_VERSION_KEY,LESSON_CONTENT_VERSION);
+    studentAnswers={};
+  }
+}
+document.addEventListener("DOMContentLoaded",()=>{resetLessonAttemptIfContentUpdated();const saved=localStorage.getItem("lessonSidebarCollapsed");if(saved==="yes")document.body.classList.add("lesson-sidebar-collapsed");renderAnswerGrid();renderAnswers(isLessonChecked());renderLessonResult();updateLessonGateButtons();updateSectionProgressUI();showTab("theory");});
+</script>
+
+
+<script id="physx-helper-tools-script">
+function toggleHelperTools(){const box=document.getElementById('lessonHelperTools');if(!box)return;box.classList.toggle('open');const btn=box.querySelector('.lesson-helper-title');if(btn)btn.setAttribute('aria-expanded',box.classList.contains('open')?'true':'false');}
+function openTool(tool){const modal=document.getElementById('helperToolModal');if(!modal)return;modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));const names={calculator:'Калькулятор',board:'Жазу тақтасы',timer:'Таймер'};const icons={calculator:'fa-calculator',board:'fa-pen-ruler',timer:'fa-clock'};const name=document.getElementById('helperToolName');const icon=document.getElementById('helperToolIcon');if(name)name.textContent=names[tool]||'Көмекші құрал';if(icon)icon.className='fa-solid '+(icons[tool]||'fa-toolbox');const panel=document.getElementById(tool==='calculator'?'toolCalculatorPanel':tool==='board'?'toolBoardPanel':'toolTimerPanel');if(panel)panel.classList.add('active');if(tool==='board')setTimeout(initBoard,60);}
+function closeTool(){const modal=document.getElementById('helperToolModal');if(modal){modal.classList.remove('show');modal.setAttribute('aria-hidden','true');}}
+function appendCalc(v){const d=document.getElementById('calcDisplay');if(d)d.value=(d.value||'')+v;}function clearCalc(){const d=document.getElementById('calcDisplay');if(d)d.value='';}function backspaceCalc(){const d=document.getElementById('calcDisplay');if(d)d.value=(d.value||'').slice(0,-1);}function calculateCalc(){const d=document.getElementById('calcDisplay');if(!d)return;try{const expr=(d.value||'').replace(/÷/g,'/').replace(/×/g,'*');if(!/^[0-9+\-*/().\s]+$/.test(expr))throw new Error('bad');d.value=String(Function('return ('+expr+')')());}catch(e){d.value='Қате';}}
+let boardReady=false, boardCtx=null, boardDrawing=false, boardColor='#145cff', boardSize=4;function initBoard(){const c=document.getElementById('helperBoardCanvas');if(!c)return;const r=c.getBoundingClientRect();const scale=window.devicePixelRatio||1;c.width=Math.max(1,Math.floor(r.width*scale));c.height=Math.max(1,Math.floor(r.height*scale));boardCtx=c.getContext('2d');boardCtx.setTransform(scale,0,0,scale,0,0);boardCtx.lineCap='round';boardCtx.lineJoin='round';if(boardReady)return;boardReady=true;const pos=e=>{const rect=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-rect.left,y:t.clientY-rect.top}};const start=e=>{boardDrawing=true;const p=pos(e);boardCtx.beginPath();boardCtx.moveTo(p.x,p.y);e.preventDefault()};const move=e=>{if(!boardDrawing)return;const p=pos(e);boardCtx.strokeStyle=boardColor;boardCtx.lineWidth=boardSize;boardCtx.lineTo(p.x,p.y);boardCtx.stroke();e.preventDefault()};const end=()=>{boardDrawing=false};c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);window.addEventListener('mouseup',end);c.addEventListener('touchstart',start,{passive:false});c.addEventListener('touchmove',move,{passive:false});window.addEventListener('touchend',end);}
+function setBoardColor(c){boardColor=c;}function setBoardSize(s){boardSize=Number(s)||4;}function clearBoard(){const c=document.getElementById('helperBoardCanvas');if(c&&boardCtx)boardCtx.clearRect(0,0,c.width,c.height);}
+let timerSeconds=720,timerStartSeconds=720,timerInterval=null;function fmtTimer(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}function renderTimer(){const a=document.getElementById('timerDisplay'),b=document.getElementById('floatingTimerDisplay');if(a)a.textContent=fmtTimer(timerSeconds);if(b)b.textContent=fmtTimer(timerSeconds)}function setTimerFromInput(){const i=document.getElementById('timerMinutes');timerStartSeconds=Math.max(1,Number(i?.value||12))*60;timerSeconds=timerStartSeconds;renderTimer()}function setQuickTimer(m){const i=document.getElementById('timerMinutes');if(i)i.value=m;timerStartSeconds=m*60;timerSeconds=timerStartSeconds;renderTimer()}function startTimer(){setTimerFromInput();document.getElementById('floatingTimerWidget')?.classList.add('show');closeTool();clearInterval(timerInterval);timerInterval=setInterval(()=>{timerSeconds--;renderTimer();if(timerSeconds<=0){clearInterval(timerInterval);timerInterval=null;alert('Уақыт аяқталды!')}},1000)}function pauseTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}else{document.getElementById('floatingTimerWidget')?.classList.add('show');timerInterval=setInterval(()=>{timerSeconds--;renderTimer();if(timerSeconds<=0){clearInterval(timerInterval);timerInterval=null;alert('Уақыт аяқталды!')}},1000)}}function resetTimer(){clearInterval(timerInterval);timerInterval=null;timerSeconds=timerStartSeconds;renderTimer()}function hideFloatingTimer(){document.getElementById('floatingTimerWidget')?.classList.remove('show')}
+document.addEventListener('DOMContentLoaded',()=>{renderTimer();});
+</script>
+
+<script id="lesson-teacher-mode-script">
+  document.addEventListener("DOMContentLoaded", function () {
+    const user = JSON.parse(localStorage.getItem("physxUser") || "{}");
+    const isTeacher =
+      localStorage.getItem("physxUserRole") === "teacher" ||
+      localStorage.getItem("physxRole") === "teacher" ||
+      user.role === "teacher";
+
+    if (isTeacher) {
+      document.body.classList.add("teacher-mode");
+    }
+
+    document.body.classList.remove("is-fullscreen-mode");
+  });
+
+  function toggleFullscreen(){
+    return false;
+  }
+</script>
+
+</body>
+</html>
