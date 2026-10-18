@@ -1,0 +1,725 @@
+<!DOCTYPE html><html lang="kk"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PhysX - Advanced 26-сабақ</title>
+<link rel="stylesheet" href="../../css/style.css"><link rel="stylesheet" href="../../css/dropdown.css">
+<link rel="stylesheet" href="../../css/responsive.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"><style>
+:root{
+  --main:#0d47a1;--blue:#145cff;--green:#12b76a;--orange:#ff7a2f;
+  --text:#071837;--muted:#64748b;--line:#dbe7f5;--shadow:0 18px 40px rgba(13,71,161,.10)
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:var(--text);background:radial-gradient(#d2dff1 1px,transparent 1px),linear-gradient(180deg,#fbfdff,#eef5ff);background-size:28px 28px,100% 100%;overflow-x:hidden}
+.header{height:68px;background:#fff;border-bottom:1px solid #d6e6fb;display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:1000;box-shadow:0 2px 18px rgba(15,23,42,.04)}
+.logo{display:flex;align-items:center;gap:10px;color:var(--main);text-decoration:none;font-size:30px;font-weight:900}
+.nav{display:flex;align-items:center;gap:24px}.nav a{text-decoration:none;color:#06205b;font-weight:800;font-size:15px}.nav a.active{color:#ff9800}
+.lesson-page{width:min(100% - 18px,1500px);margin:0 auto;padding:8px 0 24px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start;transition:.25s}
+.lesson-sidebar{position:sticky;top:78px;height:calc(100vh - 90px);background:linear-gradient(180deg,#0f5cff,#022a83 72%,#011e64);color:#fff;border-radius:18px;padding:12px 10px;overflow:auto;box-shadow:0 22px 45px rgba(13,71,161,.25)}
+.sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.sidebar-title{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:900}.sidebar-title i,.side-menu-btn i{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.sidebar-toggle{width:34px;height:34px;border:none;border-radius:12px;background:rgba(255,255,255,.16);color:#fff;cursor:pointer}
+.sidebar-small{font-size:13px;color:#dbeafe;font-weight:800;margin:10px 0}
+.side-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px;margin-bottom:9px}
+.side-card h3{margin:0 0 8px;font-size:13px;font-weight:900}.circle-row{display:flex;align-items:center;gap:10px}.circle{width:50px;height:50px;border-radius:50%;background:conic-gradient(#38bdf8 0deg,rgba(255,255,255,.22) 0deg);display:grid;place-items:center;position:relative;font-weight:900}.circle::after{content:"";position:absolute;width:36px;height:36px;border-radius:50%;background:#0943b6}.circle span{position:relative;z-index:2;font-size:12px}.side-progress-bar{height:7px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden;margin:10px 0}.side-progress-bar div{height:100%;width:0;background:#38bdf8}
+.side-menu{display:grid;gap:8px;margin-top:10px}.side-menu-btn{min-height:46px;border:none;border-radius:13px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;gap:10px;padding:0 11px;font-size:13px;font-weight:900;text-decoration:none;cursor:pointer}.side-menu-btn.active,.side-menu-btn:hover{background:rgba(255,255,255,.22)}.side-menu-btn.finish-side{background:linear-gradient(135deg,#12b76a,#22c55e);justify-content:center}
+body.lesson-sidebar-collapsed .lesson-page{grid-template-columns:72px minmax(0,1fr)}body.lesson-sidebar-collapsed .lesson-sidebar{width:72px;min-width:72px;max-width:72px;padding:9px 7px}body.lesson-sidebar-collapsed .sidebar-title span,body.lesson-sidebar-collapsed .sidebar-small,body.lesson-sidebar-collapsed .side-card,body.lesson-sidebar-collapsed .side-menu-btn span,.helper-text{ } body.lesson-sidebar-collapsed .sidebar-title span,body.lesson-sidebar-collapsed .sidebar-small,body.lesson-sidebar-collapsed .side-card,body.lesson-sidebar-collapsed .side-menu-btn span{display:none!important}body.lesson-sidebar-collapsed .side-menu-btn{width:50px;height:50px;min-height:50px;padding:0;justify-content:center}body.lesson-sidebar-collapsed .side-menu-btn i{width:36px;height:36px}
+.lesson-main{min-width:0}.main-card,.content-card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px}.lesson-title h1{margin:0 0 7px;font-size:27px;color:#061b55;font-weight:900}.lesson-title p{margin:0;color:#334155;font-weight:800}.top-row{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.top-btn{height:38px;padding:0 14px;border:none;border-radius:13px;background:#eef6ff;color:#145cff;font-weight:900;display:inline-flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer}.top-btn.full{background:#145cff;color:#fff}.lesson-mini-pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.lesson-mini-pills span{height:29px;padding:0 10px;border-radius:999px;background:#eef6ff;border:1px solid #d6e6fb;color:#0d47a1;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:900}
+.content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.content-header h2{font-size:22px;color:#061b55;margin:0}.content-badge{border-radius:999px;background:#eaf3ff;color:#145cff;padding:8px 12px;font-size:12px;font-weight:900}.infographic-frame{padding:8px;background:#fff;border:1px solid #d6e6fb;border-radius:18px;display:flex;justify-content:center;align-items:center;overflow:hidden}.lesson-infographic-img{width:100%;max-height:calc(100vh - 185px);object-fit:contain;border-radius:14px}
+.next-card{margin-top:10px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fff,#f0f7ff);border:1px solid #d6e6fb;display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center}.next-icon{width:42px;height:42px;border-radius:13px;background:#145cff;color:#fff;display:grid;place-items:center}.next-text h3{margin:0 0 3px;color:#0d47a1;font-size:17px}.next-text p{margin:0;font-size:13px;color:#475569;font-weight:700}.next-actions{display:flex;gap:9px;flex-wrap:wrap}.next-actions button{height:38px;padding:0 14px;border:none;border-radius:11px;color:white;font-weight:900;cursor:pointer}.complete-btn{background:linear-gradient(135deg,#f59e0b,#ff7a2f)}.next-btn{background:#145cff}.finish-btn{background:linear-gradient(135deg,#12b76a,#22c55e)}
+.answer-sheet{margin-top:14px;background:linear-gradient(135deg,#fff,#f0f7ff);border:1px solid #d6e6fb;border-radius:18px;padding:16px}.answer-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px}.answer-head h3{margin:0 0 4px;color:#0d47a1}.answer-head p{margin:0;color:#475569;font-size:13px;font-weight:700}.answer-score{min-width:72px;height:38px;border-radius:12px;background:#145cff;color:#fff;display:grid;place-items:center;font-weight:900}.answer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.answer-row{display:grid;grid-template-columns:34px repeat(4,1fr);gap:6px;align-items:center;padding:8px;border-radius:14px;background:#fff;border:1px solid #d6e6fb}.qnum{width:30px;height:30px;border-radius:10px;background:#eef6ff;color:#145cff;display:grid;place-items:center;font-weight:900}.answer-row button{height:30px;border:none;border-radius:9px;background:#eef6ff;color:#0d47a1;font-weight:900;cursor:pointer}.answer-row button.selected{background:#145cff;color:#fff}.answer-row button.correct{background:#22c55e;color:#fff}.answer-row button.wrong{background:#ef4444;color:#fff}.actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:14px}.action-btn{height:40px;padding:0 16px;border:none;border-radius:12px;font-weight:900;cursor:pointer}.check{background:#145cff;color:#fff}.reset{background:#eef6ff;color:#0d47a1}.feedback{margin-top:12px;padding:12px 14px;border-radius:14px;font-weight:900;display:none}.feedback.success{display:block;background:#ecfdf5;border:1px solid #bbf7d0;color:#059669}.feedback.warn{display:block;background:#fff7ed;border:1px solid #fed7aa;color:#ea580c}.result-box{margin-top:12px;padding:14px 16px;border-radius:16px;border:1px solid #d6e6fb;background:linear-gradient(135deg,#fff,#f0f7ff);display:none;align-items:center;justify-content:space-between;gap:12px}.result-box.show{display:flex}.result-stars{font-size:24px;color:#f59e0b;letter-spacing:2px}.result-xp{min-width:92px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#12b76a,#22c55e);color:#fff;font-size:18px;font-weight:900}.locked{opacity:.55;cursor:not-allowed!important;background:#94a3b8!important}.unlocked{opacity:1!important;cursor:pointer!important}
+.helper-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);z-index:5000;display:none;align-items:center;justify-content:center;padding:18px}.helper-modal-backdrop.show{display:flex}.helper-modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;border:1px solid #d6e6fb;box-shadow:0 30px 70px rgba(15,23,42,.25);padding:18px}.helper-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px}.helper-head h2{margin:0 0 5px;color:#061b55}.helper-head p{margin:0;color:#64748b;font-weight:800;font-size:13px}.helper-close{width:42px;height:42px;border:none;border-radius:14px;background:#eef6ff;color:#145cff;font-size:18px;cursor:pointer}.helper-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}.helper-tab{height:42px;border:none;border-radius:13px;background:#eef6ff;color:#0d47a1;font-weight:900;cursor:pointer}.helper-tab.active{background:#145cff;color:#fff}.helper-panel{display:none;border:1px solid #d6e6fb;border-radius:18px;background:#f8fbff;padding:14px}.helper-panel.active{display:block}.calc-display{width:100%;height:54px;border:1px solid #d6e6fb;border-radius:14px;background:#fff;color:#061b55;font-size:24px;font-weight:900;padding:0 14px;text-align:right;margin-bottom:10px}.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.calc-grid button{height:44px;border:none;border-radius:12px;background:#fff;color:#0d47a1;font-size:17px;font-weight:900;cursor:pointer;border:1px solid #d6e6fb}.calc-grid .equal{background:#145cff;color:#fff}.helper-note{width:100%;min-height:220px;border:1px solid #d6e6fb;border-radius:14px;background:#fff;padding:14px;resize:vertical;font-size:15px;font-weight:700}.tool-action{height:38px;padding:0 14px;border:none;border-radius:12px;background:#145cff;color:#fff;font-weight:900;cursor:pointer;margin-top:10px}.tool-action.secondary{background:#eef6ff;color:#0d47a1}.draw-board{width:100%;height:320px;background:#fff;border:1px solid #d6e6fb;border-radius:14px;touch-action:none;display:block}.timer-screen{height:130px;border-radius:20px;background:linear-gradient(135deg,#145cff,#1fb4ff);color:#fff;display:grid;place-items:center;font-size:54px;font-weight:900;margin-bottom:12px}.timer-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.timer-presets button{height:40px;border:none;border-radius:12px;background:#eef6ff;color:#0d47a1;font-weight:900;cursor:pointer}.floating-timer{position:fixed;top:78px;right:18px;z-index:4200;height:42px;padding:0 14px;border-radius:14px;background:#145cff;color:#fff;display:none;align-items:center;gap:8px;font-weight:900}.floating-timer.show{display:flex}
+body.is-fullscreen-mode .header{display:none!important}body.is-fullscreen-mode .lesson-page{width:calc(100% - 16px)!important;max-width:none!important;padding-top:8px!important}body.is-fullscreen-mode .lesson-sidebar{top:8px!important;height:calc(100vh - 16px)!important}body.is-fullscreen-mode .top-btn.full{background:#ef4444!important}body.is-fullscreen-mode .lesson-infographic-img{max-height:calc(100vh - 120px)!important}
+@media(max-width:900px){.lesson-page{grid-template-columns:1fr}.lesson-sidebar{position:relative;top:0;height:auto}.answer-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.answer-grid,.helper-tabs{grid-template-columns:1fr}.top-row{flex-direction:column}}
+
+/* ==================================================
+   LESSON MODE HEADER — PhysX сабақ режимі
+   Жоғары деңгейге арналған бірізді стиль
+================================================== */
+
+.lesson-mode-header{
+  height:58px !important;
+  background:rgba(255,255,255,.96) !important;
+  border-bottom:1px solid #cfe0f4 !important;
+  padding:0 30px !important;
+  box-shadow:0 4px 22px rgba(15,23,42,.045) !important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.lesson-logo{
+  font-size:28px !important;
+  letter-spacing:-.045em !important;
+  color:#0d47a1 !important;
+}
+
+.lesson-header-center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  min-height:38px;
+  padding:0 16px;
+  border-radius:999px;
+  background:#eef6ff;
+  border:1px solid #d6e6fb;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#0b2f77;
+  white-space:nowrap;
+}
+
+.lesson-header-center span{
+  font-size:12px;
+  font-weight:850;
+  color:#64748b;
+}
+
+.lesson-header-center b{
+  font-size:13px;
+  font-weight:950;
+  color:#061b55;
+}
+
+.lesson-header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:auto;
+}
+
+.lesson-top-btn{
+  min-height:38px;
+  padding:0 13px;
+  border-radius:13px;
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(20,92,255,.18);
+  color:#145cff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(13,71,161,.06);
+  transition:.2s ease;
+  white-space:nowrap;
+}
+
+.lesson-top-btn:hover{
+  background:#145cff;
+  color:#ffffff;
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(20,92,255,.18);
+}
+
+.teacher-mode-badge{
+  display:none;
+  min-height:38px;
+  padding:0 13px;
+  border-radius:999px;
+  background:#ecfdf5;
+  border:1px solid #bbf7d0;
+  color:#059669;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+body.teacher-mode .teacher-mode-badge{
+  display:inline-flex;
+}
+
+/* Толық экран батырмасы керек емес */
+.floating-fullscreen-btn,
+.lesson-fullscreen-btn,
+.fullscreen-side-btn{
+  display:none !important;
+}
+
+.lesson-sidebar{
+  top:72px !important;
+  height:calc(100vh - 84px) !important;
+}
+
+body.is-fullscreen-mode .header{
+  display:flex !important;
+}
+
+body.is-fullscreen-mode .lesson-mode-header{
+  display:flex !important;
+}
+
+@media(max-width:980px){
+  .lesson-header-center{
+    display:none;
+  }
+
+  .lesson-mode-header{
+    padding:0 14px !important;
+  }
+
+  .lesson-header-actions{
+    gap:8px;
+  }
+
+  .profile-top-btn{
+    display:none;
+  }
+}
+
+@media(max-width:760px){
+  .lesson-top-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    font-size:0;
+  }
+
+  .lesson-top-btn i{
+    font-size:14px;
+  }
+}
+
+
+/* Sidebar order final fix: қызметтік батырмалар төменгі топ сияқты көрінсін */
+.side-menu-btn:not([data-tab]),
+.side-menu a.side-menu-btn,
+.finish-side{
+  order:50;
+}
+.side-menu-btn[data-tab]{
+  order:1;
+}
+.side-menu{
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+
+/* Sidebar label final fix */
+.side-menu-btn span{
+  line-height:1.18 !important;
+}
+.side-menu-btn[data-tab="examples"] span{
+  font-size:12px !important;
+}
+
+</style>
+<style id="advanced-final-style-patch">
+/* ==================================================
+   Advanced final badge style
+   Мақсат: екінші скриндегідей жасыл ✅ бейдж
+   - батырманың өзі көк стильде қалады
+   - галочка кішкентай жасыл дөңгелек болып тұрады
+   - ашық және жинақы sidebar режимінде бірдей әдемі көрінеді
+================================================== */
+.side-menu-btn{
+  position:relative !important;
+  overflow:visible !important;
+}
+.side-menu-btn[data-tab]{
+  padding-right:38px !important;
+}
+.side-menu-btn.section-done{
+  border-color:rgba(255,255,255,.18) !important;
+}
+.side-menu-btn.section-done:not(.active):not(:hover):not(.finish-side){
+  background:rgba(255,255,255,.10) !important;
+}
+.side-menu-btn.section-done.active,
+.side-menu-btn.section-done:hover{
+  background:rgba(255,255,255,.22) !important;
+}
+.side-menu-btn.section-done::after{
+  content:"✓";
+  position:absolute;
+  top:50%;
+  right:9px;
+  transform:translateY(-50%);
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  background:#22c55e;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-weight:950;
+  font-size:13px;
+  line-height:1;
+  box-shadow:0 6px 14px rgba(34,197,94,.32);
+  border:2px solid rgba(255,255,255,.88);
+  z-index:5;
+}
+body.lesson-sidebar-collapsed .side-menu-btn[data-tab]{
+  padding-right:0 !important;
+}
+body.lesson-sidebar-collapsed .side-menu-btn.section-done::after{
+  top:5px;
+  right:5px;
+  transform:none;
+  width:18px;
+  height:18px;
+  font-size:10px;
+  border-width:2px;
+}
+body.lesson-sidebar-collapsed .side-menu-btn.section-done{
+  background:rgba(255,255,255,.12) !important;
+}
+body.lesson-sidebar-collapsed .side-menu-btn.section-done.active,
+body.lesson-sidebar-collapsed .side-menu-btn.section-done:hover{
+  background:rgba(255,255,255,.24) !important;
+}
+.answer-row.checked button{cursor:not-allowed;opacity:.92}
+.action-btn.reset{display:none!important}
+.result-box{display:none!important}
+.result-box.show{display:flex!important}
+</style>
+
+</head>
+<body>
+<header class="header lesson-mode-header">
+  <a href="../../index.html" class="logo lesson-logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <div class="lesson-header-center">
+    <span>Жоғары деңгей · Механика</span>
+    <b>26-сабақ</b>
+  </div>
+
+  <div class="lesson-header-actions">
+    <span class="teacher-mode-badge" id="teacherModeBadge">
+      <i class="fa-solid fa-unlock"></i>
+      Мұғалім режимі
+    </span>
+
+    <a href="../../levels_map.html" class="lesson-top-btn">
+      <i class="fa-solid fa-arrow-left"></i>
+      Оқу картасына қайту
+    </a>
+
+    <a href="../../profile.html" class="lesson-top-btn profile-top-btn">
+      <i class="fa-solid fa-user"></i>
+      Профиль
+    </a>
+  </div>
+</header>
+<main class="lesson-page"><aside class="lesson-sidebar"><div class="sidebar-head"><div class="sidebar-title"><i class="fa-solid fa-book-open"></i><span>Сабақ</span></div><button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-chevron-left"></i></button></div><div class="sidebar-small">Жоғары деңгей · Advanced<br>26-сабақ</div>
+<div class="side-card"><h3>Сабақ прогресі</h3><div class="circle-row"><div class="circle"><span id="sidePercent">0%</span></div><div><div id="bigPercent" style="font-size:24px;font-weight:900;">0%</div><div id="smallProgress" style="font-size:11.5px;color:#dbeafe;font-weight:800;">0 / 4 бөлім</div></div></div><div class="side-progress-bar"><div id="sideFill"></div></div><div style="font-size:12px;font-weight:900;">Максимум: 5⭐ · +10 XP</div></div>
+<div class="side-menu"><button class="side-menu-btn" data-tab="theory" onclick="showTab('theory',this)"><i class="fa-solid fa-book-open"></i><span>Теориялық</span></button><button class="side-menu-btn" data-tab="examples" onclick="showTab('examples',this)"><i class="fa-solid fa-flask"></i><span>Есеп шығару мысалдары</span></button><button class="side-menu-btn" data-tab="tasks" onclick="showTab('tasks',this)"><i class="fa-solid fa-calculator"></i><span>Есептер</span></button><button class="side-menu-btn" data-tab="answers" onclick="showTab('answers',this)"><i class="fa-solid fa-circle-check"></i><span>Шығарылу</span></button><button class="side-menu-btn" onclick="openHelperTools()"><i class="fa-solid fa-screwdriver-wrench"></i><span>Көмекші құралдар</span></button><button class="side-menu-btn finish-side locked" onclick="finishLesson()"><i class="fa-solid fa-flag-checkered"></i><span>Аяқтау</span></button><a class="side-menu-btn" href="../../levels_map.html"><i class="fa-solid fa-map"></i><span>Оқу картасы</span></a></div></aside>
+<section class="lesson-main"><section class="main-card"><div class="top-row"><div class="lesson-title"><h1>26-сабақ. Жоғары деңгей тақырыбы</h1><p>Жоғары деңгейге арналған сабақ. Формат: standard</p><div class="lesson-mini-pills"><span><i class="fa-solid fa-layer-group"></i> 26 / 60</span><span><i class="fa-solid fa-star"></i> 5 жұлдыз</span><span><i class="fa-solid fa-bolt"></i> +10 XP</span></div></div><div class="top-actions"></div></div></section>
+
+<div class="content-card tab-content" id="theory">
+  <div class="content-header"><h2>Теориялық бөлім</h2><div class="content-badge"><i class='fa-solid fa-book-open'></i> Теория</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/26/26.1.jpg" class="lesson-infographic-img" alt="Теориялық бөлім"></div>
+  
+  <div class="next-card"><div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді аяқтап, келесі бөлімге өт.</p></div><div class="next-actions"><button class="complete-btn" onclick="completeSection('theory')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('examples',document.querySelector('.side-menu-btn[data-tab=examples]'))">Келесі бөлім <i class="fa-solid fa-arrow-right"></i></button></div></div>
+</div>
+
+<div class="content-card tab-content" id="examples" style="display:none;">
+  <div class="content-header"><h2>Есеп шығару мысалдары</h2><div class="content-badge"><i class='fa-solid fa-flask'></i> Мысалдар</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/26/26.2.jpg" class="lesson-infographic-img" alt="Есеп шығару мысалдары"></div>
+  
+  <div class="next-card"><div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді аяқтап, келесі бөлімге өт.</p></div><div class="next-actions"><button class="complete-btn" onclick="completeSection('examples')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('tasks',document.querySelector('.side-menu-btn[data-tab=tasks]'))">Келесі бөлім <i class="fa-solid fa-arrow-right"></i></button></div></div>
+</div>
+
+<div class="content-card tab-content" id="tasks" style="display:none;">
+  <div class="content-header"><h2>Есептер тестік нұсқа</h2><div class="content-badge"><i class='fa-solid fa-calculator'></i> Есептер</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/26/26.3.jpg" class="lesson-infographic-img" alt="Есептер тестік нұсқа"></div>
+  
+        <div class="answer-sheet">
+          <div class="answer-head"><div><h3>Жауап парағы</h3><p>8 сұраққа A/B/C/D жауаптарын белгіле.</p></div><div class="answer-score" id="score-tasks">0 / 8</div></div>
+          <div class="answer-grid" id="grid-tasks"></div>
+          <div class="actions"><button class="action-btn check" onclick="checkAnswers('tasks')">Жауаптарды тексеру</button></div>
+          <div class="feedback" id="feedback-tasks"></div>
+        </div>
+  <div class="next-card"><div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді аяқтап, келесі бөлімге өт.</p></div><div class="next-actions"><button class="complete-btn" onclick="completeSection('tasks')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('answers',document.querySelector('.side-menu-btn[data-tab=answers]'))">Келесі бөлім <i class="fa-solid fa-arrow-right"></i></button></div></div>
+</div>
+
+<div class="content-card tab-content" id="answers" style="display:none;">
+  <div class="content-header"><h2>Шығарылу жолы мен жауаптары</h2><div class="content-badge"><i class='fa-solid fa-circle-check'></i> Жауаптары</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/26/26.4.jpg" class="lesson-infographic-img" alt="Шығарылу жолы мен жауаптары"></div>
+  
+  <div class="next-card"><div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div><div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді аяқтап, келесі бөлімге өт.</p></div><div class="next-actions"><button class="complete-btn" onclick="completeSection('answers')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="finish-btn locked" onclick="finishLesson()">Сабақты аяқтау <i class="fa-solid fa-check"></i></button></div></div>
+</div>
+<div class="main-card"><div class="result-box"><div><div style="font-weight:900;color:#0d47a1;margin-bottom:5px;">Сабақ нәтижесі</div><div class="result-stars" id="resultStars">☆☆☆☆☆</div><div style="font-size:13px;color:#475569;font-weight:800;" id="resultSub">Бөлімдерді аяқтағаннан кейін жұлдыз беріледі.</div></div><div class="result-xp" id="resultXp">+0 XP</div></div></div>
+</section></main>
+<div class="helper-modal-backdrop" id="helperModal"><div class="helper-modal">
+<div class="helper-head"><div><h2>Көмекші құралдар</h2><p>Есептеу, жазу, сызу және уақыт бақылау үшін.</p></div><button class="helper-close" onclick="closeHelperTools()"><i class="fa-solid fa-xmark"></i></button></div>
+<div class="helper-tabs"><button class="helper-tab active" onclick="openHelperTab('calc',this)">Калькулятор</button><button class="helper-tab" onclick="openHelperTab('note',this)">Жазу</button><button class="helper-tab" onclick="openHelperTab('draw',this)">Сызу тақтасы</button><button class="helper-tab" onclick="openHelperTab('timer',this)">Таймер</button></div>
+<div class="helper-panel active" id="helper-calc"><input class="calc-display" id="calcDisplay" value="0" readonly><div class="calc-grid"><button onclick="calcClear()">C</button><button onclick="calcBack()">⌫</button><button onclick="calcAdd('/')">÷</button><button onclick="calcAdd('*')">×</button><button onclick="calcAdd('7')">7</button><button onclick="calcAdd('8')">8</button><button onclick="calcAdd('9')">9</button><button onclick="calcAdd('-')">−</button><button onclick="calcAdd('4')">4</button><button onclick="calcAdd('5')">5</button><button onclick="calcAdd('6')">6</button><button onclick="calcAdd('+')">+</button><button onclick="calcAdd('1')">1</button><button onclick="calcAdd('2')">2</button><button onclick="calcAdd('3')">3</button><button class="equal" onclick="calcEqual()">=</button><button onclick="calcAdd('0')">0</button><button onclick="calcAdd('.')">.</button><button onclick="calcAdd('(')">(</button><button onclick="calcAdd(')')">)</button></div></div>
+<div class="helper-panel" id="helper-note"><textarea class="helper-note" id="helperNote" placeholder="Берілгені, формула, қысқа есептеу жаз..."></textarea><button class="tool-action secondary" onclick="clearNote()">Тазалау</button><button class="tool-action" onclick="saveNote()">Сақтау</button></div>
+<div class="helper-panel" id="helper-draw"><canvas class="draw-board" id="drawBoard"></canvas><button class="tool-action secondary" onclick="clearDraw()">Тазалау</button></div>
+<div class="helper-panel" id="helper-timer"><div class="timer-screen" id="timerScreen">15:00</div><div class="timer-presets"><button onclick="setTimerMinutes(10)">10 мин</button><button onclick="setTimerMinutes(15)">15 мин</button><button onclick="setTimerMinutes(20)">20 мин</button></div><button class="tool-action" onclick="startTimer()">Бастау</button><button class="tool-action" onclick="pauseTimer()">Тоқтату</button><button class="tool-action secondary" onclick="resetTimer()">Қайта</button></div>
+</div></div><div class="floating-timer" id="floatingTimer"><i class="fa-solid fa-stopwatch"></i><span id="floatingTimerText">15:00</span></div>
+
+<script>
+const lessonId="advanced-lesson-26", lessonNumber=26, lessonType="standard", maxStars=4, maxXP=10;
+const lessonSections=["theory", "examples", "tasks", "answers"];
+const taskGroups=["tasks"];
+const correctAnswers={1:'B',2:'A',3:'C',4:'D',5:'A',6:'B',7:'C',8:'D'};
+let answers=JSON.parse(localStorage.getItem(lessonId+"-answers")||"{}");
+function getProgress(){return JSON.parse(localStorage.getItem("progress_"+lessonId)||'{"completedSections":[]}')}
+function saveProgress(p){localStorage.setItem("progress_"+lessonId,JSON.stringify(p))}
+function toggleSidebar(){document.body.classList.toggle("lesson-sidebar-collapsed");localStorage.setItem("advancedSidebarCollapsed",document.body.classList.contains("lesson-sidebar-collapsed")?"1":"0")}
+function toggleFullscreen(){const page=document.documentElement;if(!document.fullscreenElement){page.requestFullscreen&&page.requestFullscreen();document.body.classList.add("is-fullscreen-mode");updateFull(true)}else{document.exitFullscreen&&document.exitFullscreen();document.body.classList.remove("is-fullscreen-mode");updateFull(false)}}
+function updateFull(isFull){document.querySelectorAll(".top-btn.full i").forEach(i=>{i.classList.toggle("fa-expand",!isFull);i.classList.toggle("fa-compress",isFull)});document.querySelectorAll(".top-btn.full span").forEach(s=>s.textContent=isFull?"Шығу":"Толық экран")}
+document.addEventListener("fullscreenchange",()=>updateFull(!!document.fullscreenElement));
+function showTab(id,btn){document.querySelectorAll(".tab-content").forEach(x=>x.style.display="none");document.getElementById(id).style.display="block";document.querySelectorAll(".side-menu-btn").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");window.scrollTo({top:0,behavior:"smooth"})}
+function completeSection(id){const p=getProgress();if(!p.completedSections.includes(id))p.completedSections.push(id);saveProgress(p);updateUI();}
+function buildGrid(group){const grid=document.getElementById("grid-"+group);if(!grid)return;grid.innerHTML="";for(let q=1;q<=8;q++){const row=document.createElement("div");row.className="answer-row";row.dataset.q=q;row.dataset.group=group;row.innerHTML=`<span class="qnum">${q}</span><button onclick="selectAnswer('${group}',${q},'A')">A</button><button onclick="selectAnswer('${group}',${q},'B')">B</button><button onclick="selectAnswer('${group}',${q},'C')">C</button><button onclick="selectAnswer('${group}',${q},'D')">D</button>`;grid.appendChild(row)}}
+function selectAnswer(group,q,a){if(!answers[group])answers[group]={};answers[group][q]=a;localStorage.setItem(lessonId+"-answers",JSON.stringify(answers));renderAnswers(group)}
+function renderAnswers(group){document.querySelectorAll(`.answer-row[data-group="${group}"]`).forEach(row=>{const q=row.dataset.q,sel=answers[group]?.[q];row.querySelectorAll("button").forEach(b=>{b.classList.remove("selected","correct","wrong");if(b.textContent.trim()===sel)b.classList.add("selected")})})}
+function checkAnswers(group){let score=0;document.querySelectorAll(`.answer-row[data-group="${group}"]`).forEach(row=>{const q=row.dataset.q,sel=answers[group]?.[q],cor=correctAnswers[q];row.querySelectorAll("button").forEach(b=>{b.classList.remove("correct","wrong");const v=b.textContent.trim();if(v===cor)b.classList.add("correct");if(v===sel&&sel!==cor)b.classList.add("wrong")});if(sel===cor)score++});localStorage.setItem(`${lessonId}-${group}-score`,score);document.getElementById("score-"+group).textContent=score+" / 8";const fb=document.getElementById("feedback-"+group);fb.className="feedback success";fb.textContent=`Нәтиже: ${score} / 8. Бұл бөлім тексерілді.`;completeSection(group);updateUI()}
+function resetAnswers(group){if(answers[group])delete answers[group];localStorage.setItem(lessonId+"-answers",JSON.stringify(answers));localStorage.removeItem(`${lessonId}-${group}-score`);document.getElementById("score-"+group).textContent="0 / 8";const fb=document.getElementById("feedback-"+group);fb.className="feedback";fb.textContent="";renderAnswers(group);updateUI()}
+function calcStars(){if(lessonType==="theory"){const p=getProgress();return lessonSections.every(s=>p.completedSections.includes(s))?maxStars:Math.floor((p.completedSections.length/lessonSections.length)*maxStars)}let total=0, denom=taskGroups.length*8;taskGroups.forEach(g=>total+=Number(localStorage.getItem(`${lessonId}-${g}-score`)||0));if(denom===0)return 0;const pct=total/denom;if(pct>=1)return maxStars;if(pct>=.85)return Math.max(1,maxStars-1);if(pct>=.70)return Math.max(1,maxStars-2);if(pct>=.50)return Math.max(1,Math.ceil(maxStars/2));if(total>0)return 1;return 0}
+function calcXP(stars){return Math.round((stars/maxStars)*maxXP)||0}
+function starText(s){let out="";for(let i=1;i<=maxStars;i++)out+=i<=s?"⭐":"☆";return out}
+function updateUI(){const p=getProgress(),done=p.completedSections.length,percent=Math.round(done/lessonSections.length*100);document.getElementById("sidePercent").textContent=percent+"%";document.getElementById("bigPercent").textContent=percent+"%";document.getElementById("smallProgress").textContent=done+" / "+lessonSections.length+" бөлім";document.getElementById("sideFill").style.width=percent+"%";document.querySelector(".circle").style.background=`conic-gradient(#38bdf8 ${percent*3.6}deg, rgba(255,255,255,.22) 0deg)`;lessonSections.forEach(s=>{const b=document.querySelector(`.side-menu-btn[data-tab="${s}"]`);if(b&&p.completedSections.includes(s))b.classList.add("section-done")});const stars=calcStars(),xp=calcXP(stars);document.getElementById("resultStars").textContent=starText(stars);document.getElementById("resultXp").textContent="+"+xp+" XP";document.getElementById("resultSub").textContent=`Жұлдыз: ${stars} / ${maxStars}`;document.querySelectorAll(".finish-side,.finish-btn").forEach(b=>{if(lessonSections.every(s=>p.completedSections.includes(s))){b.classList.remove("locked");b.classList.add("unlocked")}})}
+function finishLesson(){const p=getProgress();if(!lessonSections.every(s=>p.completedSections.includes(s))){alert("Сабақты аяқтау үшін барлық бөлімдерді аяқта.");return}const stars=calcStars(),xp=calcXP(stars);localStorage.setItem(lessonId+"-stars",stars);localStorage.setItem(lessonId+"-xp",xp);localStorage.setItem("lesson"+lessonNumber+"_stars",stars);let user=JSON.parse(localStorage.getItem("physxUser")||'{"studyLevel":"advanced","progress":{"points":0,"lessonsCompleted":[]}}');if(!user.progress)user.progress={points:0,lessonsCompleted:[]};if(!Array.isArray(user.progress.lessonsCompleted))user.progress.lessonsCompleted=[];if(!user.progress.lessonsCompleted.includes(lessonId)){user.progress.lessonsCompleted.push(lessonId);user.progress.points=(user.progress.points||0)+xp;alert(`Сабақ аяқталды! ${starText(stars)} +${xp} XP`)}else alert("Бұл сабақ бұрын аяқталған.");localStorage.setItem("physxUser",JSON.stringify(user));location.href="../../levels_map.html"}
+
+function openHelperTools(){document.getElementById("helperModal").classList.add("show");loadNote();initDrawBoard()}
+function closeHelperTools(){document.getElementById("helperModal").classList.remove("show")}
+function openHelperTab(name,btn){document.querySelectorAll(".helper-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".helper-tab").forEach(t=>t.classList.remove("active"));document.getElementById("helper-"+name).classList.add("active");btn.classList.add("active");if(name==="draw")setTimeout(initDrawBoard,80)}
+let calcExpression="";function calcRender(){document.getElementById("calcDisplay").value=calcExpression||"0"}function calcAdd(v){calcExpression+=v;calcRender()}function calcClear(){calcExpression="";calcRender()}function calcBack(){calcExpression=calcExpression.slice(0,-1);calcRender()}function calcEqual(){try{const safe=calcExpression.replace(/[^0-9+\-*/().]/g,"");calcExpression=String(Function('"use strict"; return ('+safe+')')())}catch(e){calcExpression="Қате";setTimeout(calcClear,900)}calcRender()}
+function noteKey(){return "physx_note_"+location.pathname}function loadNote(){const n=document.getElementById("helperNote");if(n)n.value=localStorage.getItem(noteKey())||""}function saveNote(){const n=document.getElementById("helperNote");if(n){localStorage.setItem(noteKey(),n.value);alert("Жазба сақталды.")}}function clearNote(){const n=document.getElementById("helperNote");if(n)n.value="";localStorage.removeItem(noteKey())}
+let drawReady=false,drawing=false;function initDrawBoard(){const c=document.getElementById("drawBoard");if(!c||drawReady)return;const r=c.getBoundingClientRect();c.width=Math.max(300,Math.floor(r.width));c.height=Math.max(220,Math.floor(r.height));const ctx=c.getContext("2d");ctx.lineWidth=3;ctx.lineCap="round";ctx.strokeStyle="#145cff";function pos(e){const rr=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-rr.left,y:p.clientY-rr.top}}function start(e){e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)}function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()}function end(){drawing=false}c.addEventListener("mousedown",start);c.addEventListener("mousemove",move);window.addEventListener("mouseup",end);c.addEventListener("touchstart",start,{passive:false});c.addEventListener("touchmove",move,{passive:false});c.addEventListener("touchend",end);drawReady=true}function clearDraw(){const c=document.getElementById("drawBoard");if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height)}
+let timerSeconds=15*60,timerDefault=15*60,timerInterval=null;function formatTimer(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}function updateTimerView(){const text=formatTimer(timerSeconds);document.getElementById("timerScreen").textContent=text;document.getElementById("floatingTimerText").textContent=text}function setTimerMinutes(min){timerDefault=min*60;timerSeconds=timerDefault;pauseTimer();updateTimerView()}function startTimer(){document.getElementById("floatingTimer").classList.add("show");if(timerInterval)return;timerInterval=setInterval(()=>{if(timerSeconds>0){timerSeconds--;updateTimerView()}else{pauseTimer();alert("Уақыт аяқталды!")}},1000)}function pauseTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}function resetTimer(){pauseTimer();timerSeconds=timerDefault;updateTimerView()}
+
+window.addEventListener("DOMContentLoaded",()=>{if(localStorage.getItem("advancedSidebarCollapsed")==="1")document.body.classList.add("lesson-sidebar-collapsed");taskGroups.forEach(g=>{buildGrid(g);renderAnswers(g)});updateUI();updateTimerView();document.querySelector('.side-menu-btn[data-tab="theory"]')?.classList.add("active");});
+</script>
+<script id="lesson-teacher-mode-script">
+  document.addEventListener("DOMContentLoaded", function () {
+    const user = JSON.parse(localStorage.getItem("physxUser") || "{}");
+    const isTeacher =
+      localStorage.getItem("physxUserRole") === "teacher" ||
+      localStorage.getItem("physxRole") === "teacher" ||
+      user.role === "teacher";
+
+    if (isTeacher) {
+      document.body.classList.add("teacher-mode");
+    }
+
+    document.body.classList.remove("is-fullscreen-mode");
+  });
+
+  function toggleFullscreen(){
+    return false;
+  }
+</script>
+
+
+
+<script id="advanced-final-safety-patch">
+(function(){
+  function $(sel, root=document){ return root.querySelector(sel); }
+  function $all(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+  function scoreKey(group){ return `${lessonId}-${group}-score`; }
+  function checkedKey(group){ return `${lessonId}-${group}-checked`; }
+  function resultVisibleKey(){ return `${lessonId}-result-visible`; }
+  function isTaskGroup(id){ return Array.isArray(taskGroups) && taskGroups.includes(id); }
+  function allSectionsDone(p){ return Array.isArray(lessonSections) && lessonSections.every(s => p.completedSections.includes(s)); }
+  function getTotal(group){
+    const rows = $all(`.answer-row[data-group="${group}"]`);
+    if(rows.length) return rows.length;
+    return Object.keys(correctAnswers || {}).length || 8;
+  }
+  function relabelSideButtons(){
+    const labels = {
+      theory: 'Теориялық', examples: 'Есеп шығару мысалдары', life: 'Өмірдегі мысалдар',
+      tasks: 'Есептер', answers: 'Шығарылу',
+      tasks1: 'Есептер I', answers1: 'Шығарылу I', tasks2: 'Есептер II', answers2: 'Шығарылу II',
+      work1: '1-бөлім', work2: '2-бөлім', work3: '3-бөлім',
+    };
+    const ansLabels = {answers1:'1-бөлім жауаптары', answers2:'2-бөлім жауаптары', answers3:'3-бөлім жауаптары'};
+    $all('.side-menu-btn[data-tab]').forEach(btn=>{
+      const id = btn.getAttribute('data-tab');
+      const span = btn.querySelector('span');
+      if(!span) return;
+      if((lessonId || '').includes('control')) span.textContent = ansLabels[id] || labels[id] || span.textContent;
+      else span.textContent = labels[id] || span.textContent;
+    });
+  }
+  window.completeSection = function(id){
+    if(isTaskGroup(id) && localStorage.getItem(checkedKey(id)) !== '1'){
+      const fb = $(`#feedback-${id}`);
+      if(fb){ fb.className='feedback warn'; fb.textContent='Алдымен барлық сұраққа жауап беріп, «Жауаптарды тексеру» батырмасын бас.'; }
+      return;
+    }
+    const p = getProgress();
+    if(!Array.isArray(p.completedSections)) p.completedSections = [];
+    if(!p.completedSections.includes(id)) p.completedSections.push(id);
+    saveProgress(p);
+    updateUI();
+  };
+  window.selectAnswer = function(group,q,a){
+    if(localStorage.getItem(checkedKey(group)) === '1') return;
+    if(!answers[group]) answers[group] = {};
+    answers[group][q] = a;
+    localStorage.setItem(lessonId+'-answers', JSON.stringify(answers));
+    renderAnswers(group);
+  };
+  window.renderAnswers = function(group){
+    const checked = localStorage.getItem(checkedKey(group)) === '1';
+    $all(`.answer-row[data-group="${group}"]`).forEach(row=>{
+      const q = row.dataset.q;
+      const sel = answers[group]?.[q];
+      const cor = (correctAnswers || {})[q];
+      row.classList.toggle('checked', checked);
+      row.querySelectorAll('button').forEach(b=>{
+        const v = b.textContent.trim();
+        b.disabled = checked;
+        b.classList.remove('selected','correct','wrong');
+        if(v === sel) b.classList.add('selected');
+        if(checked && v === cor) b.classList.add('correct');
+        if(checked && v === sel && sel !== cor) b.classList.add('wrong');
+      });
+    });
+  };
+  window.checkAnswers = function(group){
+    const rows = $all(`.answer-row[data-group="${group}"]`);
+    const total = rows.length || getTotal(group);
+    let answered = 0, score = 0;
+    rows.forEach(row=>{
+      const q = row.dataset.q;
+      const sel = answers[group]?.[q];
+      const cor = (correctAnswers || {})[q];
+      if(sel) answered++;
+      if(sel === cor) score++;
+    });
+    const fb = $(`#feedback-${group}`);
+    if(answered < total){
+      if(fb){ fb.className='feedback warn'; fb.textContent=`Алдымен барлық сұраққа жауап белгіле. Белгіленгені: ${answered} / ${total}.`; }
+      renderAnswers(group);
+      updateUI();
+      return;
+    }
+    localStorage.setItem(scoreKey(group), String(score));
+    localStorage.setItem(checkedKey(group), '1');
+    localStorage.setItem(resultVisibleKey(), '1');
+    const scoreEl = $(`#score-${group}`);
+    if(scoreEl) scoreEl.textContent = `${score} / ${total}`;
+    if(fb){ fb.className='feedback success'; fb.textContent=`Нәтиже: ${score} / ${total}. Бұл бөлім тексерілді.`; }
+    renderAnswers(group);
+    completeSection(group);
+    updateUI();
+  };
+  window.resetAnswers = function(group){ return false; };
+  window.updateUI = function(){
+    const p = getProgress();
+    if(!Array.isArray(p.completedSections)) p.completedSections = [];
+    const done = p.completedSections.length;
+    const totalSections = lessonSections.length || 1;
+    const percent = Math.round(done / totalSections * 100);
+    const sidePercent = $('#sidePercent'), bigPercent = $('#bigPercent'), smallProgress = $('#smallProgress'), sideFill = $('#sideFill'), circle = $('.circle');
+    if(sidePercent) sidePercent.textContent = percent + '%';
+    if(bigPercent) bigPercent.textContent = percent + '%';
+    if(smallProgress) smallProgress.textContent = done + ' / ' + totalSections + ' бөлім';
+    if(sideFill) sideFill.style.width = percent + '%';
+    if(circle) circle.style.background = `conic-gradient(#38bdf8 ${percent*3.6}deg, rgba(255,255,255,.22) 0deg)`;
+    lessonSections.forEach(s=>{
+      const b = $(`.side-menu-btn[data-tab="${s}"]`);
+      if(b) b.classList.toggle('section-done', p.completedSections.includes(s));
+    });
+    const stars = typeof calcStars === 'function' ? calcStars() : 0;
+    const xp = typeof calcXP === 'function' ? calcXP(stars) : 0;
+    const resultStars = $('#resultStars'), resultXp = $('#resultXp'), resultSub = $('#resultSub');
+    if(resultStars && typeof starText === 'function') resultStars.textContent = starText(stars);
+    if(resultXp) resultXp.textContent = '+' + xp + ' XP';
+    if(resultSub) resultSub.textContent = `Жұлдыз: ${stars} / ${typeof maxStars !== 'undefined' && maxStars ? maxStars : (lessonId.includes('control') ? 5 : totalSections)}`;
+    const hasAnyScore = Array.isArray(taskGroups) && taskGroups.some(g => localStorage.getItem(scoreKey(g)) !== null);
+    const noTasks = !Array.isArray(taskGroups) || taskGroups.length === 0;
+    const resultBox = $('.result-box');
+    if(resultBox) resultBox.classList.toggle('show', hasAnyScore || (noTasks && allSectionsDone(p)) || localStorage.getItem(resultVisibleKey()) === '1');
+    $all('.finish-side,.finish-btn').forEach(b=>{
+      const ok = allSectionsDone(p);
+      b.classList.toggle('locked', !ok);
+      b.classList.toggle('unlocked', ok);
+    });
+  };
+  window.finishLesson = function(){
+    const p = getProgress();
+    if(!allSectionsDone(p)){
+      alert((lessonId || '').includes('control') ? 'Бақылауды аяқтау үшін барлық бөлімдерді аяқта.' : 'Сабақты аяқтау үшін барлық бөлімдерді аяқта.');
+      return;
+    }
+    const stars = typeof calcStars === 'function' ? calcStars() : 0;
+    const xp = typeof calcXP === 'function' ? calcXP(stars) : 0;
+    localStorage.setItem(lessonId+'-stars', String(stars));
+    localStorage.setItem(lessonId+'-xp', String(xp));
+    if((lessonId || '').includes('control')){
+      localStorage.setItem(`advanced_control_${lessonNumber}_passed`, '1');
+      localStorage.setItem(`advanced_control_work_${lessonNumber}_passed`, '1');
+      localStorage.setItem(`control_work_${lessonNumber}_passed`, '1');
+    } else {
+      localStorage.setItem('lesson'+lessonNumber+'_stars', String(stars));
+    }
+    let user = JSON.parse(localStorage.getItem('physxUser') || '{"studyLevel":"advanced","progress":{"points":0,"lessonsCompleted":[]}}');
+    if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+    if(!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+    if(!user.progress.lessonsCompleted.includes(lessonId)){
+      user.progress.lessonsCompleted.push(lessonId);
+      user.progress.points = (user.progress.points || 0) + xp;
+      alert(((lessonId || '').includes('control') ? 'Бақылау аяқталды!' : 'Сабақ аяқталды!') + ' ' + (typeof starText === 'function' ? starText(stars) : '') + ' +' + xp + ' XP');
+    } else {
+      alert((lessonId || '').includes('control') ? 'Бұл бақылау бұрын аяқталған.' : 'Бұл сабақ бұрын аяқталған.');
+    }
+    localStorage.setItem('physxUser', JSON.stringify(user));
+    location.href='../../levels_map.html';
+  };
+  document.addEventListener('DOMContentLoaded', function(){
+    relabelSideButtons();
+    $all('.action-btn.reset').forEach(b=>b.remove());
+    if(Array.isArray(taskGroups)) taskGroups.forEach(g=>{ if(typeof buildGrid === 'function') buildGrid(g); renderAnswers(g); });
+    updateUI();
+  });
+})();
+</script>
+
+
+<style id="advanced-lesson26-final-answer-patch">
+.lesson-title h1,.content-header h2,.lesson-header-center b,.sidebar-title,.lesson-mini-pills span,.content-badge,.answer-head h3{
+  font-family:"Segoe UI",Tahoma,Arial,sans-serif!important;font-synthesis:none!important;text-rendering:geometricPrecision!important;
+  -webkit-font-smoothing:antialiased!important;-moz-osx-font-smoothing:grayscale!important;letter-spacing:0!important;
+}
+.lesson-title h1{font-weight:800!important;font-size:30px!important;line-height:1.18!important;color:#061b55!important}
+.content-header h2{font-weight:750!important;font-size:22px!important;line-height:1.25!important}
+.lesson-title p{font-family:"Segoe UI",Tahoma,Arial,sans-serif!important;font-weight:650!important}
+.answer-grid.advanced-detailed-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.answer-row.answer-card{display:block!important;padding:12px!important;border-radius:16px!important;background:#fff!important;border:1px solid #d6e6fb!important}
+.answer-card-head{display:flex!important;gap:10px!important;align-items:flex-start!important;margin-bottom:10px!important}
+.answer-card .qnum{flex:0 0 32px!important}
+.answer-question-text{font-size:13.4px!important;line-height:1.46!important;font-weight:650!important;color:#061b55!important}
+.answer-options{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important}
+.answer-options button{min-height:36px!important;height:auto!important;padding:7px 9px!important;text-align:left!important;display:flex!important;gap:7px!important;align-items:center!important;border-radius:11px!important;line-height:1.25!important;font-weight:650!important}
+.answer-options button b{width:22px!important;height:22px!important;border-radius:50%!important;display:grid!important;place-items:center!important;background:rgba(20,92,255,.12)!important;flex:0 0 22px!important;font-weight:800!important}
+.answer-options button span{font-size:12.75px!important;font-weight:650!important}
+.answer-options button.selected b,.answer-options button.correct b,.answer-options button.wrong b{background:rgba(255,255,255,.25)!important}
+#tasks .answer-head p{font-weight:650!important}
+@media(max-width:980px){.answer-grid.advanced-detailed-grid{grid-template-columns:1fr!important}.answer-options{grid-template-columns:1fr!important}}
+</style>
+
+<script id="advanced-lesson26-final-answer-logic">
+(function(){
+  const GROUP="tasks", TOTAL=10, MAX_STARS=5, MAX_XP=10;
+  const QUESTIONS={"1": ["Күш 30 Н, күш иіні 0,2 м. Күш моменті неге тең?", {"A": "4 Н·м", "B": "6 Н·м", "C": "8 Н·м", "D": "10 Н·м"}], "2": ["Күш моменті 20 Н·м. Күш 50 Н болса, күш иіні неге тең?", {"A": "0,2 м", "B": "0,3 м", "C": "0,4 м", "D": "0,5 м"}], "3": ["Иінтіректің сол жағында 40 Н күш 0,3 м иінмен әсер етеді. Күш моменті неге тең?", {"A": "8 Н·м", "B": "10 Н·м", "C": "12 Н·м", "D": "14 Н·м"}], "4": ["Тепе-теңдік кезінде моменттердің қатынасы қандай болады?", {"A": "M₁ > M₂", "B": "M₁ < M₂", "C": "M₁ = M₂", "D": "M₁ = 0"}], "5": ["Күш моментінің негізгі формуласы қандай?", {"A": "F = ma", "B": "P = mg", "C": "M = Fd", "D": "N = P"}], "6": ["Күш моменті 45 Н·м. Күш 15 Н болса, күш иіні неге тең?", {"A": "1 м", "B": "2 м", "C": "3 м", "D": "4 м"}], "7": ["Сағат тіліне қарсы айналу қандай таңбамен алынады?", {"A": "Теріс", "B": "Нөл", "C": "Оң", "D": "Белгісіз"}], "8": ["Иін ұзындығы 2 есе артса, күш өзгермесе момент қалай өзгереді?", {"A": "Өзгермейді", "B": "2 есе артады", "C": "2 есе азаяды", "D": "4 есе артады"}], "9": ["Күш моментінің өлшем бірлігі қандай?", {"A": "Н", "B": "Дж", "C": "Н·м", "D": "Н/м"}], "10": ["Тепе-теңдік шарты қандай?", {"A": "ΣF > 0", "B": "ΣM > 0", "C": "ΣM = 0", "D": "ΣF < 0"}]};
+  const CORRECT={"1": "B", "2": "C", "3": "C", "4": "C", "5": "C", "6": "C", "7": "C", "8": "B", "9": "C", "10": "C"};
+
+  function $(s,r=document){return r.querySelector(s)} 
+  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function checkedKey(g){return `${lessonId}-${g}-checked`}
+  function scoreKey(g){return `${lessonId}-${g}-score`}
+  function resultVisibleKey(){return `${lessonId}-result-visible`}
+  function getAnswers(){try{return JSON.parse(localStorage.getItem(lessonId+"-answers")||"{}")}catch(e){return {}}}
+  function saveAnswers(){localStorage.setItem(lessonId+"-answers",JSON.stringify(answers))}
+
+  function normalizeHeader(){
+    const title=$(".lesson-title h1"); if(title) title.textContent="26-сабақ. Күш моменті және моменттер ережесі";
+    const desc=$(".lesson-title p"); if(desc) desc.textContent="4-тарау · Статика · Күш моменті және тепе-теңдік шарты";
+    const center=$(".lesson-header-center b"); if(center) center.textContent="26-сабақ";
+    const pills=$all(".lesson-mini-pills span");
+    if(pills[1]) pills[1].innerHTML='<i class="fa-solid fa-star"></i> 5 жұлдыз';
+    if(pills[2]) pills[2].innerHTML='<i class="fa-solid fa-bolt"></i> +10 XP';
+    const sideMax=$(".side-card div[style*='font-size:12px']"); if(sideMax) sideMax.textContent="Максимум: 5⭐ · +10 XP";
+    const h=$("#tasks .content-header h2"); if(h) h.textContent="Есептер тестік нұсқа";
+    const p=$("#tasks .answer-head p"); if(p) p.textContent="1–10 сұраққа A/B/C/D жауаптарын белгіле.";
+  }
+
+  window.buildGrid=function(group=GROUP){
+    const grid=$("#grid-"+group); if(!grid) return;
+    grid.classList.add("advanced-detailed-grid"); grid.innerHTML="";
+    Object.entries(QUESTIONS).forEach(([q,d])=>{
+      const row=document.createElement("div");
+      row.className="answer-row answer-card";
+      row.dataset.q=q; row.dataset.group=group; row.dataset.question=q;
+      const opts=Object.entries(d[1]).map(([letter,text])=>`<button type="button" data-value="${letter}" onclick="selectAnswer('${group}',${q},'${letter}')"><b>${letter}</b><span>${text}</span></button>`).join("");
+      row.innerHTML=`<div class="answer-card-head"><span class="qnum">${q}</span><div class="answer-question-text">${d[0]}</div></div><div class="answer-options">${opts}</div>`;
+      grid.appendChild(row);
+    });
+    const sc=localStorage.getItem(scoreKey(group)), el=$("#score-"+group);
+    if(el) el.textContent=(sc===null?"0":sc)+" / "+TOTAL;
+    const p=$("#tasks .answer-head p"); if(p) p.textContent="1–10 сұраққа A/B/C/D жауаптарын белгіле.";
+  };
+
+  window.selectAnswer=function(group,q,a){
+    if(localStorage.getItem(checkedKey(group))==="1") return;
+    answers=getAnswers(); if(!answers[group]) answers[group]={};
+    answers[group][String(q)]=a; saveAnswers(); renderAnswers(group);
+  };
+
+  window.renderAnswers=function(group=GROUP){
+    answers=getAnswers();
+    const checked=localStorage.getItem(checkedKey(group))==="1";
+    $all(`.answer-row[data-group="${group}"]`).forEach(row=>{
+      const q=row.dataset.q, selected=answers[group]?.[q], correct=CORRECT[q];
+      row.classList.toggle("checked",checked);
+      row.querySelectorAll("button").forEach(btn=>{
+        const v=btn.dataset.value||btn.textContent.trim();
+        btn.disabled=checked;
+        btn.classList.remove("selected","correct","wrong");
+        if(v===selected) btn.classList.add("selected");
+        if(checked&&v===correct) btn.classList.add("correct");
+        if(checked&&v===selected&&selected!==correct) btn.classList.add("wrong");
+      });
+    });
+  };
+
+  window.checkAnswers=function(group=GROUP){
+    answers=getAnswers();
+    let answered=0, score=0;
+    $all(`.answer-row[data-group="${group}"]`).forEach(row=>{
+      const q=row.dataset.q, sel=answers[group]?.[q];
+      if(sel) answered++;
+      if(sel===CORRECT[q]) score++;
+    });
+    const fb=$("#feedback-"+group);
+    if(answered<TOTAL){
+      if(fb){fb.className="feedback warn"; fb.textContent=`Алдымен барлық сұраққа жауап белгіле. Белгіленгені: ${answered} / ${TOTAL}.`;}
+      renderAnswers(group); updateUI(); return;
+    }
+    localStorage.setItem(scoreKey(group),String(score));
+    localStorage.setItem(checkedKey(group),"1");
+    localStorage.setItem(resultVisibleKey(),"1");
+    const el=$("#score-"+group); if(el) el.textContent=`${score} / ${TOTAL}`;
+    if(fb){fb.className="feedback success"; fb.textContent=`Нәтиже: ${score} / ${TOTAL}. Бұл бөлім тексерілді.`;}
+    renderAnswers(group);
+    if(typeof completeSection==="function") completeSection(group);
+    updateUI();
+  };
+
+  window.calcStars=function(){
+    const score=Number(localStorage.getItem(scoreKey(GROUP))||0), pct=score/TOTAL;
+    if(pct>=.95)return MAX_STARS; if(pct>=.85)return 4; if(pct>=.70)return 3; if(pct>=.50)return 2; if(score>0)return 1; return 0;
+  };
+  window.calcXP=function(stars){return Math.round((stars/MAX_STARS)*MAX_XP)||0};
+  window.starText=function(stars){let out=""; for(let i=1;i<=MAX_STARS;i++) out+=i<=stars?"⭐":"☆"; return out};
+
+  window.updateUI=function(){
+    const p=getProgress(); if(!Array.isArray(p.completedSections)) p.completedSections=[];
+    const done=p.completedSections.length, total=lessonSections.length||1, percent=Math.round(done/total*100);
+    const side=$("#sidePercent"), big=$("#bigPercent"), small=$("#smallProgress"), fill=$("#sideFill"), circle=$(".circle");
+    if(side) side.textContent=percent+"%";
+    if(big) big.textContent=percent+"%";
+    if(small) small.textContent=done+" / "+total+" бөлім";
+    if(fill) fill.style.width=percent+"%";
+    if(circle) circle.style.background=`conic-gradient(#38bdf8 ${percent*3.6}deg, rgba(255,255,255,.22) 0deg)`;
+    lessonSections.forEach(s=>{const b=$(`.side-menu-btn[data-tab="${s}"]`); if(b) b.classList.toggle("section-done",p.completedSections.includes(s));});
+    const sideMax=$(".side-card div[style*='font-size:12px']"); if(sideMax) sideMax.textContent="Максимум: 5⭐ · +10 XP";
+    const stars=calcStars(), xp=calcXP(stars), rs=$("#resultStars"), rx=$("#resultXp"), sub=$("#resultSub"), box=$(".result-box");
+    if(rs) rs.textContent=starText(stars);
+    if(rx) rx.textContent="+"+xp+" XP";
+    if(sub) sub.textContent=`Жұлдыз: ${stars} / ${MAX_STARS}`;
+    if(box) box.classList.toggle("show",localStorage.getItem(resultVisibleKey())==="1"||localStorage.getItem(scoreKey(GROUP))!==null);
+    $all(".finish-side,.finish-btn").forEach(b=>{const ok=lessonSections.every(s=>p.completedSections.includes(s)); b.classList.toggle("locked",!ok); b.classList.toggle("unlocked",ok);});
+  };
+
+  document.addEventListener("DOMContentLoaded",function(){
+    normalizeHeader();
+    buildGrid(GROUP);
+    renderAnswers(GROUP);
+    updateUI();
+  });
+})();
+</script>
+
+</body></html>
