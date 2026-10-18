@@ -1,0 +1,3356 @@
+<!DOCTYPE html>
+
+<html lang="kk">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PhysX - Бақылау жұмысы №3</title>
+<link href="../../css/style.css" rel="stylesheet"/>
+<link href="../../css/dropdown.css" rel="stylesheet"/>
+<link rel="stylesheet" href="../../css/responsive.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    :root{
+      --blue:#0d47a1;
+      --blue2:#145cff;
+      --dark:#061b55;
+      --text:#071837;
+      --muted:#64748b;
+      --line:#dbe7f5;
+      --green:#12b76a;
+      --orange:#ff7a2f;
+      --red:#ef4444;
+      --shadow:0 18px 40px rgba(13,71,161,.10);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(#d2dff1 1px,transparent 1px),
+        linear-gradient(180deg,#fbfdff,#eef5ff);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+    }
+
+    .header{
+      height:68px;
+      background:#fff;
+      border-bottom:1px solid #d6e6fb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 28px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 18px rgba(15,23,42,.04);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      text-decoration:none;
+      font-size:30px;
+      font-weight:900;
+    }
+
+    .logo i{font-size:24px}
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:28px;
+    }
+
+    .nav-link{
+      text-decoration:none;
+      color:#06205b;
+      font-weight:800;
+      font-size:15px;
+      padding:25px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{color:#f59e0b}
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:8px;
+      height:4px;
+      border-radius:999px;
+      background:#f59e0b;
+    }
+
+    .login-link{
+      background:#145cff;
+      color:#fff!important;
+      padding:14px 22px!important;
+      border-radius:12px;
+    }
+
+    .login-link::after{display:none}
+
+    .control-page{
+      width:min(100% - 24px,1500px);
+      margin:0 auto;
+      padding:10px 0 38px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .control-sidebar{
+      position:sticky;
+      top:82px;
+      height:calc(100vh - 94px);
+      overflow-y:auto;
+      overflow-x:hidden;
+      border-radius:20px;
+      background:linear-gradient(180deg,#0f5cff,#022a83 72%,#011e64);
+      color:#fff;
+      box-shadow:0 22px 45px rgba(13,71,161,.25);
+      padding:18px;
+    }
+
+    .sidebar-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .sidebar-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .sidebar-title i{
+      width:38px;
+      height:38px;
+      border-radius:14px;
+      background:rgba(255,255,255,.15);
+      display:grid;
+      place-items:center;
+    }
+
+    .side-subtitle{
+      font-size:14px;
+      font-weight:800;
+      color:#dbeafe;
+      margin-bottom:14px;
+      line-height:1.4;
+    }
+
+    .side-card{
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:14px;
+    }
+
+    .side-card h3{
+      margin:0 0 12px;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .circle-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .circle{
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      background:conic-gradient(#38bdf8 0deg,#38bdf8 var(--deg),rgba(255,255,255,.20) 0deg);
+      display:grid;
+      place-items:center;
+      position:relative;
+      flex-shrink:0;
+      font-weight:900;
+    }
+
+    .circle::after{
+      content:"";
+      position:absolute;
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      background:#0943b6;
+    }
+
+    .circle span{
+      position:relative;
+      z-index:2;
+    }
+
+    .side-progress-bar{
+      height:8px;
+      background:rgba(255,255,255,.22);
+      border-radius:999px;
+      overflow:hidden;
+      margin:12px 0 9px;
+    }
+
+    .side-progress-bar div{
+      height:100%;
+      width:0%;
+      background:#38bdf8;
+      border-radius:999px;
+    }
+
+    .side-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:13px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .side-menu{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .side-menu-btn{
+      height:54px;
+      border-radius:14px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:0 14px;
+      font-size:15px;
+      font-weight:900;
+      text-decoration:none;
+      cursor:pointer;
+      position:relative;
+    }
+
+    .side-menu-btn i{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.14);
+      font-size:19px;
+    }
+
+    .side-menu-btn.active{
+      background:rgba(255,255,255,.24);
+      border-color:rgba(255,255,255,.42);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),0 10px 22px rgba(0,0,0,.16);
+    }
+
+    .side-menu-btn.section-done::after{
+      content:"✓";
+      position:absolute;
+      right:9px;
+      top:50%;
+      transform:translateY(-50%);
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#22c55e;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .finish-locked{
+      opacity:.52;
+      cursor:not-allowed;
+      filter:grayscale(.25);
+      background:#64748b!important;
+      box-shadow:none!important;
+    }
+
+    .finish-locked.unlocked{
+      opacity:1;
+      cursor:pointer;
+      filter:none;
+      background:linear-gradient(135deg,#12b76a,#22c55e)!important;
+      box-shadow:0 10px 22px rgba(34,197,94,.20)!important;
+    }
+
+    .control-main{min-width:0}
+
+    .main-card,
+    .content-card{
+      background:rgba(255,255,255,.96);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:18px;
+      margin-bottom:14px;
+    }
+
+    .control-title{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:15px;
+      margin-bottom:14px;
+    }
+
+    .control-title h1{
+      margin:0 0 7px;
+      font-size:30px;
+      color:#071837;
+      line-height:1.15;
+    }
+
+    .control-title p{
+      margin:0;
+      color:#334155;
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .control-badge{
+      background:#edf5ff;
+      color:#145cff;
+      border:1px solid #d6e3f5;
+      border-radius:14px;
+      padding:11px 16px;
+      font-weight:900;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      white-space:nowrap;
+    }
+
+    .control-stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .stat-card{
+      min-height:94px;
+      border-radius:18px;
+      padding:18px;
+      color:#fff;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      box-shadow:0 14px 28px rgba(13,71,161,.12);
+    }
+
+    .stat-card::after{
+      content:"✦";
+      position:absolute;
+      right:18px;
+      top:14px;
+      font-size:25px;
+      opacity:.28;
+    }
+
+    .stat-blue{background:linear-gradient(135deg,#1976ff,#1fb4ff)}
+    .stat-green{background:linear-gradient(135deg,#16c784,#08a45b)}
+    .stat-orange{background:linear-gradient(135deg,#ff9533,#ff3d3d)}
+    .stat-purple{background:linear-gradient(135deg,#7c3aed,#445cff)}
+
+    .stat-icon{
+      width:50px;
+      height:50px;
+      border-radius:15px;
+      background:rgba(255,255,255,.18);
+      display:grid;
+      place-items:center;
+      font-size:23px;
+      flex-shrink:0;
+    }
+
+    .stat-info b{
+      display:block;
+      font-size:14px;
+      margin-bottom:4px;
+    }
+
+    .stat-info strong{
+      display:block;
+      font-size:26px;
+      margin-bottom:2px;
+    }
+
+    .stat-info span{
+      font-size:13px;
+      font-weight:800;
+      opacity:.92;
+    }
+
+    .content-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:12px;
+    }
+
+    .content-header h2{
+      margin:0;
+      color:#061b55;
+      font-size:24px;
+      font-weight:900;
+    }
+
+    .content-badge{
+      background:#edf5ff;
+      color:#145cff;
+      border:1px solid #d6e3f5;
+      border-radius:14px;
+      padding:9px 14px;
+      font-weight:900;
+      display:flex;
+      gap:7px;
+      align-items:center;
+      white-space:nowrap;
+    }
+
+    .infographic-frame{
+      padding:8px;
+      background:#fff;
+      border:1px solid #d6e6fb;
+      border-radius:18px;
+      overflow:hidden;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .control-img{
+      width:100%;
+      max-height:calc(100vh - 210px);
+      object-fit:contain;
+      display:block;
+      border-radius:14px;
+    }
+
+    .answer-sheet{
+      margin-top:14px;
+      background:linear-gradient(135deg,#ffffff,#f0f7ff);
+      border:1px solid #d6e6fb;
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 10px 22px rgba(13,71,161,.07);
+    }
+
+    .answer-sheet-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .answer-sheet-head h3{
+      margin:0 0 4px;
+      color:#0d47a1;
+      font-size:20px;
+      font-weight:900;
+    }
+
+    .answer-sheet-head p{
+      margin:0;
+      color:#475569;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .answer-score{
+      min-width:76px;
+      height:40px;
+      border-radius:12px;
+      background:#145cff;
+      color:white;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+    }
+
+    .answer-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+    }
+
+    .answer-row{
+      display:grid;
+      grid-template-columns:34px repeat(4,1fr);
+      gap:6px;
+      align-items:center;
+      padding:8px;
+      border-radius:14px;
+      background:#ffffff;
+      border:1px solid #d6e6fb;
+    }
+
+    .question-number{
+      width:30px;
+      height:30px;
+      border-radius:10px;
+      background:#eef6ff;
+      color:#145cff;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+    }
+
+    .answer-row button{
+      height:30px;
+      border:none;
+      border-radius:9px;
+      background:#eef6ff;
+      color:#0d47a1;
+      font-weight:900;
+      cursor:pointer;
+      transition:.2s;
+    }
+
+    .answer-row button.selected{background:#145cff;color:white}
+    .answer-row button.correct{background:#22c55e;color:white}
+    .answer-row button.wrong{background:#ef4444;color:white}
+
+    .answer-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .answer-actions button{
+      height:40px;
+      padding:0 16px;
+      border:none;
+      border-radius:12px;
+      font-weight:900;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .check-answers-btn{background:#145cff;color:white}
+    .reset-answers-btn{background:#eef6ff;color:#0d47a1}
+
+    .answer-feedback{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      display:none;
+    }
+
+    .answer-feedback.success{
+      display:block;
+      background:#ecfdf5;
+      border:1px solid #bbf7d0;
+      color:#059669;
+    }
+
+    .answer-feedback.warning{
+      display:block;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#ea580c;
+    }
+
+    .answer-feedback.error{
+      display:block;
+      background:#fff1f2;
+      border:1px solid #fecdd3;
+      color:#e11d48;
+    }
+
+    .next-card{
+      background:rgba(255,255,255,.96);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:14px;
+      display:grid;
+      grid-template-columns:52px minmax(0,1fr) auto;
+      gap:14px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+
+    .next-icon{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      background:#145cff;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:22px;
+    }
+
+    .next-text h3{
+      margin:0 0 4px;
+      color:#0d47a1;
+      font-size:20px;
+      font-weight:900;
+    }
+
+    .next-text p{
+      margin:0;
+      color:#334155;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .next-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .next-actions button,
+    .next-actions a{
+      height:44px;
+      padding:0 18px;
+      border:none;
+      border-radius:13px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+
+    .primary-btn{background:#145cff;color:white}
+    .success-btn{background:#12b76a;color:white}
+    .light-btn{background:#eef6ff;color:#0d47a1;border:1px solid #d6e3f5!important}
+    .locked-btn{background:#94a3b8!important;color:#fff!important;opacity:.65;cursor:not-allowed!important}
+    .locked-btn.unlocked{background:#12b76a!important;opacity:1;cursor:pointer!important}
+
+    .tab-content[style*="display:none"]{display:none!important}
+
+    .floating-fullscreen-btn{
+      position:fixed;
+      right:18px;
+      top:78px;
+      z-index:2500;
+      height:42px;
+      padding:0 14px;
+      border:none;
+      border-radius:14px;
+      background:#145cff;
+      color:#ffffff;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(20,92,255,.26);
+      transition:.22s;
+    }
+
+    body.is-fullscreen-mode .header{display:none!important}
+    body.is-fullscreen-mode .floating-fullscreen-btn{top:12px;right:12px;background:#ef4444}
+    body.is-fullscreen-mode .control-page{width:calc(100% - 16px);max-width:none;padding-top:8px}
+    body.is-fullscreen-mode .control-sidebar{top:8px;height:calc(100vh - 16px)}
+    body.is-fullscreen-mode .control-img{max-height:calc(100vh - 75px)}
+
+    @media(max-width:1200px){
+      .control-page{grid-template-columns:1fr}
+      .control-sidebar{position:relative;top:0;height:auto}
+      .control-stats{grid-template-columns:repeat(2,1fr)}
+      .answer-grid{grid-template-columns:repeat(3,1fr)}
+    }
+
+    @media(max-width:760px){
+      .nav{gap:14px;overflow-x:auto}
+      .header{padding:0 14px}
+      .control-stats{grid-template-columns:1fr}
+      .answer-grid{grid-template-columns:1fr}
+      .answer-sheet-head{align-items:flex-start;flex-direction:column}
+      .answer-actions,.next-actions{flex-direction:column;align-items:stretch}
+      .answer-actions button,.next-actions button,.next-actions a{width:100%}
+      .next-card{grid-template-columns:1fr}
+    }
+  
+/* ==================================================
+   COMPACT CONTROL WORK DESIGN
+   Бақылау жұмысы бетін сабақ беті сияқты ықшам қылу
+================================================== */
+
+.control-page{
+  grid-template-columns:260px minmax(0,1fr) !important;
+  gap:12px !important;
+  padding:8px 0 26px !important;
+}
+
+.control-sidebar{
+  width:260px !important;
+  padding:14px !important;
+  border-radius:18px !important;
+}
+
+.sidebar-title{
+  font-size:21px !important;
+}
+
+.side-subtitle{
+  font-size:13px !important;
+  margin-bottom:10px !important;
+}
+
+.side-card{
+  padding:12px !important;
+  margin-bottom:10px !important;
+}
+
+.side-card h3{
+  font-size:14px !important;
+  margin-bottom:8px !important;
+}
+
+.circle{
+  width:54px !important;
+  height:54px !important;
+}
+
+.circle::after{
+  width:39px !important;
+  height:39px !important;
+}
+
+#bigPercent{
+  font-size:26px !important;
+}
+
+.side-menu{
+  gap:8px !important;
+  margin-top:10px !important;
+}
+
+.side-menu-btn{
+  height:48px !important;
+  border-radius:13px !important;
+  padding:0 12px !important;
+  gap:10px !important;
+  font-size:14px !important;
+}
+
+.side-menu-btn i{
+  width:34px !important;
+  height:34px !important;
+  border-radius:11px !important;
+  font-size:17px !important;
+}
+
+.main-card,
+.content-card{
+  padding:14px 18px !important;
+  border-radius:18px !important;
+  margin-bottom:12px !important;
+}
+
+.control-title{
+  margin-bottom:10px !important;
+  align-items:center !important;
+}
+
+.control-title h1{
+  font-size:28px !important;
+  margin-bottom:4px !important;
+}
+
+.control-title p{
+  font-size:14px !important;
+  line-height:1.35 !important;
+}
+
+.control-badge{
+  padding:8px 13px !important;
+  border-radius:12px !important;
+  font-size:13px !important;
+}
+
+.control-stats{
+  grid-template-columns:repeat(4,1fr) !important;
+  gap:12px !important;
+}
+
+.stat-card{
+  min-height:86px !important;
+  padding:14px 16px !important;
+  border-radius:16px !important;
+}
+
+.stat-icon{
+  width:44px !important;
+  height:44px !important;
+  border-radius:13px !important;
+  font-size:21px !important;
+}
+
+.stat-info b{
+  font-size:13px !important;
+}
+
+.stat-info strong{
+  font-size:24px !important;
+}
+
+.stat-info span{
+  font-size:12px !important;
+}
+
+.content-header{
+  margin-bottom:9px !important;
+}
+
+.content-header h2{
+  font-size:24px !important;
+}
+
+.content-badge{
+  padding:8px 12px !important;
+  border-radius:12px !important;
+  font-size:13px !important;
+}
+
+.infographic-frame{
+  padding:6px !important;
+  border-radius:16px !important;
+}
+
+.control-img{
+  max-height:calc(100vh - 175px) !important;
+  border-radius:12px !important;
+}
+
+.answer-sheet{
+  margin-top:10px !important;
+  padding:12px !important;
+  border-radius:16px !important;
+}
+
+.answer-sheet-head{
+  margin-bottom:10px !important;
+}
+
+.answer-sheet-head h3{
+  font-size:18px !important;
+}
+
+.answer-sheet-head p{
+  font-size:12px !important;
+}
+
+.answer-score{
+  height:36px !important;
+  min-width:72px !important;
+  border-radius:11px !important;
+}
+
+.answer-grid{
+  grid-template-columns:repeat(5,1fr) !important;
+  gap:8px !important;
+}
+
+.answer-row{
+  padding:6px !important;
+  grid-template-columns:30px repeat(4,1fr) !important;
+  gap:5px !important;
+  border-radius:12px !important;
+}
+
+.question-number{
+  width:27px !important;
+  height:27px !important;
+  border-radius:9px !important;
+}
+
+.answer-row button{
+  height:28px !important;
+  border-radius:8px !important;
+  font-size:13px !important;
+}
+
+.answer-actions{
+  margin-top:10px !important;
+}
+
+.answer-actions button{
+  height:38px !important;
+  border-radius:11px !important;
+  padding:0 14px !important;
+}
+
+.next-card{
+  padding:12px 14px !important;
+  grid-template-columns:46px minmax(0,1fr) auto !important;
+  gap:12px !important;
+  border-radius:18px !important;
+}
+
+.next-icon{
+  width:46px !important;
+  height:46px !important;
+  border-radius:14px !important;
+  font-size:20px !important;
+}
+
+.next-text h3{
+  font-size:19px !important;
+}
+
+.next-text p{
+  font-size:13px !important;
+}
+
+.next-actions button,
+.next-actions a{
+  height:40px !important;
+  border-radius:12px !important;
+  padding:0 15px !important;
+  font-size:14px !important;
+}
+
+.floating-fullscreen-btn{
+  height:38px !important;
+  border-radius:12px !important;
+  top:76px !important;
+}
+
+@media(max-width:1200px){
+  .control-page{
+    grid-template-columns:1fr !important;
+  }
+  .control-sidebar{
+    width:auto !important;
+  }
+  .control-stats{
+    grid-template-columns:repeat(2,1fr) !important;
+  }
+  .answer-grid{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+@media(max-width:760px){
+  .control-stats,
+  .answer-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* ==================================================
+   COLLAPSIBLE CONTROL SIDEBAR + TOP CARD
+   Сол жақ көк панель және жоғарғы блок жиналады
+================================================== */
+
+.sidebar-toggle-btn,
+.top-compact-toggle{
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  transition:.22s;
+}
+
+.sidebar-toggle-btn{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+
+.sidebar-toggle-btn:hover{
+  background:rgba(255,255,255,.25);
+}
+
+.top-compact-toggle{
+  height:36px;
+  padding:0 13px;
+  border-radius:12px;
+  background:#edf5ff;
+  color:#145cff;
+  border:1px solid #d6e3f5;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  white-space:nowrap;
+}
+
+.top-compact-toggle:hover{
+  background:#dbeafe;
+}
+
+/* Sidebar collapsed layout */
+body.control-sidebar-collapsed .control-page{
+  grid-template-columns:74px minmax(0,1fr) !important;
+}
+
+body.control-sidebar-collapsed .control-sidebar{
+  width:74px !important;
+  padding:12px 8px !important;
+  overflow:hidden !important;
+}
+
+body.control-sidebar-collapsed .sidebar-title span,
+body.control-sidebar-collapsed .side-subtitle,
+body.control-sidebar-collapsed .side-card,
+body.control-sidebar-collapsed .side-menu-btn span{
+  display:none !important;
+}
+
+body.control-sidebar-collapsed .sidebar-head{
+  justify-content:center !important;
+  margin-bottom:12px !important;
+}
+
+body.control-sidebar-collapsed .sidebar-title{
+  justify-content:center !important;
+}
+
+body.control-sidebar-collapsed .sidebar-title i{
+  width:44px !important;
+  height:44px !important;
+  border-radius:15px !important;
+}
+
+body.control-sidebar-collapsed .sidebar-toggle-btn{
+  position:absolute;
+  top:72px;
+  left:20px;
+  width:34px;
+  height:34px;
+  background:rgba(255,255,255,.18);
+}
+
+body.control-sidebar-collapsed .sidebar-toggle-btn i{
+  transform:rotate(180deg);
+}
+
+body.control-sidebar-collapsed .side-menu{
+  margin-top:54px !important;
+  gap:10px !important;
+}
+
+body.control-sidebar-collapsed .side-menu-btn{
+  width:50px !important;
+  height:50px !important;
+  padding:0 !important;
+  justify-content:center !important;
+  border-radius:15px !important;
+  margin:0 auto !important;
+}
+
+body.control-sidebar-collapsed .side-menu-btn i{
+  width:38px !important;
+  height:38px !important;
+  margin:0 !important;
+}
+
+body.control-sidebar-collapsed .side-menu-btn.section-done::after{
+  right:0 !important;
+  top:0 !important;
+  transform:none !important;
+}
+
+/* Top hero collapsed layout */
+body.control-top-collapsed .control-hero-card{
+  padding:10px 14px !important;
+}
+
+body.control-top-collapsed .control-title{
+  margin-bottom:0 !important;
+}
+
+body.control-top-collapsed .control-title p,
+body.control-top-collapsed .control-badge,
+body.control-top-collapsed .control-stats{
+  display:none !important;
+}
+
+body.control-top-collapsed .control-title h1{
+  font-size:24px !important;
+  margin:0 !important;
+}
+
+body.control-top-collapsed .top-compact-toggle i{
+  transform:rotate(180deg);
+}
+
+/* Кеңейген кезде суретке көбірек орын беру */
+body.control-sidebar-collapsed .control-img{
+  max-height:calc(100vh - 155px) !important;
+}
+
+body.control-top-collapsed .control-img{
+  max-height:calc(100vh - 120px) !important;
+}
+
+body.control-sidebar-collapsed.control-top-collapsed .control-img{
+  max-height:calc(100vh - 105px) !important;
+}
+
+@media(max-width:1200px){
+  body.control-sidebar-collapsed .control-page{
+    grid-template-columns:1fr !important;
+  }
+
+  body.control-sidebar-collapsed .control-sidebar{
+    width:auto !important;
+    height:76px !important;
+    display:flex;
+    align-items:center;
+  }
+
+  body.control-sidebar-collapsed .side-menu{
+    margin-top:0 !important;
+    display:flex !important;
+  }
+}
+
+/* ==================================================
+   COLLAPSE FIX v2
+   Жұмыс істейтін тұрақты жинау/ашу түзетуі
+================================================== */
+
+.control-page{
+  transition:grid-template-columns .25s ease;
+}
+
+.sidebar-toggle-btn{
+  width:34px !important;
+  height:34px !important;
+  border:none !important;
+  border-radius:12px !important;
+  background:rgba(255,255,255,.18) !important;
+  color:#fff !important;
+  display:grid !important;
+  place-items:center !important;
+  cursor:pointer !important;
+  flex-shrink:0 !important;
+  position:static !important;
+  z-index:20 !important;
+}
+
+.sidebar-toggle-btn i{
+  transition:.25s ease;
+}
+
+.top-collapse-row{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:6px;
+}
+
+.top-compact-toggle{
+  height:34px !important;
+  padding:0 12px !important;
+  border-radius:12px !important;
+  border:1px solid #d6e3f5 !important;
+  background:#edf5ff !important;
+  color:#145cff !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+  white-space:nowrap !important;
+}
+
+.top-compact-toggle i{
+  transition:.25s ease;
+}
+
+/* SIDEBAR COLLAPSED */
+body.control-sidebar-collapsed .control-page{
+  grid-template-columns:82px minmax(0,1fr) !important;
+}
+
+body.control-sidebar-collapsed .control-sidebar{
+  width:82px !important;
+  padding:12px 8px !important;
+  overflow:hidden !important;
+}
+
+body.control-sidebar-collapsed .sidebar-head{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin-bottom:12px !important;
+}
+
+body.control-sidebar-collapsed .sidebar-title span,
+body.control-sidebar-collapsed .side-subtitle,
+body.control-sidebar-collapsed .side-card,
+body.control-sidebar-collapsed .side-menu-btn span{
+  display:none !important;
+}
+
+body.control-sidebar-collapsed .sidebar-title{
+  justify-content:center !important;
+}
+
+body.control-sidebar-collapsed .sidebar-title i{
+  width:46px !important;
+  height:46px !important;
+  border-radius:16px !important;
+}
+
+body.control-sidebar-collapsed .sidebar-toggle-btn i{
+  transform:rotate(180deg);
+}
+
+body.control-sidebar-collapsed .side-menu{
+  margin-top:10px !important;
+  gap:10px !important;
+}
+
+body.control-sidebar-collapsed .side-menu-btn{
+  width:54px !important;
+  height:54px !important;
+  padding:0 !important;
+  justify-content:center !important;
+  border-radius:16px !important;
+  margin:0 auto !important;
+}
+
+body.control-sidebar-collapsed .side-menu-btn i{
+  width:40px !important;
+  height:40px !important;
+  margin:0 !important;
+}
+
+body.control-sidebar-collapsed .side-menu-btn.section-done::after{
+  right:1px !important;
+  top:1px !important;
+  transform:none !important;
+}
+
+/* TOP CARD COLLAPSED */
+body.control-top-collapsed .control-hero-card{
+  padding:8px 14px !important;
+}
+
+body.control-top-collapsed .control-title p,
+body.control-top-collapsed .control-badge,
+body.control-top-collapsed .control-stats{
+  display:none !important;
+}
+
+body.control-top-collapsed .control-title{
+  margin-bottom:0 !important;
+}
+
+body.control-top-collapsed .control-title h1{
+  font-size:23px !important;
+  margin:0 !important;
+}
+
+body.control-top-collapsed .top-compact-toggle i{
+  transform:rotate(180deg);
+}
+
+/* Экран кеңеюі */
+body.control-sidebar-collapsed .control-img{
+  max-height:calc(100vh - 150px) !important;
+}
+
+body.control-top-collapsed .control-img{
+  max-height:calc(100vh - 118px) !important;
+}
+
+body.control-sidebar-collapsed.control-top-collapsed .control-img{
+  max-height:calc(100vh - 96px) !important;
+}
+
+@media(max-width:1200px){
+  body.control-sidebar-collapsed .control-page{
+    grid-template-columns:1fr !important;
+  }
+
+  body.control-sidebar-collapsed .control-sidebar{
+    width:auto !important;
+    height:auto !important;
+  }
+
+  body.control-sidebar-collapsed .sidebar-head{
+    flex-direction:row !important;
+  }
+}
+
+/* ==================================================
+   HELPER TOOLS PANEL
+   Калькулятор, жазу, сызу тақтасы, уақыт
+================================================== */
+
+.helper-tools-card{
+  min-height:64px;
+  border-radius:16px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  padding:10px 12px;
+  margin:10px 0 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  cursor:pointer;
+  transition:.22s;
+}
+
+.helper-tools-card:hover{
+  background:rgba(255,255,255,.22);
+  transform:translateY(-1px);
+}
+
+.helper-tools-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.helper-tools-icon{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:rgba(255,255,255,.16);
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  font-size:18px;
+}
+
+.helper-tools-left b{
+  display:block;
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:3px;
+}
+
+.helper-tools-left span{
+  display:block;
+  font-size:11px;
+  line-height:1.25;
+  color:#dbeafe;
+  font-weight:800;
+}
+
+.helper-arrow{
+  opacity:.82;
+  flex-shrink:0;
+}
+
+body.control-sidebar-collapsed .helper-tools-card{
+  width:54px !important;
+  height:54px !important;
+  min-height:54px !important;
+  padding:0 !important;
+  justify-content:center !important;
+  margin:10px auto !important;
+  border-radius:16px !important;
+}
+
+body.control-sidebar-collapsed .helper-tools-left b,
+body.control-sidebar-collapsed .helper-tools-left span,
+body.control-sidebar-collapsed .helper-arrow{
+  display:none !important;
+}
+
+body.control-sidebar-collapsed .helper-tools-left{
+  gap:0 !important;
+}
+
+body.control-sidebar-collapsed .helper-tools-icon{
+  width:40px !important;
+  height:40px !important;
+}
+
+.helper-tools-modal{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  background:rgba(7,24,55,.46);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+
+.helper-tools-modal.open{
+  display:flex;
+}
+
+.helper-panel{
+  width:min(760px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#ffffff;
+  border:1px solid #d6e6fb;
+  border-radius:22px;
+  box-shadow:0 28px 80px rgba(2,42,131,.28);
+  padding:18px;
+}
+
+.helper-panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+.helper-panel-head h3{
+  margin:0 0 4px;
+  color:#061b55;
+  font-size:24px;
+  font-weight:900;
+}
+
+.helper-panel-head p{
+  margin:0;
+  color:#64748b;
+  font-size:13px;
+  font-weight:700;
+}
+
+.helper-close{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#145cff;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.helper-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.helper-tab{
+  height:42px;
+  border:none;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#0d47a1;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+
+.helper-tab.active{
+  background:#145cff;
+  color:#fff;
+}
+
+.helper-tool{
+  display:none;
+  background:linear-gradient(135deg,#ffffff,#f5f9ff);
+  border:1px solid #d6e6fb;
+  border-radius:18px;
+  padding:14px;
+}
+
+.helper-tool.active{
+  display:block;
+}
+
+.calc-screen{
+  min-height:56px;
+  border-radius:15px;
+  background:#061b55;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:0 16px;
+  font-size:30px;
+  font-weight:900;
+  margin-bottom:10px;
+  overflow:hidden;
+}
+
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.calc-grid button{
+  height:44px;
+  border:none;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#0d47a1;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.calc-grid button:hover{
+  background:#dbeafe;
+}
+
+.calc-grid .calc-equal{
+  background:#12b76a;
+  color:#fff;
+}
+
+#helperNotes{
+  width:100%;
+  min-height:260px;
+  border:1px solid #d6e6fb;
+  border-radius:16px;
+  padding:14px;
+  resize:vertical;
+  outline:none;
+  font-size:15px;
+  font-weight:700;
+  color:#071837;
+  background:#fff;
+}
+
+.helper-actions,
+.draw-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.helper-actions button,
+.draw-actions button{
+  height:40px;
+  border:none;
+  border-radius:12px;
+  padding:0 14px;
+  font-weight:900;
+  cursor:pointer;
+  background:#145cff;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+#drawCanvas{
+  width:100%;
+  height:340px;
+  display:block;
+  background:#fff;
+  border:1px solid #d6e6fb;
+  border-radius:16px;
+  touch-action:none;
+}
+
+.draw-color{
+  width:38px !important;
+  padding:0 !important;
+  border:3px solid #fff !important;
+  box-shadow:0 0 0 1px #d6e6fb;
+}
+
+.draw-color.blue{background:#145cff !important}
+.draw-color.dark{background:#111827 !important}
+.draw-color.red{background:#ef4444 !important}
+
+.timer-display{
+  height:130px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#145cff,#1fb4ff);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:58px;
+  font-weight:900;
+  box-shadow:0 14px 28px rgba(20,92,255,.18);
+}
+
+.timer-presets{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+
+.timer-presets button{
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:#eef6ff;
+  color:#0d47a1;
+  font-weight:900;
+  cursor:pointer;
+}
+
+@media(max-width:720px){
+  .helper-tabs{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .timer-display{
+    font-size:42px;
+  }
+}
+
+/* ==================================================
+   TOP TIMER PILL
+   Таймер басталғанда бақылау бетінің жоғары жағында көрінеді
+================================================== */
+
+.top-timer-pill{
+  min-width:112px;
+  height:42px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#145cff,#1fb4ff);
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 14px;
+  font-weight:900;
+  font-size:17px;
+  box-shadow:0 12px 24px rgba(20,92,255,.22);
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.top-timer-pill.running{
+  display:flex;
+}
+
+.top-timer-pill.warning{
+  background:linear-gradient(135deg,#f59e0b,#ff7a2f);
+  animation:timerPulse 1s infinite;
+}
+
+.top-timer-pill.danger{
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  animation:timerPulse .75s infinite;
+}
+
+@keyframes timerPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.035)}
+}
+
+body.control-top-collapsed .top-timer-pill{
+  display:flex;
+}
+
+body.control-top-collapsed .top-timer-pill:not(.running){
+  display:none;
+}
+
+@media(max-width:760px){
+  .top-timer-pill{
+    width:100%;
+    margin-top:8px;
+  }
+}
+
+/* ==================================================
+   FULLSCREEN BUTTON POSITION FIX
+   Толық экран батырмасы таймерді жаппау үшін төменірек/оңға ауысты
+================================================== */
+
+.floating-fullscreen-btn{
+  top:132px !important;
+  right:20px !important;
+  height:38px !important;
+  border-radius:12px !important;
+  z-index:2400 !important;
+}
+
+.top-timer-pill{
+  z-index:2450 !important;
+  position:relative !important;
+}
+
+/* толық экран режимінде батырма төменгі оң жаққа түседі */
+body.is-fullscreen-mode .floating-fullscreen-btn{
+  top:auto !important;
+  right:22px !important;
+  bottom:22px !important;
+  background:#ef4444 !important;
+}
+
+/* жоғарғы блок жиналғанда да таймер мен толық экран бір-бірін жаппайды */
+body.control-top-collapsed .floating-fullscreen-btn{
+  top:118px !important;
+}
+
+body.is-fullscreen-mode.control-top-collapsed .floating-fullscreen-btn{
+  top:auto !important;
+  bottom:22px !important;
+}
+
+@media(max-width:760px){
+  .floating-fullscreen-btn{
+    top:auto !important;
+    right:14px !important;
+    bottom:16px !important;
+  }
+}
+
+/* ==================================================
+   FULLSCREEN BUTTON INLINE WITH TOP BLOCK
+   Толық экран батырмасы Жоғарғы блок батырмасының жанына орналасты
+================================================== */
+
+.top-collapse-row{
+  display:flex !important;
+  justify-content:flex-end !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin-bottom:8px !important;
+}
+
+.top-collapse-row .floating-fullscreen-btn{
+  position:static !important;
+  height:34px !important;
+  padding:0 13px !important;
+  border-radius:12px !important;
+  background:#145cff !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  z-index:auto !important;
+}
+
+.top-collapse-row .floating-fullscreen-btn span{
+  display:inline !important;
+}
+
+body.is-fullscreen-mode .top-collapse-row .floating-fullscreen-btn{
+  position:fixed !important;
+  right:18px !important;
+  bottom:18px !important;
+  top:auto !important;
+  background:#ef4444 !important;
+  z-index:5000 !important;
+  box-shadow:0 14px 28px rgba(239,68,68,.25) !important;
+}
+
+body.is-fullscreen-mode .top-collapse-row{
+  margin-bottom:0 !important;
+}
+
+@media(max-width:760px){
+  .top-collapse-row{
+    justify-content:stretch !important;
+  }
+
+  .top-collapse-row .top-compact-toggle,
+  .top-collapse-row .floating-fullscreen-btn{
+    flex:1 !important;
+    justify-content:center !important;
+  }
+}
+
+/* ==================================================
+   FULLSCREEN EXIT BUTTON STAYS IN TOP BLOCK
+   Толық экраннан шығу батырмасы да жоғарғы блокта тұрады
+================================================== */
+
+body.is-fullscreen-mode .header{
+  display:none !important;
+}
+
+body.is-fullscreen-mode .control-page{
+  padding-top:8px !important;
+}
+
+/* Бұрын толық экранда төменгі оң жаққа түсетін еді — енді жоғарғы блокта қалады */
+body.is-fullscreen-mode .top-collapse-row .floating-fullscreen-btn{
+  position:static !important;
+  right:auto !important;
+  bottom:auto !important;
+  top:auto !important;
+  z-index:auto !important;
+  background:#ef4444 !important;
+  box-shadow:none !important;
+}
+
+/* Толық экран кезінде жоғарғы блок жиналып тұрса да батырмалар көрінеді */
+body.is-fullscreen-mode .top-collapse-row{
+  display:flex !important;
+  justify-content:flex-end !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin-bottom:8px !important;
+}
+
+/* Толық экранда жоғарғы карточка өте көп орын алмауы үшін */
+body.is-fullscreen-mode .control-hero-card{
+  padding:8px 14px !important;
+}
+
+/* Толық экранда жоғарғы блок жиналса, тек тақырып + батырмалар ғана қалады */
+body.is-fullscreen-mode.control-top-collapsed .control-title p,
+body.is-fullscreen-mode.control-top-collapsed .control-badge,
+body.is-fullscreen-mode.control-top-collapsed .control-stats{
+  display:none !important;
+}
+
+/* ==================================================
+   CONTROL STAR + XP RESULT
+================================================== */
+.control-result-box{
+  margin-top:12px;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid #d6e6fb;
+  background:linear-gradient(135deg,#ffffff,#f0f7ff);
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.control-result-box.show{display:flex}
+.control-result-stars{font-size:24px;letter-spacing:2px;color:#f59e0b}
+.control-result-sub{font-size:13px;color:#475569;font-weight:800}
+.control-result-xp{
+  min-width:92px;height:44px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#12b76a,#22c55e);color:#fff;font-size:18px;font-weight:900;
+}
+
+
+/* ==================================================
+   LESSON MODE HEADER — оқушыға кедергі жасамайтын жоғарғы панель
+================================================== */
+
+.lesson-mode-header{
+  height:58px !important;
+  background:rgba(255,255,255,.96) !important;
+  border-bottom:1px solid #cfe0f4 !important;
+  padding:0 30px !important;
+  box-shadow:0 4px 22px rgba(15,23,42,.045) !important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.lesson-logo{
+  font-size:28px !important;
+  letter-spacing:-.045em !important;
+  color:#0d47a1 !important;
+}
+
+.lesson-header-center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  min-height:38px;
+  padding:0 16px;
+  border-radius:999px;
+  background:#eef6ff;
+  border:1px solid #d6e6fb;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#0b2f77;
+  white-space:nowrap;
+}
+
+.lesson-header-center span{
+  font-size:12px;
+  font-weight:850;
+  color:#64748b;
+}
+
+.lesson-header-center b{
+  font-size:13px;
+  font-weight:950;
+  color:#061b55;
+}
+
+.lesson-header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:auto;
+}
+
+.lesson-top-btn{
+  min-height:38px;
+  padding:0 13px;
+  border-radius:13px;
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(20,92,255,.18);
+  color:#145cff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(13,71,161,.06);
+  transition:.2s ease;
+  white-space:nowrap;
+}
+
+.lesson-top-btn:hover{
+  background:#145cff;
+  color:#ffffff;
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(20,92,255,.18);
+}
+
+.teacher-mode-badge{
+  display:none;
+  min-height:38px;
+  padding:0 13px;
+  border-radius:999px;
+  background:#ecfdf5;
+  border:1px solid #bbf7d0;
+  color:#059669;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+body.teacher-mode .teacher-mode-badge{
+  display:inline-flex;
+}
+
+/* Толық экран батырмалары толық алынды */
+.floating-fullscreen-btn,
+.lesson-fullscreen-btn,
+.fullscreen-side-btn{
+  display:none !important;
+}
+
+/* Жаңа header 58px болғандықтан sidebar орны қайта теңестірілді */
+.lesson-sidebar{
+  top:72px !important;
+  height:calc(100vh - 84px) !important;
+}
+
+body.is-fullscreen-mode .lesson-mode-header{
+  display:flex !important;
+}
+
+@media(max-width:980px){
+  .lesson-header-center{
+    display:none;
+  }
+
+  .lesson-mode-header{
+    padding:0 14px !important;
+  }
+
+  .lesson-header-actions{
+    gap:8px;
+  }
+
+  .profile-top-btn{
+    display:none;
+  }
+}
+
+@media(max-width:760px){
+  .lesson-top-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    font-size:0;
+  }
+
+  .lesson-top-btn i{
+    font-size:14px;
+  }
+}
+
+</style>
+
+<style id="control-work-final-ux-fix">
+/* CONTROL FINAL UX: cleaner result text + compact helper side panel */
+.answer-row.locked button,
+.answer-row button:disabled{
+  cursor:not-allowed !important;
+  opacity:.92;
+}
+.control-restart-btn{
+  background:linear-gradient(135deg,#f59e0b,#ff7a2f) !important;
+  color:#fff !important;
+  box-shadow:0 10px 20px rgba(245,158,11,.18) !important;
+}
+.control-result-box.show{
+  display:flex !important;
+}
+.control-result-sub{
+  line-height:1.45 !important;
+}
+.answer-feedback{
+  font-size:13px !important;
+  line-height:1.4 !important;
+}
+.helper-tools-modal{
+  background:transparent !important;
+  backdrop-filter:none !important;
+  align-items:flex-start !important;
+  justify-content:flex-end !important;
+  padding:78px 18px 18px !important;
+  pointer-events:none !important;
+}
+.helper-tools-modal.open{
+  display:flex !important;
+}
+.helper-panel{
+  width:min(390px, calc(100vw - 32px)) !important;
+  max-height:calc(100vh - 98px) !important;
+  pointer-events:auto !important;
+  border-radius:18px !important;
+  padding:12px !important;
+  box-shadow:0 18px 45px rgba(7,24,55,.20) !important;
+}
+.helper-panel-head{
+  align-items:center !important;
+  margin-bottom:10px !important;
+}
+.helper-panel-head h3{
+  font-size:17px !important;
+}
+.helper-tabs{
+  gap:7px !important;
+}
+.helper-tab{
+  height:36px !important;
+  border-radius:11px !important;
+  font-size:12px !important;
+}
+.helper-tool{
+  padding:10px !important;
+  border-radius:15px !important;
+}
+.calc-screen{
+  min-height:46px !important;
+  font-size:22px !important;
+}
+.calc-grid{
+  grid-template-columns:repeat(4,1fr) !important;
+  gap:7px !important;
+}
+.calc-grid button{
+  height:38px !important;
+  border-radius:11px !important;
+  font-size:14px !important;
+}
+.calc-grid .calc-equal{
+  grid-column:auto !important;
+}
+#drawCanvas{
+  height:300px !important;
+}
+.timer-display{
+  height:96px !important;
+  font-size:46px !important;
+}
+@media(max-width:760px){
+  .helper-tools-modal{
+    justify-content:center !important;
+    padding:70px 10px 10px !important;
+  }
+  .helper-panel{
+    width:calc(100vw - 20px) !important;
+  }
+}
+</style>
+
+</head>
+<body>
+<header class="header lesson-mode-header">
+  <a href="../../index.html" class="logo lesson-logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <div class="lesson-header-center">
+    <span>Бастапқы деңгей · Механика</span>
+    <b>Бақылау №3</b>
+  </div>
+
+  <div class="lesson-header-actions">
+    <span class="teacher-mode-badge" id="teacherModeBadge">
+      <i class="fa-solid fa-unlock"></i>
+      Мұғалім режимі
+    </span>
+
+    <a href="../../levels_map.html" class="lesson-top-btn">
+      <i class="fa-solid fa-arrow-left"></i>
+      Оқу картасына қайту
+    </a>
+
+    <a href="../../profile.html" class="lesson-top-btn profile-top-btn">
+      <i class="fa-solid fa-user"></i>
+      Профиль
+    </a>
+  </div>
+</header>
+<main class="control-page">
+<aside class="control-sidebar">
+<div class="sidebar-head">
+<div class="sidebar-title">
+<i class="fa-solid fa-trophy"></i>
+<span>Бақылау</span>
+</div>
+<button class="sidebar-toggle-btn" onclick="toggleControlSidebar()" title="Панельді жинау/ашу" type="button"><i class="fa-solid fa-chevron-left"></i></button></div>
+<div class="side-subtitle">3-бөлім · Механика<br/>Бақылау жұмысы №3</div>
+<div class="side-card">
+<h3>Бақылау прогресі</h3>
+<div class="circle-row">
+<div class="circle" style="--deg:0deg"><span>0%</span></div>
+<div>
+<div id="bigPercent" style="font-size:30px;font-weight:900;">0%</div>
+<div id="progressText" style="font-size:12px;color:#dbeafe;font-weight:800;">0 / 2 бөлім</div>
+</div>
+</div>
+<div class="side-progress-bar"><div id="sideProgressFill"></div></div>
+<div class="side-row">
+<span>Тапсырма + жауап</span>
+<span>+15 XP</span>
+</div>
+</div>
+<div class="helper-tools-card" onclick="toggleHelperTools()" title="Көмекші құралдарды ашу"><div class="helper-tools-left"><div class="helper-tools-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div><div><b>Көмекші құралдар</b><span>Калькулятор · Жазу · Сызу · Таймер</span></div></div><i class="fa-solid fa-chevron-right helper-arrow"></i></div><div class="side-menu">
+<button class="side-menu-btn active" data-tab="work" onclick="showTab('work')">
+<i class="fa-solid fa-file-pen"></i>
+<span>Бақылау жұмысы</span>
+</button>
+<button class="side-menu-btn" data-tab="answer" onclick="goAnswerIfPassed()">
+<i class="fa-solid fa-circle-check"></i>
+<span>Жауаптары</span>
+</button>
+<button class="side-menu-btn finish-side finish-locked" onclick="finishControlIfPassed()">
+<i class="fa-solid fa-flag-checkered"></i>
+<span>Аяқтау</span>
+</button>
+<a class="side-menu-btn" href="../../levels_map.html">
+<i class="fa-solid fa-map"></i>
+<span>Оқу картасы</span>
+</a>
+</div>
+</aside>
+<section class="control-main">
+<section class="main-card control-hero-card"><div class="top-collapse-row"><button class="top-compact-toggle" onclick="toggleControlTop()" title="Жоғарғы ақпаратты жинау/ашу" type="button">Жоғарғы блок <i class="fa-solid fa-chevron-up"></i></button></div>
+<div class="control-title">
+<div>
+<h1>Бақылау жұмысы №3</h1>
+<p>1-бөлім бойынша қорытынды тексеру. Жауап парағын белгіле. Кемінде 70% жинасаң, жауаптарын көріп, бақылауды аяқтай аласың.</p>
+</div>
+<div class="control-badge">
+<i class="fa-solid fa-book-open"></i>
+            3-бөлім
+          </div>
+<div class="top-timer-pill" id="topTimerPill" onclick="toggleHelperTools(); showHelperTool('timer');" title="Таймерді ашу"><i class="fa-solid fa-stopwatch"></i><span id="topTimerText">15:00</span></div></div>
+<div class="control-stats">
+<div class="stat-card stat-purple">
+<div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+<div class="stat-info">
+<b>Бақылау реті</b>
+<strong>3 / 5</strong>
+<span>Бастапқы деңгей</span>
+</div>
+</div>
+<div class="stat-card stat-blue">
+<div class="stat-icon"><i class="fa-solid fa-list-check"></i></div>
+<div class="stat-info">
+<b>Сұрақ саны</b>
+<strong>15</strong>
+<span>Тест жауаптары</span>
+</div>
+</div>
+<div class="stat-card stat-green">
+<div class="stat-icon"><i class="fa-solid fa-percent"></i></div>
+<div class="stat-info">
+<b>Өту шегі</b>
+<strong>70%</strong>
+<span>Кемінде 11 / 15</span>
+</div>
+</div>
+<div class="stat-card stat-orange">
+<div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+<div class="stat-info">
+<b>Марапат</b>
+<strong>+15 XP</strong>
+<span>Бақылау аяқталса</span>
+</div>
+</div>
+</div>
+</section>
+<section class="content-card tab-content" id="work">
+<div class="content-header">
+<h2>3-бақылау жұмысы</h2>
+<div class="content-badge">
+<i class="fa-solid fa-file-pen"></i>
+            Тапсырмалар
+          </div>
+</div>
+<div class="infographic-frame">
+<img alt="3-бақылау жұмысы" class="control-img" src="../../image/beginner/control_work_3/3.1.jpg"/>
+</div>
+<div class="answer-sheet">
+<div class="answer-sheet-head">
+<div>
+<h3>Жауап парағы</h3>
+<p>15 сұраққа A/B/C/D жауаптарын белгіле. 70% өту үшін кемінде 11 дұрыс жауап керек.</p>
+</div>
+<div class="answer-score" id="answerScore">0 / 15</div>
+</div>
+<div class="answer-grid" id="answerGrid"></div>
+<div class="answer-actions">
+<button class="check-answers-btn" onclick="checkAnswers()">
+              Жауаптарды тексеру
+              <i class="fa-solid fa-check"></i>
+</button>
+<button class="reset-answers-btn" onclick="resetAnswers()">
+              Қайта белгілеу
+              <i class="fa-solid fa-rotate-right"></i>
+</button>
+</div>
+<div class="answer-feedback" id="answerFeedback"></div>
+          <div class="control-result-box" id="controlResultBox">
+            <div>
+              <div style="font-weight:900;color:#0d47a1;margin-bottom:5px;">Бақылау нәтижесі</div>
+              <div class="control-result-stars" id="controlResultStars">☆☆☆☆☆</div>
+              <div class="control-result-sub" id="controlResultSub">Жауаптарды тексергеннен кейін нәтиже шығады.</div>
+            </div>
+            <div class="control-result-xp" id="controlResultXp">+0 XP</div>
+          </div>
+</div>
+<div class="next-card">
+<div class="next-icon">
+<i class="fa-solid fa-arrow-turn-down"></i>
+</div>
+<div class="next-text">
+<h3>Келесі қадам</h3>
+<p>Кемінде 70% жинасаң, бақылау жұмысының жауаптарын көре аласың.</p>
+</div>
+<div class="next-actions">
+<button class="locked-btn" id="viewAnswerBtn" onclick="goAnswerIfPassed()">
+              Жауаптарын көру
+              <i class="fa-solid fa-arrow-right"></i>
+</button>
+</div>
+</div>
+</section>
+<section class="content-card tab-content" id="answer" style="display:none;">
+<div class="content-header">
+<h2>3-бақылау жұмысының жауаптары</h2>
+<div class="content-badge">
+<i class="fa-solid fa-circle-check"></i>
+            Өзіңді тексер
+          </div>
+</div>
+<div class="infographic-frame">
+<img alt="3-бақылау жұмысының жауаптары" class="control-img" src="../../image/beginner/control_work_3/3.2.jpg"/>
+</div>
+<div class="next-card">
+<div class="next-icon">
+<i class="fa-solid fa-flag-checkered"></i>
+</div>
+<div class="next-text">
+<h3>Бақылауды аяқтау</h3>
+<p>Жауаптарды қарап шықсаң, бақылау жұмысын аяқтап, оқу картасына қайта аласың.</p>
+</div>
+<div class="next-actions">
+<button class="success-btn finish-side finish-locked" onclick="finishControlIfPassed()">
+              Бақылауды аяқтау
+              <i class="fa-solid fa-check"></i>
+</button>
+<a class="light-btn" href="../../levels_map.html">
+              Оқу картасы
+              <i class="fa-solid fa-map"></i>
+</a>
+</div>
+</div>
+</section>
+</section>
+</main>
+
+<div class="helper-tools-modal" id="helperToolsModal" aria-hidden="true">
+  <div class="helper-panel" role="dialog" aria-modal="false" aria-labelledby="helperPanelTitle">
+    <div class="helper-panel-head">
+      <div>
+        <h3 id="helperPanelTitle">Көмекші құралдар</h3>
+        <p>Бақылау жұмысын орындауға арналған шағын құралдар.</p>
+      </div>
+      <button class="helper-close" type="button" onclick="toggleHelperTools()" title="Жабу">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="helper-tabs">
+      <button class="helper-tab active" data-tool="calc" onclick="showHelperTool('calc')" type="button"><i class="fa-solid fa-calculator"></i> Калькулятор</button>
+      <button class="helper-tab" data-tool="notes" onclick="showHelperTool('notes')" type="button"><i class="fa-solid fa-pen"></i> Жазба</button>
+      <button class="helper-tab" data-tool="draw" onclick="showHelperTool('draw')" type="button"><i class="fa-solid fa-pen-ruler"></i> Тақта</button>
+      <button class="helper-tab" data-tool="timer" onclick="showHelperTool('timer')" type="button"><i class="fa-solid fa-clock"></i> Таймер</button>
+    </div>
+
+    <section class="helper-tool active" id="tool-calc">
+      <div class="calc-screen" id="calcScreen">0</div>
+      <div class="calc-grid">
+        <button type="button" onclick="calcClear()" style="background:#fff1f2;color:#e11d48;">C</button>
+        <button type="button" onclick="calcBack()">⌫</button>
+        <button type="button" onclick="calcPress('(')" style="background:#145cff;color:white;">(</button>
+        <button type="button" onclick="calcPress(')')" style="background:#145cff;color:white;">)</button>
+        <button type="button" onclick="calcPress('7')">7</button>
+        <button type="button" onclick="calcPress('8')">8</button>
+        <button type="button" onclick="calcPress('9')">9</button>
+        <button type="button" onclick="calcPress('/')" style="background:#145cff;color:white;">÷</button>
+        <button type="button" onclick="calcPress('4')">4</button>
+        <button type="button" onclick="calcPress('5')">5</button>
+        <button type="button" onclick="calcPress('6')">6</button>
+        <button type="button" onclick="calcPress('*')" style="background:#145cff;color:white;">×</button>
+        <button type="button" onclick="calcPress('1')">1</button>
+        <button type="button" onclick="calcPress('2')">2</button>
+        <button type="button" onclick="calcPress('3')">3</button>
+        <button type="button" onclick="calcPress('-')" style="background:#145cff;color:white;">−</button>
+        <button type="button" onclick="calcPress('0')">0</button>
+        <button type="button" onclick="calcPress('.')">.</button>
+        <button class="calc-equal" type="button" onclick="calcEqual()">=</button>
+        <button type="button" onclick="calcPress('+')" style="background:#145cff;color:white;">+</button>
+      </div>
+    </section>
+
+    <section class="helper-tool" id="tool-notes">
+      <textarea id="helperNotes" placeholder="Қысқаша есептеу жазбаларыңды жаз..."></textarea>
+      <div class="helper-actions">
+        <button type="button" onclick="saveHelperNotes()"><i class="fa-solid fa-save"></i> Сақтау</button>
+        <button type="button" onclick="clearHelperNotes()" style="background:#f59e0b;"><i class="fa-solid fa-trash"></i> Тазалау</button>
+      </div>
+    </section>
+
+    <section class="helper-tool" id="tool-draw">
+      <canvas id="drawCanvas" width="900" height="420"></canvas>
+      <div class="draw-actions">
+        <button class="draw-color blue" type="button" onclick="setDrawColor('#145cff')" title="Көк"></button>
+        <button class="draw-color dark" type="button" onclick="setDrawColor('#111827')" title="Қара"></button>
+        <button class="draw-color red" type="button" onclick="setDrawColor('#ef4444')" title="Қызыл"></button>
+        <button type="button" onclick="clearCanvas()"><i class="fa-solid fa-eraser"></i> Тазалау</button>
+      </div>
+    </section>
+
+    <section class="helper-tool" id="tool-timer">
+      <div class="timer-display" id="timerDisplay">15:00</div>
+      <div class="timer-presets">
+        <button type="button" onclick="setTimer(5)">5 мин</button>
+        <button type="button" onclick="setTimer(10)">10 мин</button>
+        <button type="button" onclick="setTimer(15)">15 мин</button>
+      </div>
+      <div class="helper-actions">
+        <button type="button" onclick="startTimer()"><i class="fa-solid fa-play"></i> Бастау</button>
+        <button type="button" onclick="pauseTimer()" style="background:#64748b;"><i class="fa-solid fa-pause"></i> Тоқтату</button>
+        <button type="button" onclick="resetTimer()" style="background:#f59e0b;"><i class="fa-solid fa-rotate-right"></i> Қайта қою</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+
+    function toggleControlSidebar(){
+      document.body.classList.toggle("control-sidebar-collapsed");
+      localStorage.setItem(
+        "controlSidebarCollapsed",
+        document.body.classList.contains("control-sidebar-collapsed") ? "1" : "0"
+      );
+    }
+
+    function toggleControlTop(){
+      document.body.classList.toggle("control-top-collapsed");
+      localStorage.setItem(
+        "controlTopCollapsed",
+        document.body.classList.contains("control-top-collapsed") ? "1" : "0"
+      );
+    }
+
+    function restoreControlLayout(){
+      if(localStorage.getItem("controlSidebarCollapsed") === "1"){
+        document.body.classList.add("control-sidebar-collapsed");
+      }
+
+      if(localStorage.getItem("controlTopCollapsed") === "1"){
+        document.body.classList.add("control-top-collapsed");
+      }
+    }
+
+
+    let calcValue = "";
+    let drawColor = "#145cff";
+    let isDrawing = false;
+    let timerSeconds = Number(localStorage.getItem("controlTimerSeconds") || 900);
+    let timerInterval = null;
+
+    function toggleHelperTools(){
+      const modal = document.getElementById("helperToolsModal");
+      if(!modal) return;
+      modal.classList.toggle("open");
+      if(modal.classList.contains("open")){
+        setTimeout(initCanvas, 80);
+        loadHelperNotes();
+        updateTimerDisplay();
+      }
+    }
+
+    function showHelperTool(tool){
+      document.querySelectorAll(".helper-tab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tool === tool);
+      });
+
+      document.querySelectorAll(".helper-tool").forEach(item => {
+        item.classList.remove("active");
+      });
+
+      const active = document.getElementById("tool-" + tool);
+      if(active) active.classList.add("active");
+
+      if(tool === "draw"){
+        setTimeout(initCanvas, 80);
+      }
+    }
+
+    function calcPress(value){
+      if(calcValue === "0") calcValue = "";
+      calcValue += value;
+      updateCalcScreen();
+    }
+
+    function calcClear(){
+      calcValue = "";
+      updateCalcScreen();
+    }
+
+    function calcBack(){
+      calcValue = calcValue.slice(0, -1);
+      updateCalcScreen();
+    }
+
+    function calcEqual(){
+      try{
+        if(!/^[0-9+\-*/().\\s]+$/.test(calcValue)) throw new Error("bad");
+        const result = Function('"use strict"; return (' + calcValue + ')')();
+        calcValue = String(Math.round(result * 1000000) / 1000000);
+      }catch(e){
+        calcValue = "";
+        const screen = document.getElementById("calcScreen");
+        if(screen) screen.textContent = "Қате";
+        return;
+      }
+      updateCalcScreen();
+    }
+
+    function updateCalcScreen(){
+      const screen = document.getElementById("calcScreen");
+      if(screen) screen.textContent = calcValue || "0";
+    }
+
+    function saveHelperNotes(){
+      const notes = document.getElementById("helperNotes");
+      if(notes){
+        localStorage.setItem("controlHelperNotes", notes.value);
+        alert("Жазба сақталды.");
+      }
+    }
+
+    function loadHelperNotes(){
+      const notes = document.getElementById("helperNotes");
+      if(notes){
+        notes.value = localStorage.getItem("controlHelperNotes") || "";
+      }
+    }
+
+    function clearHelperNotes(){
+      const notes = document.getElementById("helperNotes");
+      if(notes){
+        notes.value = "";
+        localStorage.removeItem("controlHelperNotes");
+      }
+    }
+
+    function initCanvas(){
+      const canvas = document.getElementById("drawCanvas");
+      if(!canvas || canvas.dataset.ready === "1") return;
+
+      const ctx = canvas.getContext("2d");
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = drawColor;
+
+      function getPos(e){
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches ? e.touches[0] : e;
+        return {
+          x:(touch.clientX - rect.left) * (canvas.width / rect.width),
+          y:(touch.clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      function start(e){
+        e.preventDefault();
+        isDrawing = true;
+        const p = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+      }
+
+      function move(e){
+        if(!isDrawing) return;
+        e.preventDefault();
+        const p = getPos(e);
+        ctx.strokeStyle = drawColor;
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+      }
+
+      function end(){
+        isDrawing = false;
+      }
+
+      canvas.addEventListener("mousedown", start);
+      canvas.addEventListener("mousemove", move);
+      window.addEventListener("mouseup", end);
+
+      canvas.addEventListener("touchstart", start, {passive:false});
+      canvas.addEventListener("touchmove", move, {passive:false});
+      canvas.addEventListener("touchend", end);
+
+      canvas.dataset.ready = "1";
+    }
+
+    function setDrawColor(color){
+      drawColor = color;
+    }
+
+    function clearCanvas(){
+      const canvas = document.getElementById("drawCanvas");
+      if(!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+
+    
+    function setTimer(minutes){
+      timerSeconds = minutes * 60;
+      localStorage.setItem("controlTimerSeconds", timerSeconds);
+      updateTimerDisplay();
+
+      const topPill = document.getElementById("topTimerPill");
+      if(topPill && timerInterval === null){
+        topPill.classList.remove("running", "warning", "danger");
+      }
+    }
+
+
+    
+    function updateTimerDisplay(){
+      const display = document.getElementById("timerDisplay");
+      const topText = document.getElementById("topTimerText");
+      const topPill = document.getElementById("topTimerPill");
+
+      const min = Math.floor(timerSeconds / 60);
+      const sec = timerSeconds % 60;
+      const formatted = String(min).padStart(2,"0") + ":" + String(sec).padStart(2,"0");
+
+      if(display) display.textContent = formatted;
+      if(topText) topText.textContent = formatted;
+
+      if(topPill){
+        topPill.classList.toggle("running", timerInterval !== null || timerSeconds > 0);
+        topPill.classList.toggle("warning", timerSeconds <= 300 && timerSeconds > 60);
+        topPill.classList.toggle("danger", timerSeconds <= 60);
+      }
+
+      localStorage.setItem("controlTimerSeconds", timerSeconds);
+    }
+
+
+    
+    function startTimer(){
+      if(timerInterval) return;
+
+      const topPill = document.getElementById("topTimerPill");
+      if(topPill){
+        topPill.classList.add("running");
+      }
+
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        if(timerSeconds <= 0){
+          pauseTimer();
+          alert("Уақыт аяқталды!");
+          return;
+        }
+        timerSeconds--;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+
+    
+    function pauseTimer(){
+      clearInterval(timerInterval);
+      timerInterval = null;
+      updateTimerDisplay();
+    }
+
+
+    
+    function resetTimer(){
+      pauseTimer();
+      timerSeconds = 15 * 60;
+      updateTimerDisplay();
+
+      const topPill = document.getElementById("topTimerPill");
+      if(topPill){
+        topPill.classList.remove("running", "warning", "danger");
+      }
+    }
+
+
+
+    const controlId = "beginner-control-3";
+    const ANSWERS_KEY = "beginner_control_3_answers";
+    const SCORE_KEY = "beginner_control_3_score";
+    const PASS_SCORE = 11;
+    const TOTAL = 15;
+
+    /*
+      Дұрыс жауаптарды осы жерден өзгертесің.
+      Әзірше үлгі ретінде қойылды.
+    */
+    const correctAnswers = {
+      1:"A",
+      2:"C",
+      3:"B",
+      4:"C",
+      5:"B",
+      6:"C",
+      7:"B",
+      8:"B",
+      9:"C",
+      10:"B",
+      11:"A",
+      12:"B",
+      13:"C",
+      14:"A",
+      15:"B"
+    };
+
+    let studentAnswers = JSON.parse(localStorage.getItem(ANSWERS_KEY)) || {};
+
+    function buildAnswerGrid(){
+      const grid = document.getElementById("answerGrid");
+      if(!grid) return;
+
+      grid.innerHTML = "";
+
+      for(let q = 1; q <= TOTAL; q++){
+        const row = document.createElement("div");
+        row.className = "answer-row";
+        row.dataset.question = q;
+
+        row.innerHTML = `
+          <span class="question-number">${q}</span>
+          <button type="button" onclick="selectAnswer(${q}, 'A')">A</button>
+          <button type="button" onclick="selectAnswer(${q}, 'B')">B</button>
+          <button type="button" onclick="selectAnswer(${q}, 'C')">C</button>
+          <button type="button" onclick="selectAnswer(${q}, 'D')">D</button>
+        `;
+
+        grid.appendChild(row);
+      }
+    }
+
+    function selectAnswer(question, answer){
+      studentAnswers[question] = answer;
+      localStorage.setItem(ANSWERS_KEY, JSON.stringify(studentAnswers));
+      renderAnswers();
+    }
+
+    function renderAnswers(){
+      document.querySelectorAll(".answer-row").forEach(row => {
+        const question = row.dataset.question;
+        const selected = studentAnswers[question];
+
+        row.querySelectorAll("button").forEach(btn => {
+          btn.classList.remove("selected", "correct", "wrong");
+
+          if(btn.textContent.trim() === selected){
+            btn.classList.add("selected");
+          }
+        });
+      });
+    }
+
+    function checkAnswers(){
+      let score = 0;
+
+      document.querySelectorAll(".answer-row").forEach(row => {
+        const question = row.dataset.question;
+        const selected = studentAnswers[question];
+        const correct = correctAnswers[question];
+
+        row.querySelectorAll("button").forEach(btn => {
+          btn.classList.remove("correct", "wrong");
+
+          const value = btn.textContent.trim();
+
+          if(value === correct){
+            btn.classList.add("correct");
+          }
+
+          if(value === selected && selected !== correct){
+            btn.classList.add("wrong");
+          }
+        });
+
+        if(selected === correct){
+          score++;
+        }
+      });
+
+      const scoreBox = document.getElementById("answerScore");
+      if(scoreBox){
+        scoreBox.textContent = score + " / " + TOTAL;
+      }
+
+      localStorage.setItem(SCORE_KEY, score);
+
+      const feedback = document.getElementById("answerFeedback");
+      const percent = Math.round((score / TOTAL) * 100);
+
+      if(feedback){
+        feedback.className = "answer-feedback";
+
+        if(score >= PASS_SCORE){
+          feedback.classList.add("success");
+          feedback.textContent = "Жарайсың! Нәтижең " + percent + "%. Енді жауаптарын көріп, бақылауды аяқтай аласың.";
+          completeSection("work");
+        } else {
+          feedback.classList.add("warning");
+          feedback.textContent = "Нәтижең " + percent + "%. Бақылаудан өту үшін кемінде 70% жинау керек. Қайталап көр.";
+        }
+      }
+
+      updateGateButtons();
+      updateProgressUI();
+    }
+
+    function resetAnswers(){
+      studentAnswers = {};
+      localStorage.removeItem(ANSWERS_KEY);
+      localStorage.removeItem(SCORE_KEY);
+
+      const scoreBox = document.getElementById("answerScore");
+      if(scoreBox) scoreBox.textContent = "0 / " + TOTAL;
+
+      const feedback = document.getElementById("answerFeedback");
+      if(feedback){
+        feedback.className = "answer-feedback";
+        feedback.textContent = "";
+      }
+
+      renderAnswers();
+      updateGateButtons();
+      updateProgressUI();
+    }
+
+    function hasPassed(){
+      return Number(localStorage.getItem(SCORE_KEY) || 0) >= PASS_SCORE;
+    }
+
+    function goAnswerIfPassed(){
+      const score = Number(localStorage.getItem(SCORE_KEY) || 0);
+      const percent = Math.round((score / TOTAL) * 100);
+
+      if(!hasPassed()){
+        const feedback = document.getElementById("answerFeedback");
+
+        if(feedback){
+          feedback.className = "answer-feedback error";
+          feedback.textContent = "Жауаптарды көру үшін алдымен кемінде 70% жина. Қазіргі нәтижең: " + percent + "%.";
+        } else {
+          alert("Жауаптарды көру үшін алдымен кемінде 70% жина.");
+        }
+
+        showTab("work");
+        return;
+      }
+
+      completeSection("work");
+      showTab("answer");
+    }
+
+    function getControlProgress(){
+      return JSON.parse(localStorage.getItem("progress_" + controlId)) || {
+        completedSections:[]
+      };
+    }
+
+    function saveControlProgress(progress){
+      localStorage.setItem("progress_" + controlId, JSON.stringify(progress));
+    }
+
+    function completeSection(sectionId){
+      const progress = getControlProgress();
+
+      if(!progress.completedSections.includes(sectionId)){
+        progress.completedSections.push(sectionId);
+      }
+
+      saveControlProgress(progress);
+      updateProgressUI();
+    }
+
+    function updateProgressUI(){
+      const progress = getControlProgress();
+      const completed = progress.completedSections.length;
+      const percent = Math.round((completed / 2) * 100);
+
+      document.querySelectorAll(".circle span").forEach(item => item.textContent = percent + "%");
+
+      const bigPercent = document.getElementById("bigPercent");
+      if(bigPercent) bigPercent.textContent = percent + "%";
+
+      const progressText = document.getElementById("progressText");
+      if(progressText) progressText.textContent = completed + " / 2 бөлім";
+
+      const fill = document.getElementById("sideProgressFill");
+      if(fill) fill.style.width = percent + "%";
+
+      document.querySelectorAll(".side-menu-btn").forEach(btn => {
+        const tab = btn.dataset.tab;
+        if(!tab) return;
+        btn.classList.toggle("section-done", progress.completedSections.includes(tab));
+      });
+
+      updateGateButtons();
+    }
+
+    function updateGateButtons(){
+      const passed = hasPassed();
+
+      document.querySelectorAll(".finish-locked, .locked-btn").forEach(btn => {
+        btn.classList.toggle("unlocked", passed);
+        btn.title = passed ? "Ашық" : "Алдымен бақылаудан кемінде 70% жина";
+      });
+    }
+
+    function finishControlIfPassed(){
+      if(!hasPassed()){
+        alert("Бақылауды аяқтау үшін алдымен кемінде 70% жина.");
+        showTab("work");
+        return;
+      }
+
+      completeSection("answer");
+
+      let user = JSON.parse(localStorage.getItem("physxUser")) || {
+        progress:{
+          points:0,
+          lessonsCompleted:[]
+        },
+        studyLevel:"beginner"
+      };
+
+      if(!user.progress){
+        user.progress = {
+          points:0,
+          lessonsCompleted:[]
+        };
+      }
+
+      if(!Array.isArray(user.progress.lessonsCompleted)){
+        user.progress.lessonsCompleted = [];
+      }
+
+      if(!user.progress.lessonsCompleted.includes(controlId)){
+        user.progress.lessonsCompleted.push(controlId);
+        user.progress.points = (user.progress.points || 0) + 15;
+        alert("Бақылау жұмысы аяқталды! +15 XP");
+      } else {
+        alert("Бұл бақылау жұмысы бұрын аяқталған.");
+      }
+
+      localStorage.setItem("physxUser", JSON.stringify(user));
+      window.location.href = "../../levels_map.html";
+    }
+
+    function showTab(id){
+      document.querySelectorAll(".tab-content").forEach(item => {
+        item.style.display = "none";
+      });
+
+      const tab = document.getElementById(id);
+      if(tab){
+        tab.style.display = "block";
+      }
+
+      document.querySelectorAll(".side-menu-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      const activeBtn = document.querySelector('.side-menu-btn[data-tab="' + id + '"]');
+      if(activeBtn){
+        activeBtn.classList.add("active");
+      }
+    }
+
+    function toggleFullscreen(){
+  return false;
+}
+function getControlXPByStars(stars){ return [0,3,6,9,12,15][Number(stars)] || 0; }
+function controlStarText(stars){ let s=""; for(let i=1;i<=5;i++) s += i<=stars ? "⭐" : "☆"; return s; }
+
+function renderControlResult(){
+  const box = document.getElementById("controlResultBox");
+  const starsEl = document.getElementById("controlResultStars");
+  const subEl = document.getElementById("controlResultSub");
+  const xpEl = document.getElementById("controlResultXp");
+  if(!box || !starsEl || !subEl || !xpEl) return;
+  const saved = localStorage.getItem(SCORE_KEY);
+  if(saved === null){ box.classList.remove("show"); return; }
+  const score = Number(saved || 0);
+  const stars = Number(localStorage.getItem(CONTROL_STARS_KEY) || 0);
+  const xp = Number(localStorage.getItem(CONTROL_XP_KEY) || 0);
+  const percent = Math.round(score/TOTAL*100);
+  starsEl.textContent = controlStarText(stars);
+  subEl.textContent = `Нәтиже: ${score}/${TOTAL} (${percent}%). Бақылаудан өту үшін кемінде 70%.`;
+  xpEl.textContent = `+${xp} XP`;
+  box.classList.add("show");
+}
+
+const oldControlCheckAnswers = checkAnswers;
+checkAnswers = function(){
+  oldControlCheckAnswers();
+  const score = Number(localStorage.getItem(SCORE_KEY) || 0);
+  const stars = getControlStarRating(score, TOTAL);
+  const xp = getControlXPByStars(stars);
+  localStorage.setItem(CONTROL_STARS_KEY, String(stars));
+  localStorage.setItem(CONTROL_XP_KEY, String(xp));
+  renderControlResult();
+};
+
+const oldControlResetAnswers = resetAnswers;
+resetAnswers = function(){
+  oldControlResetAnswers();
+  localStorage.removeItem(CONTROL_STARS_KEY);
+  localStorage.removeItem(CONTROL_XP_KEY);
+  renderControlResult();
+};
+
+finishControlIfPassed = function(){
+  if(!hasPassed()){
+    alert("Бақылауды аяқтау үшін алдымен кемінде 70% жина.");
+    showTab("work");
+    return;
+  }
+
+  completeSection("answer");
+
+  const xp = Number(localStorage.getItem(CONTROL_XP_KEY) || 15);
+  const stars = Number(localStorage.getItem(CONTROL_STARS_KEY) || 3);
+
+  let user = JSON.parse(localStorage.getItem("physxUser")) || {
+    progress:{ points:0, lessonsCompleted:[] },
+    studyLevel:"beginner"
+  };
+
+  if(!user.progress) user.progress = { points:0, lessonsCompleted:[] };
+  if(!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+
+  if(!user.progress.lessonsCompleted.includes(CONTROL_ID_FIXED)){
+    user.progress.lessonsCompleted.push(CONTROL_ID_FIXED);
+    user.progress.points = (user.progress.points || 0) + xp;
+    alert(`Бақылау жұмысы аяқталды! Бағаң: ${controlStarText(stars)}. +${xp} XP`);
+  } else {
+    alert("Бұл бақылау жұмысы бұрын аяқталған.");
+  }
+
+  localStorage.setItem("physxUser", JSON.stringify(user));
+  window.location.href = "../../levels_map.html";
+};
+
+window.addEventListener("DOMContentLoaded", renderControlResult);
+
+
+/* ==================================================
+   CONTROL WORK FINAL PATCH
+   - undefined key errors fixed
+   - result text shortened
+   - answers lock after check
+   - retake button added safely
+================================================== */
+var CONTROL_ID_FIXED = controlId;
+var CONTROL_STARS_KEY = controlId + "_stars";
+var CONTROL_XP_KEY = controlId + "_xp";
+var CONTROL_CHECKED_KEY = controlId + "_checked";
+var CONTROL_SEEN_ANSWER_KEY = controlId + "_answer_seen";
+
+function getControlStarRating(score, total){
+  const percent = total ? Math.round((score / total) * 100) : 0;
+  if(percent >= 90) return 5;
+  if(percent >= 80) return 4;
+  if(percent >= 70) return 3;
+  if(percent >= 50) return 2;
+  if(score > 0) return 1;
+  return 0;
+}
+
+function isControlChecked(){
+  return localStorage.getItem(CONTROL_CHECKED_KEY) === "1";
+}
+
+function lockControlAnswers(lock){
+  document.querySelectorAll(".answer-row").forEach(row => {
+    row.classList.toggle("locked", !!lock);
+    row.querySelectorAll("button").forEach(btn => btn.disabled = !!lock);
+  });
+}
+
+function renderAnswers(showMarks = isControlChecked()){
+  document.querySelectorAll(".answer-row").forEach(row => {
+    const question = row.dataset.question;
+    const selected = studentAnswers[question];
+    const correct = correctAnswers[question];
+
+    row.querySelectorAll("button").forEach(btn => {
+      const value = btn.textContent.trim();
+      btn.classList.remove("selected", "correct", "wrong");
+
+      if(value === selected) btn.classList.add("selected");
+      if(showMarks && value === correct) btn.classList.add("correct");
+      if(showMarks && value === selected && selected !== correct) btn.classList.add("wrong");
+    });
+  });
+  lockControlAnswers(isControlChecked());
+}
+
+function selectAnswer(question, answer){
+  if(isControlChecked()) return;
+  studentAnswers[String(question)] = answer;
+  localStorage.setItem(ANSWERS_KEY, JSON.stringify(studentAnswers));
+  renderAnswers(false);
+}
+
+function renderControlResult(){
+  const box = document.getElementById("controlResultBox");
+  const starsEl = document.getElementById("controlResultStars");
+  const subEl = document.getElementById("controlResultSub");
+  const xpEl = document.getElementById("controlResultXp");
+  if(!box || !starsEl || !subEl || !xpEl) return;
+
+  const saved = localStorage.getItem(SCORE_KEY);
+  if(saved === null){
+    box.classList.remove("show");
+    return;
+  }
+
+  const score = Number(saved || 0);
+  const percent = Math.round(score / TOTAL * 100);
+  const stars = getControlStarRating(score, TOTAL);
+  const passed = score >= PASS_SCORE;
+
+  localStorage.setItem(CONTROL_STARS_KEY, String(stars));
+  localStorage.setItem(CONTROL_XP_KEY, passed ? "15" : "0");
+
+  starsEl.textContent = controlStarText(stars);
+  subEl.textContent = `Осы әрекет: ${score}/${TOTAL} (${percent}%) • ${stars}/5 ⭐. ${passed ? "Бақылау өтті." : "Қайта тапсыруға болады."}`;
+  xpEl.textContent = passed ? "+15 XP" : "+0 XP";
+  box.classList.add("show");
+}
+
+function checkAnswers(){
+  if(isControlChecked()){
+    const feedback = document.getElementById("answerFeedback");
+    if(feedback){
+      feedback.className = "answer-feedback warning";
+      feedback.textContent = "Нәтиже бекітілген. Жаңа әрекет үшін «Бақылауды қайта тапсыру» батырмасын бас.";
+    }
+    return;
+  }
+
+  let score = 0;
+  document.querySelectorAll(".answer-row").forEach(row => {
+    const question = row.dataset.question;
+    if(studentAnswers[question] === correctAnswers[question]) score++;
+  });
+
+  localStorage.setItem(SCORE_KEY, String(score));
+  localStorage.setItem(CONTROL_CHECKED_KEY, "1");
+  localStorage.setItem(CONTROL_STARS_KEY, String(getControlStarRating(score, TOTAL)));
+  localStorage.setItem(CONTROL_XP_KEY, score >= PASS_SCORE ? "15" : "0");
+
+  const scoreBox = document.getElementById("answerScore");
+  if(scoreBox) scoreBox.textContent = score + " / " + TOTAL;
+
+  const feedback = document.getElementById("answerFeedback");
+  if(feedback){
+    feedback.className = "answer-feedback " + (score >= PASS_SCORE ? "success" : "warning");
+    feedback.textContent = score >= PASS_SCORE
+      ? "Нәтиже бекітілді. Енді жауаптарын көріп, бақылауды аяқтай аласың."
+      : "Нәтиже бекітілді. 70% жинау үшін бақылауды қайта тапсырып көр.";
+  }
+
+  if(score >= PASS_SCORE) completeSection("work");
+
+  renderAnswers(true);
+  renderControlResult();
+  updateGateButtons();
+  updateProgressUI();
+}
+
+function resetAnswers(){
+  if(isControlChecked()){
+    restartControlAttempt();
+    return;
+  }
+
+  studentAnswers = {};
+  localStorage.removeItem(ANSWERS_KEY);
+  localStorage.removeItem(SCORE_KEY);
+  localStorage.removeItem(CONTROL_STARS_KEY);
+  localStorage.removeItem(CONTROL_XP_KEY);
+  localStorage.removeItem(CONTROL_CHECKED_KEY);
+
+  const scoreBox = document.getElementById("answerScore");
+  if(scoreBox) scoreBox.textContent = "0 / " + TOTAL;
+
+  const feedback = document.getElementById("answerFeedback");
+  if(feedback){
+    feedback.className = "answer-feedback";
+    feedback.textContent = "";
+  }
+
+  renderAnswers(false);
+  renderControlResult();
+  updateGateButtons();
+  updateProgressUI();
+}
+
+function restartControlAttempt(){
+  if(localStorage.getItem(CONTROL_SEEN_ANSWER_KEY) === "1"){
+    alert("Жауаптарын көргеннен кейін қайта тапсыру жабық. Қажет болса мұғалім режимінде тазалауға болады.");
+    return;
+  }
+
+  const ok = confirm("Бақылауды қайта тапсырасың ба? Қазіргі жауаптарың өшеді, жауаптар қайтадан жасырылып тұрады.");
+  if(!ok) return;
+
+  studentAnswers = {};
+  localStorage.removeItem(ANSWERS_KEY);
+  localStorage.removeItem(SCORE_KEY);
+  localStorage.removeItem(CONTROL_STARS_KEY);
+  localStorage.removeItem(CONTROL_XP_KEY);
+  localStorage.removeItem(CONTROL_CHECKED_KEY);
+
+  const progress = getControlProgress();
+  progress.completedSections = progress.completedSections.filter(x => x !== "work" && x !== "answer");
+  saveControlProgress(progress);
+
+  const scoreBox = document.getElementById("answerScore");
+  if(scoreBox) scoreBox.textContent = "0 / " + TOTAL;
+
+  const feedback = document.getElementById("answerFeedback");
+  if(feedback){
+    feedback.className = "answer-feedback";
+    feedback.textContent = "";
+  }
+
+  showTab("work");
+  buildAnswerGrid();
+  renderAnswers(false);
+  renderControlResult();
+  updateProgressUI();
+  updateGateButtons();
+}
+
+function hasPassed(){
+  return Number(localStorage.getItem(SCORE_KEY) || 0) >= PASS_SCORE;
+}
+
+const __controlShowTab = showTab;
+showTab = function(id){
+  if(id === "answer" && !hasPassed()){
+    goAnswerIfPassed();
+    return;
+  }
+  __controlShowTab(id);
+  if(id === "answer"){
+    localStorage.setItem(CONTROL_SEEN_ANSWER_KEY, "1");
+  }
+  updateGateButtons();
+};
+
+function goAnswerIfPassed(){
+  const score = Number(localStorage.getItem(SCORE_KEY) || 0);
+  const percent = Math.round((score / TOTAL) * 100);
+
+  if(!hasPassed()){
+    const feedback = document.getElementById("answerFeedback");
+    if(feedback){
+      feedback.className = "answer-feedback error";
+      feedback.textContent = "Жауаптарды көру үшін кемінде 70% жинау керек. Қазіргі нәтиже: " + percent + "%";
+    } else {
+      alert("Жауаптарды көру үшін алдымен кемінде 70% жина.");
+    }
+    __controlShowTab("work");
+    return;
+  }
+
+  completeSection("work");
+  showTab("answer");
+}
+
+function updateGateButtons(){
+  const passed = hasPassed();
+  const checked = isControlChecked();
+  const answerSeen = localStorage.getItem(CONTROL_SEEN_ANSWER_KEY) === "1";
+
+  document.querySelectorAll(".finish-locked, .locked-btn").forEach(btn => {
+    btn.classList.toggle("unlocked", passed);
+    btn.disabled = !passed;
+    btn.title = passed ? "Ашық" : "Алдымен бақылаудан кемінде 70% жина";
+  });
+
+  const checkBtn = document.getElementById("checkControlBtn") || document.querySelector(".check-answers-btn");
+  const resetBtn = document.getElementById("resetControlBtn") || document.querySelector(".reset-answers-btn");
+  const restartBtn = document.getElementById("restartControlBtn");
+
+  if(checkBtn) checkBtn.style.display = checked ? "none" : "inline-flex";
+  if(resetBtn) resetBtn.style.display = checked ? "none" : "inline-flex";
+  if(restartBtn) restartBtn.style.display = checked && !answerSeen ? "inline-flex" : "none";
+}
+
+function finishControlIfPassed(){
+  if(!hasPassed()){
+    alert("Бақылауды аяқтау үшін алдымен кемінде 70% жина.");
+    showTab("work");
+    return;
+  }
+
+  completeSection("answer");
+
+  let user = JSON.parse(localStorage.getItem("physxUser") || "{}");
+  if(!user.studyLevel) user.studyLevel = "beginner";
+  if(!user.progress) user.progress = { points:0, lessonsCompleted:[] };
+  if(!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+
+  if(!user.progress.lessonsCompleted.includes(controlId)){
+    user.progress.lessonsCompleted.push(controlId);
+    user.progress.points = Number(user.progress.points || 0) + 15;
+    alert("Бақылау жұмысы аяқталды! +15 XP");
+  } else {
+    alert("Бұл бақылау жұмысы бұрын аяқталған.");
+  }
+
+  localStorage.setItem("physxUser", JSON.stringify(user));
+  window.location.href = "../../levels_map.html";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  const headerBadge = document.querySelector(".lesson-header-center b");
+  if(headerBadge) headerBadge.textContent = "Бақылау №3";
+
+  const checkBtn = document.querySelector(".check-answers-btn");
+  if(checkBtn && !checkBtn.id) checkBtn.id = "checkControlBtn";
+  const resetBtn = document.querySelector(".reset-answers-btn");
+  if(resetBtn && !resetBtn.id) resetBtn.id = "resetControlBtn";
+
+  if(resetBtn && !document.getElementById("restartControlBtn")){
+    const restart = document.createElement("button");
+    restart.id = "restartControlBtn";
+    restart.type = "button";
+    restart.className = "control-restart-btn";
+    restart.style.display = "none";
+    restart.innerHTML = 'Бақылауды қайта тапсыру <i class="fa-solid fa-rotate-right"></i>';
+    restart.onclick = restartControlAttempt;
+    resetBtn.parentNode.appendChild(restart);
+  }
+
+  buildAnswerGrid();
+  renderAnswers(isControlChecked());
+  renderControlResult();
+  updateGateButtons();
+  updateProgressUI();
+  updateTimerDisplay?.();
+});
+
+</script>
+
+
+<script id="lesson-teacher-mode-script">
+  document.addEventListener("DOMContentLoaded", function () {
+    const user = JSON.parse(localStorage.getItem("physxUser") || "{}");
+    const isTeacher =
+      localStorage.getItem("physxUserRole") === "teacher" ||
+      localStorage.getItem("physxRole") === "teacher" ||
+      user.role === "teacher";
+
+    if (isTeacher) {
+      document.body.classList.add("teacher-mode");
+    }
+
+    document.body.classList.remove("is-fullscreen-mode");
+  });
+
+  function toggleFullscreen(){
+    return false;
+  }
+</script>
+
+</body>
+</html>
