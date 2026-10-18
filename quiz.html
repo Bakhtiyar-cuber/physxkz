@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PhysX | Quiz Ultra</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#1ea7ff;
+      --dark:#061b55;
+      --text:#102544;
+      --muted:#64748b;
+      --line:#d7e5f7;
+      --green:#12b76a;
+      --orange:#f59e0b;
+      --red:#ef4444;
+      --purple:#7c3aed;
+      --font:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 54%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    button,input,select,a,span,div,p,h1,h2,h3,b,strong{
+      font-family:var(--font);
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    .header{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border-bottom:1px solid #cfe0f4;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 4px 22px rgba(15,23,42,.045);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.045em;
+    }
+
+    .logo i{
+      font-size:22px;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:24px;
+    }
+
+    .nav-link{
+      color:#0b2f77;
+      font-weight:850;
+      font-size:14px;
+      padding:20px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link:hover,
+    .nav-link.active{
+      color:#145cff;
+    }
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:6px;
+      height:3px;
+      border-radius:999px;
+      background:#145cff;
+    }
+
+    .nav-dropdown{
+      position:relative;
+    }
+
+    .dropdown-menu{
+      position:absolute;
+      top:48px;
+      left:0;
+      min-width:230px;
+      background:rgba(255,255,255,.96);
+      border:1px solid #d7e5f7;
+      border-radius:18px;
+      box-shadow:0 18px 44px rgba(13,71,161,.10);
+      padding:10px;
+      display:none;
+      z-index:3000;
+      backdrop-filter:blur(12px);
+    }
+
+    .nav-dropdown:hover .dropdown-menu{
+      display:block;
+    }
+
+    .dropdown-menu a{
+      display:block;
+      padding:11px 12px;
+      border-radius:12px;
+      color:#071837;
+      font-weight:850;
+      font-size:14px;
+    }
+
+    .dropdown-menu a:hover{
+      background:#eef6ff;
+      color:#145cff;
+    }
+
+    .login-link{
+      background:transparent!important;
+      color:#0b2f77!important;
+      padding:20px 0!important;
+      border-radius:0!important;
+      box-shadow:none!important;
+    }
+
+    .login-link::after{
+      display:none!important;
+    }
+
+    .quiz-page{
+      width:min(100% - 34px,1200px);
+      margin:0 auto;
+      padding:22px 0 50px;
+    }
+
+    .quiz-hero{
+      min-height:360px;
+      border-radius:30px;
+      padding:46px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 340px;
+      gap:28px;
+      align-items:center;
+      overflow:hidden;
+      position:relative;
+      isolation:isolate;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.70) 45%,rgba(255,255,255,.22) 100%),
+        url("image/practice/game-bg.png") center right/cover no-repeat;
+      border:1px solid rgba(191,219,254,.78);
+      box-shadow:0 22px 54px rgba(13,71,161,.12);
+      margin-bottom:18px;
+    }
+
+    .quiz-hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      background:
+        radial-gradient(circle at 14% 12%,rgba(20,92,255,.12),transparent 24%),
+        radial-gradient(circle at 82% 18%,rgba(255,255,255,.30),transparent 26%);
+    }
+
+    .hero-text{
+      max-width:760px;
+    }
+
+    .quiz-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(20,92,255,.12);
+      border:1px solid rgba(20,92,255,.18);
+      color:#145cff;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:18px;
+    }
+
+    .quiz-hero h1{
+      color:#061b55;
+      font-size:48px;
+      line-height:1.05;
+      letter-spacing:-.075em;
+      font-weight:900;
+      margin-bottom:16px;
+      text-shadow:0 2px 8px rgba(255,255,255,.72);
+    }
+
+    .quiz-hero p{
+      color:#26364f;
+      font-size:16px;
+      line-height:1.72;
+      font-weight:800;
+      max-width:720px;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .hero-score{
+      min-height:230px;
+      border-radius:30px;
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+
+    .hero-score h2{
+      color:#061b55;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.04em;
+      margin-bottom:14px;
+    }
+
+    .score-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .score-mini{
+      padding:12px;
+      border-radius:18px;
+      background:rgba(20,92,255,.08);
+      border:1px solid rgba(20,92,255,.14);
+      text-align:center;
+    }
+
+    .score-mini strong{
+      display:block;
+      color:#061b55;
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .score-mini span{
+      display:block;
+      margin-top:5px;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .hero-tip{
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(220,235,255,.92);
+      color:#43526a;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .quiz-rules{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .quiz-rules div{
+      min-height:140px;
+      padding:20px;
+      border-radius:24px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.66)),
+        url("image/profile/profile-soft-bg.png") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.86);
+      box-shadow:0 14px 34px rgba(13,71,161,.08);
+      backdrop-filter:blur(12px);
+    }
+
+    .quiz-rules i{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-size:18px;
+      margin-bottom:14px;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+    }
+
+    .quiz-rules div:nth-child(2) i{
+      background:linear-gradient(135deg,#ef4444,#fb7185);
+    }
+
+    .quiz-rules div:nth-child(3) i{
+      background:linear-gradient(135deg,#f59e0b,#facc15);
+    }
+
+    .quiz-rules div:nth-child(4) i{
+      background:linear-gradient(135deg,#7c3aed,#145cff);
+    }
+
+    .quiz-rules h3{
+      color:#061b55;
+      font-size:17px;
+      font-weight:900;
+      margin-bottom:7px;
+      letter-spacing:-.025em;
+    }
+
+    .quiz-rules p{
+      color:#475569;
+      font-size:13px;
+      line-height:1.5;
+      font-weight:780;
+    }
+
+
+    .back-to-games{
+      min-height:42px;
+      padding:0 15px;
+      border-radius:15px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      background:rgba(255,255,255,.86);
+      color:#145cff;
+      border:1px solid rgba(20,92,255,.18);
+      font-size:12px;
+      font-weight:900;
+      box-shadow:0 10px 22px rgba(13,71,161,.07);
+      transition:.2s ease;
+      white-space:nowrap;
+    }
+
+    .back-to-games:hover{
+      transform:translateY(-1px);
+      background:#145cff;
+      color:#fff;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+    }
+
+    .quiz-nav-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .quiz-container{
+      border-radius:30px;
+      padding:26px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.66)),
+        url("image/profile/profile-panel-bg.png") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      backdrop-filter:blur(14px) saturate(1.12);
+      margin-bottom:18px;
+    }
+
+    .quiz-top{
+      display:grid;
+      grid-template-columns:170px 170px repeat(4,90px) 100px;
+      gap:10px;
+      align-items:end;
+      margin-bottom:18px;
+    }
+
+    .quiz-select-group label{
+      display:block;
+      color:#0b2f77;
+      font-size:11px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .quiz-select-group select{
+      width:100%;
+      height:46px;
+      border-radius:16px;
+      border:1px solid #cfe0f4;
+      background:rgba(255,255,255,.86);
+      color:#061b55;
+      font-size:13px;
+      font-weight:900;
+      padding:0 12px;
+      outline:none;
+    }
+
+    .quiz-stat{
+      height:46px;
+      border-radius:16px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(220,235,255,.95);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      box-shadow:0 10px 22px rgba(13,71,161,.05);
+      color:#061b55;
+      font-weight:900;
+    }
+
+    .quiz-stat span{
+      font-size:16px;
+    }
+
+    .quiz-stat b{
+      font-size:15px;
+    }
+
+    .quiz-actions{
+      display:flex;
+      gap:8px;
+    }
+
+    .quiz-actions button{
+      width:46px;
+      height:46px;
+      border:0;
+      border-radius:16px;
+      background:#145cff;
+      color:#fff;
+      cursor:pointer;
+      font-size:15px;
+      box-shadow:0 12px 24px rgba(20,92,255,.18);
+    }
+
+    .quiz-progress{
+      height:10px;
+      border-radius:999px;
+      background:#dbe7f5;
+      overflow:hidden;
+      margin-bottom:18px;
+    }
+
+    .quiz-progress div{
+      height:100%;
+      width:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#145cff,#12b76a);
+      transition:.25s ease;
+    }
+
+    .question-card{
+      border-radius:26px;
+      padding:24px;
+      background:rgba(20,92,255,.07);
+      border:1px solid rgba(20,92,255,.14);
+      margin-bottom:16px;
+    }
+
+    .question-label{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      min-height:30px;
+      padding:0 11px;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#145cff;
+      font-size:11px;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+
+    .question-card h2{
+      color:#061b55;
+      font-size:24px;
+      line-height:1.35;
+      font-weight:900;
+      letter-spacing:-.035em;
+    }
+
+    .answers-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+
+    .answers-grid button{
+      min-height:64px;
+      border-radius:20px;
+      border:1px solid rgba(220,235,255,.95);
+      background:rgba(255,255,255,.84);
+      color:#061b55;
+      cursor:pointer;
+      padding:14px 16px;
+      text-align:left;
+      font-size:15px;
+      line-height:1.35;
+      font-weight:850;
+      transition:.18s ease;
+    }
+
+    .answers-grid button:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 24px rgba(13,71,161,.08);
+      border-color:rgba(20,92,255,.26);
+    }
+
+    .answers-grid button.correct,
+    .answer.correct{
+      background:#ecfdf5!important;
+      border-color:#86efac!important;
+      color:#065f46!important;
+    }
+
+    .answers-grid button.wrong,
+    .answer.wrong{
+      background:#fff1f2!important;
+      border-color:#fecdd3!important;
+      color:#9f1239!important;
+    }
+
+    #feedback{
+      display:none;
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(220,235,255,.95);
+      color:#43526a;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    #feedback:not(:empty){
+      display:block;
+    }
+
+    .quiz-bottom-info{
+      display:grid;
+      grid-template-columns:60px minmax(0,1fr);
+      gap:16px;
+      align-items:center;
+      border-radius:28px;
+      padding:22px;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.80),rgba(255,255,255,.55)),
+        url("image/practice/rule-bg.png") center right/cover no-repeat;
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+    }
+
+    .quiz-bottom-info > div:first-child{
+      width:60px;
+      height:60px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#f59e0b,#facc15);
+      color:#fff;
+      font-size:24px;
+      box-shadow:0 14px 28px rgba(245,158,11,.20);
+    }
+
+    .quiz-bottom-info h2{
+      color:#061b55;
+      font-size:23px;
+      font-weight:900;
+      margin-bottom:7px;
+      letter-spacing:-.035em;
+    }
+
+    .quiz-bottom-info p{
+      color:#43526a;
+      font-size:14px;
+      line-height:1.6;
+      font-weight:800;
+      max-width:760px;
+    }
+
+    @media(max-width:1100px){
+      .quiz-hero{
+        grid-template-columns:1fr;
+      }
+
+      .hero-score{
+        max-width:420px;
+      }
+
+      .quiz-rules{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .quiz-top{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .quiz-actions{
+        grid-column:1 / -1;
+      }
+    }
+
+    @media(max-width:760px){
+      .header{
+        padding:0 14px;
+      }
+
+      .logo{
+        font-size:24px;
+      }
+
+      .nav{
+        gap:14px;
+        overflow-x:auto;
+      }
+
+      .nav-link{
+        font-size:13px;
+      }
+
+      .quiz-page{
+        width:min(100% - 22px,1200px);
+      }
+
+      .quiz-hero{
+        padding:26px 20px;
+        border-radius:26px;
+      }
+
+      .quiz-hero h1{
+        font-size:36px;
+      }
+
+      .quiz-rules,
+      .answers-grid,
+      .quiz-top{
+        grid-template-columns:1fr;
+      }
+
+      .quiz-container{
+        padding:20px;
+        border-radius:26px;
+      }
+
+      .quiz-bottom-info{
+        grid-template-columns:1fr;
+      }
+    }
+  
+    /* NAV FINAL — басқа беттермен бірдей */
+    .header{
+      height:58px !important;
+      padding:0 30px !important;
+    }
+
+    .nav{
+      display:flex !important;
+      align-items:center !important;
+      justify-content:flex-end !important;
+      gap:24px !important;
+      margin-left:auto !important;
+    }
+
+    .nav-link{
+      color:#0b2f77 !important;
+      font-weight:850 !important;
+      font-size:14px !important;
+      padding:20px 0 !important;
+      position:relative !important;
+      white-space:nowrap !important;
+      background:transparent !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+    }
+
+    .nav-link.active{
+      color:#145cff !important;
+    }
+
+    .nav-link.active::after{
+      content:"" !important;
+      position:absolute !important;
+      left:0 !important;
+      right:0 !important;
+      bottom:6px !important;
+      height:3px !important;
+      border-radius:999px !important;
+      background:#145cff !important;
+      display:block !important;
+    }
+
+    .profile-link{
+      background:transparent !important;
+      color:#0b2f77 !important;
+      padding:20px 0 !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      display:inline-flex !important;
+      align-items:center !important;
+      gap:6px !important;
+    }
+
+    .profile-link::after{
+      display:none !important;
+    }
+
+    .nav-dropdown,
+    .dropdown-menu{
+      display:none !important;
+    }
+
+    @media(max-width:900px){
+      .header{
+        padding:0 14px !important;
+      }
+
+      .nav{
+        gap:14px !important;
+        overflow-x:auto !important;
+      }
+
+      .nav-link{
+        font-size:13px !important;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link active">Практика</a>
+    <a href="achievement.html" class="nav-link">Жетістіктер</a>
+    <a href="guide.html" class="nav-link">Нұсқаулық</a>
+    <a href="about.html" class="nav-link">Біз туралы</a>
+    <a href="profile.html" class="nav-link profile-link">
+      <i class="fa-solid fa-user"></i> Профиль
+    </a>
+  </nav>
+</header>
+
+<main class="quiz-page">
+
+  <section class="quiz-hero">
+    <div class="hero-text">
+      <span class="quiz-badge">
+        <i class="fa-solid fa-gamepad"></i>
+        PhysX Quiz Ultra
+      </span>
+
+      <h1>Механика бөлімі бойынша интерактивті тест</h1>
+
+      <p>
+        Деңгей таңда, сұрақ санын белгіле және механика бойынша біліміңді тексер.
+        Дұрыс жауап берсең — ұпай, combo және XP жинайсың.
+      </p>
+    </div>
+
+    <div class="hero-score">
+      <h2>Quiz нәтижесі</h2>
+      <div class="score-grid">
+        <div class="score-mini">
+          <strong id="heroScore">0</strong>
+          <span>Ұпай</span>
+        </div>
+        <div class="score-mini">
+          <strong id="heroCombo">x0</strong>
+          <span>Combo</span>
+        </div>
+        <div class="score-mini">
+          <strong id="heroLives">5</strong>
+          <span>Мүмкіндік</span>
+        </div>
+      </div>
+      <div class="hero-tip">
+        Кеңес: алдымен EASY деңгейінен баста. Кейін MEDIUM және HARD деңгейге өт.
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-rules">
+    <div>
+      <i class="fa-solid fa-layer-group"></i>
+      <h3>3 деңгей</h3>
+      <p>Easy, Medium, Hard</p>
+    </div>
+
+    <div>
+      <i class="fa-solid fa-heart"></i>
+      <h3>5 мүмкіндік</h3>
+      <p>Қате жауап берсең, мүмкіндіктер азаяды</p>
+    </div>
+
+    <div>
+      <i class="fa-solid fa-fire"></i>
+      <h3>Combo жүйесі</h3>
+      <p>Қатарынан дұрыс жауап берсең, көбейткіш өседі</p>
+    </div>
+
+    <div>
+      <i class="fa-solid fa-clock"></i>
+      <h3>Уақыт</h3>
+      <p>Әр сұраққа шектеулі уақыт</p>
+    </div>
+  </section>
+
+  <section class="quiz-container">
+
+    <div class="quiz-nav-row">
+      <a href="practice-games.html" class="back-to-games">
+        <i class="fa-solid fa-arrow-left"></i>
+        Ойындарға қайту
+      </a>
+
+      <a href="practice.html" class="back-to-games">
+        <i class="fa-solid fa-grip"></i>
+        Практика бөлімі
+      </a>
+    </div>
+
+    <div class="quiz-top">
+
+      <div class="quiz-select-group">
+        <label for="difficultySelect">Деңгей</label>
+        <select id="difficultySelect">
+          <option value="easy">EASY</option>
+          <option value="medium">MEDIUM</option>
+          <option value="hard">HARD</option>
+        </select>
+      </div>
+
+      <div class="quiz-select-group">
+        <label for="questionCountSelect">Сұрақ саны</label>
+        <select id="questionCountSelect">
+          <option value="10">10 сұрақ</option>
+          <option value="20">20 сұрақ</option>
+          <option value="30">30 сұрақ</option>
+          <option value="50">50 сұрақ</option>
+        </select>
+      </div>
+
+      <div class="quiz-stat">
+        <span>⭐</span>
+        <b id="scoreText">0</b>
+      </div>
+
+      <div class="quiz-stat">
+        <span>🔥</span>
+        <b id="comboText">x0</b>
+      </div>
+
+      <div class="quiz-stat">
+        <span>❤️</span>
+        <b id="lives">5</b>
+      </div>
+
+      <div class="quiz-stat">
+        <span>⏱</span>
+        <b id="timer">15</b>
+      </div>
+
+      <div class="quiz-actions">
+        <button type="button" onclick="pauseGame()" title="Пауза">
+          <i class="fa-solid fa-pause"></i>
+        </button>
+
+        <button type="button" onclick="restartGame()" title="Қайта бастау">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="quiz-progress">
+      <div id="quizProgress"></div>
+    </div>
+
+    <div class="question-card">
+      <span class="question-label">
+        <i class="fa-solid fa-circle-question"></i>
+        Сұрақ
+      </span>
+
+      <h2 id="question">Ойынды бастау үшін деңгейді таңдаңыз</h2>
+    </div>
+
+    <div id="answers" class="answers-grid"></div>
+
+    <div id="feedback"></div>
+
+  </section>
+
+  <section class="quiz-bottom-info">
+    <div>
+      <i class="fa-solid fa-lightbulb"></i>
+    </div>
+
+    <div>
+      <h2>Ұсыныс</h2>
+      <p>
+        Алдымен EASY деңгейінен бастап көр. Кейін MEDIUM және HARD деңгейге өтіп,
+        күрделі есептер мен логикалық сұрақтарды орында.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  function syncHeroQuizStats(){
+    const score = document.getElementById("scoreText")?.textContent || "0";
+    const combo = document.getElementById("comboText")?.textContent || "x0";
+    const lives = document.getElementById("lives")?.textContent || "5";
+
+    const heroScore = document.getElementById("heroScore");
+    const heroCombo = document.getElementById("heroCombo");
+    const heroLives = document.getElementById("heroLives");
+
+    if(heroScore) heroScore.textContent = score;
+    if(heroCombo) heroCombo.textContent = combo;
+    if(heroLives) heroLives.textContent = lives;
+  }
+
+  setInterval(syncHeroQuizStats, 500);
+</script>
+
+<script src="js/questions-easy.js"></script>
+<script src="js/questions-medium.js"></script>
+<script src="js/questions-hard.js"></script>
+<script src="js/quiz.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PhysX | Есеп тренажері</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#115cff;
+      --blue2:#0ea5ff;
+      --dark:#061650;
+      --text:#334466;
+      --border:#d8e8ff;
+      --green:#10b981;
+      --orange:#ff8a00;
+      --purple:#7c3aed;
+      --red:#ef4444;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      color:var(--dark);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 56%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input{font-family:inherit}
+
+    .navbar{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid #d6e6fb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 18px rgba(15,23,42,.04);
+      backdrop-filter:blur(14px);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:27px;
+      font-weight:900;
+      letter-spacing:-.6px;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:26px;
+      font-weight:850;
+      color:var(--dark);
+      font-size:14px;
+    }
+
+    .nav-links a{
+      position:relative;
+      padding:22px 0;
+      opacity:.92;
+      transition:.25s ease;
+      white-space:nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--blue);
+      opacity:1;
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:8px;
+      height:3px;
+      border-radius:999px;
+      background:var(--blue);
+      box-shadow:0 4px 10px rgba(17,92,255,.35);
+    }
+
+    .page{
+      width:min(100% - 34px,1280px);
+      margin:0 auto;
+      padding:18px 0 44px;
+    }
+
+    .hero{
+      min-height:320px;
+      border-radius:30px;
+      overflow:hidden;
+      padding:38px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 360px;
+      gap:26px;
+      align-items:center;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.90) 0%,rgba(255,255,255,.72) 44%,rgba(255,255,255,.18) 100%),
+        url("image/practice/problem-bg.png") center right/cover no-repeat;
+      border:1px solid rgba(191,219,254,.78);
+      box-shadow:0 22px 54px rgba(13,71,161,.12);
+      margin-bottom:18px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(245,158,11,.12);
+      border:1px solid rgba(245,158,11,.25);
+      color:#b45309;
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      color:#061650;
+      font-size:48px;
+      line-height:1.05;
+      letter-spacing:-.075em;
+      font-weight:900;
+      margin-bottom:16px;
+      max-width:760px;
+      text-shadow:0 2px 8px rgba(255,255,255,.72);
+    }
+
+    .hero p{
+      color:#26364f;
+      max-width:690px;
+      font-size:16px;
+      line-height:1.7;
+      font-weight:800;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .score-card{
+      min-height:220px;
+      border-radius:28px;
+      padding:24px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px);
+    }
+
+    .score-card h2{
+      color:#061650;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.04em;
+      margin-bottom:14px;
+    }
+
+    .score-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .score-mini{
+      padding:12px;
+      border-radius:18px;
+      background:rgba(17,92,255,.08);
+      border:1px solid rgba(17,92,255,.14);
+      text-align:center;
+    }
+
+    .score-mini strong{
+      display:block;
+      color:#061650;
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .score-mini span{
+      display:block;
+      margin-top:5px;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .tip{
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(216,232,255,.95);
+      color:#43526a;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:310px minmax(0,1fr);
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.66)),
+        url("image/profile/profile-panel-bg.png") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.88);
+      border-radius:28px;
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      backdrop-filter:blur(14px);
+      padding:22px;
+    }
+
+    .panel h2{
+      font-size:23px;
+      color:#061650;
+      margin-bottom:14px;
+      letter-spacing:-.04em;
+    }
+
+    .level-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .level-btn{
+      min-height:74px;
+      width:100%;
+      border:1px solid rgba(216,232,255,.95);
+      border-radius:20px;
+      background:rgba(255,255,255,.78);
+      display:grid;
+      grid-template-columns:48px minmax(0,1fr);
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      cursor:pointer;
+      text-align:left;
+      transition:.22s ease;
+    }
+
+    .level-btn:hover,
+    .level-btn.active{
+      transform:translateY(-1px);
+      border-color:rgba(17,92,255,.35);
+      box-shadow:0 12px 26px rgba(17,92,255,.10);
+    }
+
+    .level-btn i{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#115cff,#0ea5ff);
+      color:#fff;
+      font-size:19px;
+    }
+
+    .level-btn:nth-child(2) i{background:linear-gradient(135deg,#10b981,#0ea5ff)}
+    .level-btn:nth-child(3) i{background:linear-gradient(135deg,#7c3aed,#115cff)}
+
+    .level-btn b{
+      display:block;
+      color:#061650;
+      font-size:14px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .level-btn span{
+      color:#64748b;
+      font-size:11.5px;
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .trainer{
+      display:grid;
+      gap:16px;
+    }
+
+    .problem-card{
+      border-radius:28px;
+      padding:24px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.90);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+    }
+
+    .problem-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .problem-title h2{
+      color:#061650;
+      font-size:27px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:-.05em;
+      margin-bottom:6px;
+    }
+
+    .problem-title p{
+      color:#526383;
+      font-size:13.5px;
+      line-height:1.5;
+      font-weight:800;
+      max-width:720px;
+    }
+
+    .pill{
+      min-height:36px;
+      padding:0 13px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#c2410c;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .problem-text{
+      padding:20px;
+      border-radius:22px;
+      background:rgba(17,92,255,.07);
+      border:1px solid rgba(17,92,255,.14);
+      color:#061650;
+      font-size:19px;
+      line-height:1.52;
+      font-weight:900;
+      margin-bottom:16px;
+    }
+
+    .given-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .given{
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(216,232,255,.95);
+      text-align:center;
+    }
+
+    .given b{
+      display:block;
+      color:#061650;
+      font-size:20px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .given span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+      margin-top:6px;
+    }
+
+    .answer-box{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 150px 140px;
+      gap:10px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+
+    .answer-box input{
+      min-height:48px;
+      padding:0 14px;
+      border-radius:16px;
+      border:1px solid #cfe0f4;
+      background:#fff;
+      color:#061650;
+      font-size:15px;
+      font-weight:850;
+      outline:none;
+    }
+
+    .answer-box input:focus{
+      border-color:#115cff;
+      box-shadow:0 0 0 4px rgba(17,92,255,.08);
+    }
+
+    .btn{
+      min-height:48px;
+      border:0;
+      border-radius:16px;
+      padding:0 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      color:#fff;
+      background:#115cff;
+      font-size:12px;
+      font-weight:950;
+      box-shadow:0 12px 24px rgba(17,92,255,.20);
+    }
+
+    .btn.green{background:#10b981}
+    .btn.orange{background:#f59e0b}
+    .btn.light{
+      background:rgba(255,255,255,.85);
+      color:#115cff;
+      border:1px solid rgba(17,92,255,.18);
+      box-shadow:0 10px 20px rgba(13,71,161,.06);
+    }
+
+    .feedback{
+      display:none;
+      margin-top:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      font-size:13.5px;
+      line-height:1.55;
+      font-weight:800;
+      border:1px solid rgba(216,232,255,.95);
+      background:rgba(255,255,255,.78);
+      color:#43526a;
+    }
+
+    .feedback.show{display:block}
+    .feedback.ok{background:#ecfdf5;border-color:#bbf7d0;color:#065f46}
+    .feedback.bad{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+
+    .solution{
+      display:none;
+      margin-top:14px;
+      border-radius:22px;
+      padding:18px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(216,232,255,.95);
+    }
+
+    .solution.show{display:block}
+
+    .solution h3{
+      color:#061650;
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .solution ol{
+      padding-left:20px;
+      color:#43526a;
+      font-size:14px;
+      line-height:1.7;
+      font-weight:800;
+    }
+
+    .side-info{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .info-card{
+      padding:18px;
+      border-radius:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.90);
+      box-shadow:0 14px 32px rgba(13,71,161,.08);
+    }
+
+    .info-card h3{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      color:#061650;
+      font-size:17px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .info-card h3 i{color:#115cff}
+
+    .info-card p{
+      color:#526383;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .progress-line{
+      height:9px;
+      border-radius:999px;
+      background:#dbe7f5;
+      overflow:hidden;
+      margin-top:12px;
+    }
+
+    .progress-line div{
+      height:100%;
+      width:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#115cff,#10b981);
+      transition:.25s ease;
+    }
+
+    @media(max-width:1050px){
+      .hero,.layout{grid-template-columns:1fr}
+      .score-card{max-width:420px}
+      .given-grid,.side-info{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media(max-width:760px){
+      .navbar{padding:0 14px}
+      .logo{font-size:24px}
+      .nav-links{gap:14px;overflow-x:auto}
+      .nav-links a{font-size:13px}
+      .page{width:min(100% - 22px,1280px)}
+      .hero{padding:24px 20px;border-radius:24px}
+      .hero h1{font-size:36px}
+      .problem-head{flex-direction:column}
+      .given-grid,.side-info,.answer-box{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav-links">
+    <a href="index.html">Басты бет</a>
+    <a href="levels_map.html">Оқу картасы</a>
+    <a href="personal_plan.html">Жеке жоспар</a>
+    <a href="practice.html" class="active">Практика</a>
+    <a href="achievement.html">Жетістіктер</a>
+    <a href="guide.html">Нұсқаулық</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Профиль</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div>
+      <div class="badge">
+        <i class="fa-solid fa-calculator"></i>
+        Есеп тренажері
+      </div>
+
+      <h1>Есепті қадаммен шығар</h1>
+
+      <p>
+        Бұл тренажер механика есептерін жүйелі шығаруға үйретеді: берілгенін анықтау,
+        формуланы таңдау, мәндерді қою және жауапты тексеру.
+      </p>
+    </div>
+
+    <div class="score-card">
+      <h2>Тренажер нәтижесі</h2>
+      <div class="score-grid">
+        <div class="score-mini">
+          <strong id="solvedCount">0</strong>
+          <span>Есеп</span>
+        </div>
+        <div class="score-mini">
+          <strong id="correctCount">0</strong>
+          <span>Дұрыс</span>
+        </div>
+        <div class="score-mini">
+          <strong id="xpCount">0</strong>
+          <span>XP</span>
+        </div>
+      </div>
+      <div class="tip">
+        Кеңес: жауапты тек санмен енгіз. Мысалы, 40 м болса, жауап өрісіне тек 40 деп жаз.
+      </div>
+    </div>
+  </section>
+
+  <section class="layout">
+    <aside class="panel">
+      <h2>Деңгей таңда</h2>
+
+      <div class="level-list">
+        <button class="level-btn active" onclick="setLevel('a', this)">
+          <i class="fa-solid fa-seedling"></i>
+          <div>
+            <b>A деңгей</b>
+            <span>Жеңіл есептер, бір формула</span>
+          </div>
+        </button>
+
+        <button class="level-btn" onclick="setLevel('b', this)">
+          <i class="fa-solid fa-person-running"></i>
+          <div>
+            <b>B деңгей</b>
+            <span>Орташа есептер, 2 қадам</span>
+          </div>
+        </button>
+
+        <button class="level-btn" onclick="setLevel('c', this)">
+          <i class="fa-solid fa-rocket"></i>
+          <div>
+            <b>C деңгей</b>
+            <span>Жоғары деңгей, талдау</span>
+          </div>
+        </button>
+      </div>
+    </aside>
+
+    <section class="trainer">
+      <div class="problem-card">
+        <div class="problem-head">
+          <div class="problem-title">
+            <h2 id="problemLevel">A деңгей есебі</h2>
+            <p id="problemTopic">Тақырып: Бірқалыпты қозғалыс</p>
+          </div>
+          <span class="pill" id="problemNumber"><i class="fa-solid fa-list-ol"></i> 1/5</span>
+        </div>
+
+        <div class="problem-text" id="problemText">
+          Дене 5 м/с жылдамдықпен 8 секунд қозғалды. Дене қанша жол жүрді?
+        </div>
+
+        <div class="given-grid" id="givenGrid"></div>
+
+        <div class="answer-box">
+          <input type="number" id="answerInput" placeholder="Жауапты енгіз">
+          <input type="text" id="unitInput" placeholder="Өлшем бірлік" value="м">
+          <button class="btn" onclick="checkAnswer()">
+            <i class="fa-solid fa-check"></i>
+            Тексеру
+          </button>
+        </div>
+
+        <div class="actions">
+          <button class="btn light" onclick="showSolution()">
+            <i class="fa-solid fa-eye"></i>
+            Шешімін көру
+          </button>
+
+          <button class="btn orange" onclick="nextProblem()">
+            <i class="fa-solid fa-forward"></i>
+            Келесі есеп
+          </button>
+
+          <a href="practice.html" class="btn light">
+            <i class="fa-solid fa-arrow-left"></i>
+            Практикаға қайту
+          </a>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="solution" id="solutionBox">
+          <h3>Шығарылу жолы</h3>
+          <ol id="solutionSteps"></ol>
+        </div>
+      </div>
+
+      <div class="side-info">
+        <div class="info-card">
+          <h3><i class="fa-solid fa-bullseye"></i> Мақсат</h3>
+          <p id="goalText">Формуланы дұрыс таңдап, мәндерді орнына қою.</p>
+        </div>
+
+        <div class="info-card">
+          <h3><i class="fa-solid fa-star"></i> Жұлдыз</h3>
+          <p>5 есептің 3-еуі дұрыс болса — 3★, 4-еуі дұрыс болса — 4★, бәрі дұрыс болса — 5★.</p>
+        </div>
+
+        <div class="info-card">
+          <h3><i class="fa-solid fa-chart-line"></i> Прогресс</h3>
+          <p id="progressText">0/5 есеп орындалды.</p>
+          <div class="progress-line"><div id="progressBar"></div></div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script>
+const sets = {
+  a: [
+    {
+      topic:"Бірқалыпты қозғалыс",
+      text:"Дене 5 м/с жылдамдықпен 8 секунд қозғалды. Дене қанша жол жүрді?",
+      given:[["v","5 м/с"],["t","8 с"],["s","?"],["Формула","s = v·t"]],
+      answer:40,
+      unit:"м",
+      solution:["Берілгені: v = 5 м/с, t = 8 с.", "Формула: s = v · t.", "Есептеу: s = 5 · 8 = 40 м.", "Жауабы: 40 м."]
+    },
+    {
+      topic:"Тығыздық",
+      text:"Массасы 200 г, көлемі 50 см³ дененің тығыздығын тап.",
+      given:[["m","200 г"],["V","50 см³"],["ρ","?"],["Формула","ρ = m/V"]],
+      answer:4,
+      unit:"г/см³",
+      solution:["Берілгені: m = 200 г, V = 50 см³.", "Формула: ρ = m / V.", "Есептеу: ρ = 200 / 50 = 4 г/см³.", "Жауабы: 4 г/см³."]
+    },
+    {
+      topic:"Күш",
+      text:"Массасы 3 кг дене 2 м/с² үдеумен қозғалады. Денеге әсер ететін күшті тап.",
+      given:[["m","3 кг"],["a","2 м/с²"],["F","?"],["Формула","F = ma"]],
+      answer:6,
+      unit:"Н",
+      solution:["Берілгені: m = 3 кг, a = 2 м/с².", "Формула: F = m · a.", "Есептеу: F = 3 · 2 = 6 Н.", "Жауабы: 6 Н."]
+    },
+    {
+      topic:"Қысым",
+      text:"100 Н күш 2 м² ауданға әсер етеді. Қысымды тап.",
+      given:[["F","100 Н"],["S","2 м²"],["p","?"],["Формула","p = F/S"]],
+      answer:50,
+      unit:"Па",
+      solution:["Берілгені: F = 100 Н, S = 2 м².", "Формула: p = F / S.", "Есептеу: p = 100 / 2 = 50 Па.", "Жауабы: 50 Па."]
+    },
+    {
+      topic:"Жұмыс",
+      text:"20 Н күш денені 5 м қашықтыққа жылжытты. Жұмысты тап.",
+      given:[["F","20 Н"],["s","5 м"],["A","?"],["Формула","A = F·s"]],
+      answer:100,
+      unit:"Дж",
+      solution:["Берілгені: F = 20 Н, s = 5 м.", "Формула: A = F · s.", "Есептеу: A = 20 · 5 = 100 Дж.", "Жауабы: 100 Дж."]
+    }
+  ],
+  b: [
+    {
+      topic:"Орташа жылдамдық",
+      text:"Дене 60 м жолды 10 с-та, кейін 40 м жолды 5 с-та жүрді. Орташа жылдамдықты тап.",
+      given:[["s₁","60 м"],["t₁","10 с"],["s₂","40 м"],["t₂","5 с"]],
+      answer:6.67,
+      unit:"м/с",
+      solution:["Жалпы жол: s = 60 + 40 = 100 м.", "Жалпы уақыт: t = 10 + 5 = 15 с.", "Орташа жылдамдық: v = s/t.", "v = 100 / 15 = 6,67 м/с."]
+    },
+    {
+      topic:"Потенциалдық энергия",
+      text:"Массасы 2 кг дене 10 м биіктікке көтерілді. g = 10 Н/кг. Потенциалдық энергияны тап.",
+      given:[["m","2 кг"],["h","10 м"],["g","10 Н/кг"],["E","?"]],
+      answer:200,
+      unit:"Дж",
+      solution:["Формула: E = mgh.", "Мәндерін қоямыз: E = 2 · 10 · 10.", "E = 200 Дж.", "Жауабы: 200 Дж."]
+    },
+    {
+      topic:"Кинетикалық энергия",
+      text:"Массасы 4 кг дене 5 м/с жылдамдықпен қозғалады. Кинетикалық энергияны тап.",
+      given:[["m","4 кг"],["v","5 м/с"],["E","?"],["Формула","E = mv²/2"]],
+      answer:50,
+      unit:"Дж",
+      solution:["Формула: E = mv²/2.", "v² = 25.", "E = 4 · 25 / 2 = 50 Дж.", "Жауабы: 50 Дж."]
+    },
+    {
+      topic:"Қуат",
+      text:"Дене 240 Дж жұмыс жасады. Уақыт 12 с. Қуатты тап.",
+      given:[["A","240 Дж"],["t","12 с"],["N","?"],["Формула","N = A/t"]],
+      answer:20,
+      unit:"Вт",
+      solution:["Формула: N = A/t.", "N = 240 / 12.", "N = 20 Вт.", "Жауабы: 20 Вт."]
+    },
+    {
+      topic:"Импульс",
+      text:"Массасы 6 кг дене 3 м/с жылдамдықпен қозғалады. Импульсті тап.",
+      given:[["m","6 кг"],["v","3 м/с"],["p","?"],["Формула","p = mv"]],
+      answer:18,
+      unit:"кг·м/с",
+      solution:["Формула: p = mv.", "p = 6 · 3.", "p = 18 кг·м/с.", "Жауабы: 18 кг·м/с."]
+    }
+  ],
+  c: [
+    {
+      topic:"Тежелу қозғалысы",
+      text:"Дене 20 м/с жылдамдықтан 4 с ішінде тоқтады. Үдеудің модулін тап.",
+      given:[["v₀","20 м/с"],["v","0"],["t","4 с"],["a","?"]],
+      answer:5,
+      unit:"м/с²",
+      solution:["Формула: a = (v - v₀)/t.", "a = (0 - 20)/4 = -5 м/с².", "Үдеудің модулі: |a| = 5 м/с².", "Жауабы: 5 м/с²."]
+    },
+    {
+      topic:"Үдемелі қозғалыс жолы",
+      text:"Дене тыныштықтан 3 м/с² үдеумен 6 с қозғалды. Жүрілген жолды тап.",
+      given:[["v₀","0"],["a","3 м/с²"],["t","6 с"],["s","?"]],
+      answer:54,
+      unit:"м",
+      solution:["Формула: s = v₀t + at²/2.", "v₀ = 0 болғандықтан s = at²/2.", "s = 3 · 36 / 2 = 54 м.", "Жауабы: 54 м."]
+    },
+    {
+      topic:"Серпімділік күші",
+      text:"Серіппе 0,04 м-ге созылды. Қатаңдығы 250 Н/м. Серпімділік күшін тап.",
+      given:[["k","250 Н/м"],["x","0,04 м"],["F","?"],["Формула","F = kx"]],
+      answer:10,
+      unit:"Н",
+      solution:["Формула: F = kx.", "F = 250 · 0,04.", "F = 10 Н.", "Жауабы: 10 Н."]
+    },
+    {
+      topic:"Момент күші",
+      text:"Күш 30 Н, иін 0,4 м. Күш моментін тап.",
+      given:[["F","30 Н"],["l","0,4 м"],["M","?"],["Формула","M = F·l"]],
+      answer:12,
+      unit:"Н·м",
+      solution:["Формула: M = F · l.", "M = 30 · 0,4.", "M = 12 Н·м.", "Жауабы: 12 Н·м."]
+    },
+    {
+      topic:"Толқын жылдамдығы",
+      text:"Толқын жиілігі 5 Гц, толқын ұзындығы 2 м. Толқын жылдамдығын тап.",
+      given:[["ν","5 Гц"],["λ","2 м"],["v","?"],["Формула","v = λν"]],
+      answer:10,
+      unit:"м/с",
+      solution:["Формула: v = λν.", "v = 2 · 5.", "v = 10 м/с.", "Жауабы: 10 м/с."]
+    }
+  ]
+};
+
+let currentLevel = "a";
+let index = 0;
+let correctInSession = 0;
+let solvedInSession = 0;
+
+function el(id){return document.getElementById(id);}
+
+function getSaved(name){
+  return Number(localStorage.getItem(name) || 0);
+}
+
+function setSaved(name, value){
+  localStorage.setItem(name, String(value));
+}
+
+function renderTotals(){
+  el("solvedCount").textContent = getSaved("physxProblemSolved");
+  el("correctCount").textContent = getSaved("physxProblemCorrect");
+  el("xpCount").textContent = getSaved("physxProblemXP");
+}
+
+function setLevel(level, button){
+  currentLevel = level;
+  index = 0;
+  correctInSession = 0;
+  solvedInSession = 0;
+  document.querySelectorAll(".level-btn").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+  renderProblem();
+}
+
+function renderProblem(){
+  const problem = sets[currentLevel][index];
+  const levelName = currentLevel.toUpperCase();
+
+  el("problemLevel").textContent = `${levelName} деңгей есебі`;
+  el("problemTopic").textContent = `Тақырып: ${problem.topic}`;
+  el("problemNumber").innerHTML = `<i class="fa-solid fa-list-ol"></i> ${index + 1}/5`;
+  el("problemText").textContent = problem.text;
+  el("answerInput").value = "";
+  el("unitInput").value = problem.unit;
+  el("feedback").className = "feedback";
+  el("solutionBox").className = "solution";
+
+  el("givenGrid").innerHTML = problem.given.map(item => `
+    <div class="given">
+      <b>${item[1]}</b>
+      <span>${item[0]}</span>
+    </div>
+  `).join("");
+
+  el("solutionSteps").innerHTML = problem.solution.map(step => `<li>${step}</li>`).join("");
+
+  el("goalText").textContent = currentLevel === "a"
+    ? "Бір формула арқылы есеп шығару дағдысын бекіту."
+    : currentLevel === "b"
+      ? "Екі қадамды есептерді формуламен байланыстыру."
+      : "Күрделі есептерде талдау жасап, дұрыс жолды таңдау.";
+
+  updateProgress();
+}
+
+function updateProgress(){
+  el("progressText").textContent = `${solvedInSession}/5 есеп орындалды.`;
+  el("progressBar").style.width = `${(solvedInSession/5)*100}%`;
+}
+
+function normalizeNumber(value){
+  return Number(String(value).replace(",", "."));
+}
+
+function checkAnswer(){
+  const problem = sets[currentLevel][index];
+  const input = normalizeNumber(el("answerInput").value);
+  const feedback = el("feedback");
+
+  if(el("answerInput").value.trim() === ""){
+    feedback.className = "feedback show bad";
+    feedback.innerHTML = "<b>Жауап енгізілмеді.</b> Алдымен сандық мәнді жаз.";
+    return;
+  }
+
+  solvedInSession++;
+  const tolerance = Math.max(0.02, Math.abs(problem.answer) * 0.02);
+  const isCorrect = Math.abs(input - problem.answer) <= tolerance;
+
+  const totalSolved = getSaved("physxProblemSolved") + 1;
+  setSaved("physxProblemSolved", totalSolved);
+  setSaved("physxPracticeSolved", Number(localStorage.getItem("physxPracticeSolved") || 0) + 1);
+
+  let xp = 0;
+
+  if(isCorrect){
+    correctInSession++;
+    xp = currentLevel === "a" ? 5 : currentLevel === "b" ? 7 : 10;
+    setSaved("physxProblemCorrect", getSaved("physxProblemCorrect") + 1);
+    setSaved("physxProblemXP", getSaved("physxProblemXP") + xp);
+
+    const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+    if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+    user.progress.points = Number(user.progress.points || 0) + xp;
+    localStorage.setItem("physxUser", JSON.stringify(user));
+
+    feedback.className = "feedback show ok";
+    feedback.innerHTML = `<b>Дұрыс!</b> Жауап: ${problem.answer} ${problem.unit}. +${xp} XP қосылды.`;
+  }else{
+    feedback.className = "feedback show bad";
+    feedback.innerHTML = `<b>Қате.</b> Дұрыс жауап: ${problem.answer} ${problem.unit}. Шешімін көріп, келесі есепке өт.`;
+  }
+
+  if(correctInSession >= 3){
+    localStorage.setItem(`${currentLevel}-problem-trainer-stars`, Math.min(5, correctInSession));
+  }
+
+  renderTotals();
+  updateProgress();
+}
+
+function showSolution(){
+  el("solutionBox").classList.add("show");
+}
+
+function nextProblem(){
+  index++;
+  if(index >= sets[currentLevel].length){
+    const stars = correctInSession >= 5 ? 5 : correctInSession >= 4 ? 4 : correctInSession >= 3 ? 3 : correctInSession >= 2 ? 2 : 1;
+    alert(`Деңгей аяқталды! Нәтиже: ${correctInSession}/5 дұрыс. Жұлдыз: ${stars}★`);
+    index = 0;
+    correctInSession = 0;
+    solvedInSession = 0;
+  }
+  renderProblem();
+}
+
+renderTotals();
+renderProblem();
+</script>
+</body>
+</html>

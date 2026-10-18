@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysX - Кіру</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#1ea7ff;
+      --dark:#061b55;
+      --text:#071837;
+      --muted:#64748b;
+      --line:#dbe7f5;
+      --green:#12b76a;
+      --orange:#ff9800;
+      --soft:#f8fbff;
+      --shadow:0 18px 45px rgba(13,71,161,.12);
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Inter","Segoe UI",Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(#d2dff1 1px,transparent 1px),
+        linear-gradient(180deg,#fbfdff,#eef5ff);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+    }
+
+    button,input,a,span,div,p,h1,h2,h3{
+      font-family:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    .header{
+      height:58px;
+      background:#fff;
+      border-bottom:1px solid #d6e6fb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 18px rgba(15,23,42,.04);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      text-decoration:none;
+      font-size:27px;
+      font-weight:900;
+    }
+
+    .logo i{
+      font-size:22px;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:26px;
+    }
+
+    .nav-link{
+      text-decoration:none;
+      color:#06205b;
+      font-weight:900;
+      font-size:15px;
+      padding:19px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{
+      color:var(--orange);
+    }
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:5px;
+      height:4px;
+      border-radius:999px;
+      background:var(--orange);
+    }
+
+    .login-link{
+      background:#145cff;
+      color:#fff!important;
+      padding:12px 20px!important;
+      border-radius:12px;
+    }
+
+    .login-link::after{
+      display:none!important;
+    }
+
+    .login-page{
+      min-height:calc(100vh - 58px);
+      display:grid;
+      place-items:center;
+      padding:28px 16px;
+    }
+
+    .login-shell{
+      width:min(100%,920px);
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      border-radius:26px;
+      overflow:hidden;
+      border:1px solid #dbe7f5;
+      background:rgba(255,255,255,.96);
+      box-shadow:var(--shadow);
+    }
+
+    .login-info{
+      position:relative;
+      min-height:480px;
+      padding:34px;
+      background:
+        radial-gradient(circle at 78% 20%,rgba(255,255,255,.34),transparent 26%),
+        linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .login-info::after{
+      content:"";
+      position:absolute;
+      width:260px;
+      height:260px;
+      right:-90px;
+      bottom:-80px;
+      border-radius:50%;
+      background:rgba(255,255,255,.16);
+    }
+
+    .info-top{
+      position:relative;
+      z-index:2;
+    }
+
+    .info-badge{
+      width:max-content;
+      height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.22);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:22px;
+    }
+
+    .login-info h1{
+      margin:0 0 12px;
+      font-size:38px;
+      line-height:1.08;
+      letter-spacing:-.8px;
+      font-weight:900;
+    }
+
+    .login-info p{
+      margin:0;
+      max-width:360px;
+      font-size:14px;
+      line-height:1.6;
+      font-weight:750;
+      opacity:.94;
+    }
+
+    .info-steps{
+      position:relative;
+      z-index:2;
+      display:grid;
+      gap:10px;
+      margin-top:30px;
+    }
+
+    .step{
+      min-height:48px;
+      border-radius:15px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+      display:grid;
+      grid-template-columns:34px minmax(0,1fr);
+      gap:10px;
+      align-items:center;
+      padding:9px;
+      backdrop-filter:blur(8px);
+    }
+
+    .step i{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.18);
+      color:#fff;
+    }
+
+    .step b{
+      display:block;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .step span{
+      display:block;
+      font-size:11.5px;
+      opacity:.88;
+      font-weight:700;
+    }
+
+    .login-panel{
+      padding:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+    }
+
+    .login-card{
+      width:100%;
+      max-width:360px;
+    }
+
+    .login-card h2{
+      margin:0 0 7px;
+      color:var(--dark);
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.4px;
+      text-align:left;
+    }
+
+    .login-subtitle{
+      margin:0 0 24px;
+      color:#64748b;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:750;
+    }
+
+    .login-form{
+      display:grid;
+      gap:14px;
+    }
+
+    .form-group{
+      display:grid;
+      gap:7px;
+    }
+
+    .form-group label{
+      color:#061b55;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .input-box{
+      height:46px;
+      border-radius:14px;
+      border:1px solid #cfe0f4;
+      background:#f8fbff;
+      display:grid;
+      grid-template-columns:38px minmax(0,1fr);
+      align-items:center;
+      overflow:hidden;
+      transition:.18s ease;
+    }
+
+    .input-box:focus-within{
+      border-color:#145cff;
+      background:#fff;
+      box-shadow:0 0 0 4px rgba(20,92,255,.10);
+    }
+
+    .input-box i{
+      color:#145cff;
+      display:grid;
+      place-items:center;
+      font-size:14px;
+    }
+
+    .input-box input{
+      width:100%;
+      height:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:#071837;
+      font-size:13px;
+      font-weight:750;
+      padding-right:12px;
+    }
+
+    .password-box{
+      grid-template-columns:38px minmax(0,1fr) 42px;
+    }
+
+    .toggle-password{
+      border:none;
+      background:transparent;
+      color:#64748b;
+      cursor:pointer;
+      height:100%;
+      display:grid;
+      place-items:center;
+    }
+
+    .toggle-password:hover{
+      color:#145cff;
+    }
+
+    .form-options{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:-2px;
+    }
+
+    .forgot-link{
+      color:#145cff;
+      text-decoration:none;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .forgot-link:hover{
+      text-decoration:underline;
+    }
+
+    .login-btn{
+      height:46px;
+      border:none;
+      border-radius:14px;
+      background:#145cff;
+      color:#fff;
+      font-weight:900;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow:0 12px 22px rgba(20,92,255,.18);
+      transition:.18s ease;
+      margin-top:4px;
+    }
+
+    .login-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 16px 28px rgba(20,92,255,.22);
+    }
+
+    .login-extra{
+      margin-top:18px;
+      padding-top:18px;
+      border-top:1px solid #e8eef7;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:7px;
+      color:#64748b;
+      font-size:12.5px;
+      font-weight:750;
+    }
+
+    .login-extra a{
+      color:#145cff;
+      font-weight:900;
+      text-decoration:none;
+    }
+
+    .login-extra a:hover{
+      text-decoration:underline;
+    }
+
+    .mini-note{
+      margin-top:16px;
+      min-height:38px;
+      border-radius:13px;
+      background:#f8fbff;
+      border:1px solid #dbe7f5;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:9px 11px;
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:750;
+      line-height:1.35;
+    }
+
+    .mini-note i{
+      color:#12b76a;
+    }
+
+
+    /* ================= ROLE SELECT ================= */
+
+    .role-select-wrap{
+      display:grid;
+      gap:9px;
+      margin:2px 0 4px;
+    }
+
+    .role-select-title{
+      color:#061b55;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .role-select{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .role-btn{
+      min-height:74px;
+      border-radius:16px;
+      border:1px solid #cfe0f4;
+      background:#f8fbff;
+      color:#061b55;
+      display:grid;
+      grid-template-columns:34px minmax(0,1fr);
+      gap:10px;
+      align-items:center;
+      padding:12px;
+      cursor:pointer;
+      text-align:left;
+      transition:.2s ease;
+    }
+
+    .role-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(20,92,255,.35);
+      box-shadow:0 12px 24px rgba(20,92,255,.08);
+    }
+
+    .role-btn.active{
+      background:rgba(20,92,255,.08);
+      border-color:rgba(20,92,255,.35);
+      box-shadow:0 0 0 4px rgba(20,92,255,.06);
+    }
+
+    .role-btn i{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:#145cff;
+      color:#fff;
+      font-size:15px;
+    }
+
+    .role-btn.teacher i{
+      background:#12b76a;
+    }
+
+    .role-btn b{
+      display:block;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:3px;
+    }
+
+    .role-btn span{
+      display:block;
+      color:#64748b;
+      font-size:10.5px;
+      line-height:1.35;
+      font-weight:750;
+    }
+
+    .teacher-mode-note{
+      display:none;
+      min-height:42px;
+      border-radius:13px;
+      background:#ecfdf5;
+      border:1px solid #bbf7d0;
+      color:#065f46;
+      padding:10px 11px;
+      font-size:11.5px;
+      font-weight:800;
+      line-height:1.4;
+    }
+
+    .teacher-mode-note.show{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .teacher-mode-note i{
+      color:#12b76a;
+      flex-shrink:0;
+    }
+
+
+    .teacher-access-hint{
+      display:none;
+      min-height:40px;
+      border-radius:13px;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#9a3412;
+      padding:10px 11px;
+      font-size:11.5px;
+      font-weight:800;
+      line-height:1.4;
+      margin-top:8px;
+    }
+
+    .teacher-access-hint.show{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .teacher-access-hint i{
+      color:#f59e0b;
+      flex-shrink:0;
+    }
+
+    @media(max-width:880px){
+      .login-shell{
+        grid-template-columns:1fr;
+        max-width:440px;
+      }
+
+      .login-info{
+        min-height:220px;
+        padding:24px;
+      }
+
+      .login-info h1{
+        font-size:28px;
+      }
+
+      .info-steps{
+        display:none;
+      }
+
+      .login-panel{
+        padding:26px;
+      }
+    }
+
+    @media(max-width:720px){
+      .header{
+        padding:0 14px;
+      }
+
+      .nav{
+        gap:14px;
+        overflow-x:auto;
+      }
+
+      .nav-link{
+        font-size:13px;
+      }
+
+      .logo{
+        font-size:23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="profile.html" class="nav-link">Жетістіктер</a>
+    <a href="login.html" class="nav-link active login-link">Кіру</a>
+  </nav>
+</header>
+
+<main class="login-page">
+  <section class="login-shell">
+    <div class="login-info">
+      <div class="info-top">
+        <div class="info-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          Қауіпсіз кіру
+        </div>
+
+        <h1>PhysX платформасына қош келдің!</h1>
+        <p>Жеке оқу жоспарыңды ашып, прогресіңді сақта. Сабақтарың, жұлдыздарың және жетістіктерің аккаунтыңда сақталады.</p>
+      </div>
+
+      <div class="info-steps">
+        <div class="step">
+          <i class="fa-solid fa-map"></i>
+          <div>
+            <b>Оқу картасы</b>
+            <span>Сабақтарды ретімен өту.</span>
+          </div>
+        </div>
+
+        <div class="step">
+          <i class="fa-solid fa-star"></i>
+          <div>
+            <b>Жұлдыз жинау</b>
+            <span>Әр сабақтан нәтиже алу.</span>
+          </div>
+        </div>
+
+        <div class="step">
+          <i class="fa-solid fa-trophy"></i>
+          <div>
+            <b>Жетістік ашу</b>
+            <span>Badge және сертификат алу.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-panel">
+      <div class="login-card">
+        <h2>Кіру</h2>
+        <p class="login-subtitle">Аккаунтыңа кіріп, оқуды жалғастыр.</p>
+
+        <form class="login-form" id="loginForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-box">
+              <i class="fa-regular fa-envelope"></i>
+              <input id="email" type="email" placeholder="example@mail.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Құпия сөз</label>
+            <div class="input-box password-box">
+              <i class="fa-solid fa-lock"></i>
+              <input id="password" type="password" placeholder="••••••••" required>
+              <button type="button" class="toggle-password" onclick="togglePassword()">
+                <i class="fa-regular fa-eye" id="eyeIcon"></i>
+              </button>
+            </div>
+          </div>
+
+
+          <div class="role-select-wrap">
+            <div class="role-select-title">Кіру режимі</div>
+
+            <div class="role-select">
+              <button type="button" class="role-btn active" onclick="setRole('student', this)">
+                <i class="fa-solid fa-user-graduate"></i>
+                <div>
+                  <b>Оқушы</b>
+                  <span>Сабақтар ретімен ашылады</span>
+                </div>
+              </button>
+
+              <button type="button" class="role-btn teacher" onclick="setRole('teacher', this)">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <div>
+                  <b>Мұғалім</b>
+                  <span>Барлық сабақ ашық</span>
+                </div>
+              </button>
+            </div>
+
+            <div class="teacher-mode-note" id="teacherModeNote">
+              <i class="fa-solid fa-unlock"></i>
+              Мұғалім режимінде барлық деңгей, сабақ және бақылау жұмыстары тексеру үшін ашық болады.
+            </div>
+
+            <div class="teacher-access-hint" id="teacherAccessHint">
+              <i class="fa-solid fa-key"></i>
+              Мұғалім режиміне тек бекітілген Gmail және арнайы құпия сөз арқылы кіруге болады.
+            </div>
+
+          </div>
+
+          <div class="form-options">
+            <a href="forgot-password.html" class="forgot-link">Құпия сөзді ұмыттың ба?</a>
+          </div>
+
+          <button type="submit" class="login-btn">
+            Кіру
+          </button>
+        </form>
+
+        <div class="login-extra">
+          <span>Аккаунтың жоқ па?</span>
+          <a href="register.html">Тіркелу</a>
+        </div>
+
+        <div class="mini-note">
+          <i class="fa-solid fa-circle-check"></i>
+          Оқушы режимінде алдымен тіркелу қажет. Мұғалім режимі тек арнайы Gmail және құпия сөз арқылы ашылады.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+
+  let selectedRole = "student";
+
+  // Мұғалім режиміне кіруге рұқсат берілген дерек.
+  // Қаласаң, осы жерден Gmail мен құпия сөзді өзгерте аласың.
+  const TEACHER_EMAIL = "baxtiarkan@gmail.com";
+  const TEACHER_PASSWORD = "PhysX2026";
+
+  function setRole(role, btn) {
+    selectedRole = role;
+
+    document.querySelectorAll(".role-btn").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+
+    const note = document.getElementById("teacherModeNote");
+    const accessHint = document.getElementById("teacherAccessHint");
+
+    if (note) {
+      note.classList.toggle("show", role === "teacher");
+    }
+
+    if (accessHint) {
+      accessHint.classList.toggle("show", role === "teacher");
+    }
+  }
+
+  function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      eyeIcon.classList.remove("fa-eye");
+      eyeIcon.classList.add("fa-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      eyeIcon.classList.remove("fa-eye-slash");
+      eyeIcon.classList.add("fa-eye");
+    }
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (email === "" || password === "") {
+      alert("Email және құпия сөзді толық толтырыңыз!");
+      return;
+    }
+
+
+    if (selectedRole === "teacher") {
+      const teacherEmailOk = email.toLowerCase() === TEACHER_EMAIL.toLowerCase();
+      const teacherPasswordOk = password === TEACHER_PASSWORD;
+
+      if (!teacherEmailOk || !teacherPasswordOk) {
+        alert("Мұғалім режиміне кіру үшін бекітілген Gmail және арнайы құпия сөз керек!");
+        return;
+      }
+    }
+
+    if (selectedRole === "student") {
+      const accounts = JSON.parse(localStorage.getItem("physxAccounts")) || [];
+      const account = accounts.find(item =>
+        String(item.email || "").toLowerCase() === email.toLowerCase() &&
+        String(item.password || "") === password
+      );
+
+      if (!account) {
+        const goRegister = confirm("Бұл аккаунт тіркелмеген немесе құпия сөз қате. Алдымен тіркелу бетіне өтесіз бе?");
+        if (goRegister) {
+          window.location.href = "register.html";
+        }
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+      user.name = account.name || user.name || "";
+      user.email = account.email;
+      user.isLoggedIn = true;
+      user.role = "student";
+
+      if (!user.studyLevel) user.studyLevel = account.studyLevel || "beginner";
+      if (!user.progress) user.progress = account.progress || { points: 0, lessonsCompleted: [] };
+      if (!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+
+      localStorage.setItem("physxUser", JSON.stringify(user));
+      localStorage.setItem("physxEmail", account.email);
+      localStorage.setItem("physxRole", "student");
+      localStorage.setItem("physxUserRole", "student");
+
+      window.location.href = "index.html";
+      return;
+    }
+
+    if (selectedRole === "teacher") {
+      const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+      user.email = email;
+      user.isLoggedIn = true;
+      user.role = "teacher";
+
+      if (!user.studyLevel) user.studyLevel = "advanced";
+      if (!user.progress) user.progress = { points: 0, lessonsCompleted: [] };
+      if (!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+
+      localStorage.setItem("physxUser", JSON.stringify(user));
+      localStorage.setItem("physxEmail", email);
+      localStorage.setItem("physxRole", "teacher");
+      localStorage.setItem("physxUserRole", "teacher");
+
+      window.location.href = "levels_map.html";
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PhysX | Тіркелу</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#1ea7ff;
+      --dark:#061b55;
+      --text:#071837;
+      --muted:#64748b;
+      --line:#dbe7f5;
+      --green:#12b76a;
+      --orange:#f59e0b;
+      --soft:#f8fbff;
+      --shadow:0 18px 45px rgba(13,71,161,.12);
+      --font:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(#d2dff1 1px,transparent 1px),
+        linear-gradient(180deg,#fbfdff,#eef5ff);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    button,input,a,span,div,p,h1,h2,h3,label{
+      font-family:var(--font);
+    }
+
+    a{
+      text-decoration:none;
+    }
+
+    .header{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid #cfe0f4;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 4px 22px rgba(15,23,42,.045);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.045em;
+    }
+
+    .logo i{
+      font-size:22px;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:24px;
+    }
+
+    .nav-link{
+      color:#0b2f77;
+      font-weight:850;
+      font-size:14px;
+      padding:20px 0;
+      position:relative;
+      white-space:nowrap;
+      background:transparent;
+      border-radius:0;
+      box-shadow:none;
+    }
+
+    .nav-link:hover,
+    .nav-link.active{
+      color:#145cff;
+    }
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:6px;
+      height:3px;
+      border-radius:999px;
+      background:#145cff;
+    }
+
+    .login-link{
+      background:#145cff!important;
+      color:#fff!important;
+      padding:11px 18px!important;
+      border-radius:13px!important;
+      box-shadow:0 12px 24px rgba(20,92,255,.16);
+    }
+
+    .login-link::after{
+      display:none!important;
+    }
+
+    .register-page{
+      min-height:calc(100vh - 58px);
+      display:grid;
+      place-items:center;
+      padding:28px 16px;
+    }
+
+    .register-shell{
+      width:min(100%,1040px);
+      display:grid;
+      grid-template-columns:.95fr 1.05fr;
+      border-radius:30px;
+      overflow:hidden;
+      border:1px solid rgba(219,231,245,.95);
+      background:rgba(255,255,255,.96);
+      box-shadow:var(--shadow);
+    }
+
+    .register-info{
+      position:relative;
+      min-height:610px;
+      padding:34px;
+      background:
+        radial-gradient(circle at 78% 20%,rgba(255,255,255,.34),transparent 26%),
+        linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .register-info::after{
+      content:"";
+      position:absolute;
+      width:300px;
+      height:300px;
+      right:-100px;
+      bottom:-80px;
+      border-radius:50%;
+      background:rgba(255,255,255,.16);
+    }
+
+    .info-top,
+    .info-steps{
+      position:relative;
+      z-index:2;
+    }
+
+    .info-badge{
+      width:max-content;
+      min-height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.22);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:22px;
+    }
+
+    .register-info h1{
+      margin:0 0 14px;
+      font-size:42px;
+      line-height:1.08;
+      letter-spacing:-.06em;
+      font-weight:900;
+    }
+
+    .register-info p{
+      margin:0;
+      max-width:390px;
+      font-size:14px;
+      line-height:1.65;
+      font-weight:750;
+      opacity:.94;
+    }
+
+    .info-steps{
+      display:grid;
+      gap:10px;
+      margin-top:30px;
+    }
+
+    .step{
+      min-height:54px;
+      border-radius:17px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+      display:grid;
+      grid-template-columns:38px minmax(0,1fr);
+      gap:11px;
+      align-items:center;
+      padding:10px;
+      backdrop-filter:blur(8px);
+    }
+
+    .step i{
+      width:38px;
+      height:38px;
+      border-radius:13px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.18);
+      color:#fff;
+    }
+
+    .step b{
+      display:block;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .step span{
+      display:block;
+      font-size:11.5px;
+      opacity:.88;
+      font-weight:700;
+      line-height:1.35;
+    }
+
+    .register-panel{
+      padding:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+    }
+
+    .register-card{
+      width:100%;
+      max-width:450px;
+    }
+
+    .register-card h2{
+      margin:0 0 7px;
+      color:var(--dark);
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:-.045em;
+      text-align:left;
+    }
+
+    .register-subtitle{
+      margin:0 0 22px;
+      color:#64748b;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:750;
+    }
+
+    .register-form{
+      display:grid;
+      gap:13px;
+    }
+
+    .name-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .form-group{
+      display:grid;
+      gap:7px;
+    }
+
+    .form-group.full{
+      grid-column:1/-1;
+    }
+
+    .form-group label{
+      color:#061b55;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .input-box{
+      height:46px;
+      border-radius:14px;
+      border:1px solid #cfe0f4;
+      background:#f8fbff;
+      display:grid;
+      grid-template-columns:38px minmax(0,1fr);
+      align-items:center;
+      overflow:hidden;
+      transition:.18s ease;
+    }
+
+    .input-box:focus-within{
+      border-color:#145cff;
+      background:#fff;
+      box-shadow:0 0 0 4px rgba(20,92,255,.10);
+    }
+
+    .input-box i{
+      color:#145cff;
+      display:grid;
+      place-items:center;
+      font-size:14px;
+    }
+
+    .input-box input{
+      width:100%;
+      height:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:#071837;
+      font-size:13px;
+      font-weight:750;
+      padding-right:12px;
+    }
+
+    .password-box{
+      grid-template-columns:38px minmax(0,1fr) 42px;
+    }
+
+    .toggle-password{
+      border:none;
+      background:transparent;
+      color:#64748b;
+      cursor:pointer;
+      height:100%;
+      display:grid;
+      place-items:center;
+    }
+
+    .toggle-password:hover{
+      color:#145cff;
+    }
+
+    .register-btn{
+      height:46px;
+      border:none;
+      border-radius:14px;
+      background:#145cff;
+      color:#fff;
+      font-weight:900;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow:0 12px 22px rgba(20,92,255,.18);
+      transition:.18s ease;
+      margin-top:4px;
+    }
+
+    .register-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 16px 28px rgba(20,92,255,.22);
+    }
+
+    .register-extra{
+      margin-top:18px;
+      padding-top:18px;
+      border-top:1px solid #e8eef7;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:7px;
+      color:#64748b;
+      font-size:12.5px;
+      font-weight:750;
+    }
+
+    .register-extra a{
+      color:#145cff;
+      font-weight:900;
+    }
+
+    .register-extra a:hover{
+      text-decoration:underline;
+    }
+
+    .mini-note{
+      margin-top:16px;
+      min-height:42px;
+      border-radius:13px;
+      background:#f8fbff;
+      border:1px solid #dbe7f5;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:9px 11px;
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:750;
+      line-height:1.35;
+    }
+
+    .mini-note i{
+      color:#12b76a;
+    }
+
+    .level-select{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+    }
+
+    .level-option{
+      min-height:54px;
+      border-radius:14px;
+      border:1px solid #cfe0f4;
+      background:#f8fbff;
+      display:grid;
+      place-items:center;
+      color:#061b55;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:900;
+      transition:.18s ease;
+      text-align:center;
+      padding:8px;
+    }
+
+    .level-option.active{
+      background:rgba(20,92,255,.08);
+      border-color:rgba(20,92,255,.35);
+      box-shadow:0 0 0 4px rgba(20,92,255,.06);
+      color:#145cff;
+    }
+
+    .level-option i{
+      display:block;
+      margin-bottom:4px;
+      font-size:15px;
+    }
+
+    @media(max-width:930px){
+      .register-shell{
+        grid-template-columns:1fr;
+        max-width:520px;
+      }
+
+      .register-info{
+        min-height:250px;
+        padding:24px;
+      }
+
+      .register-info h1{
+        font-size:30px;
+      }
+
+      .info-steps{
+        display:none;
+      }
+
+      .register-panel{
+        padding:26px;
+      }
+    }
+
+    @media(max-width:720px){
+      .header{
+        padding:0 14px;
+      }
+
+      .nav{
+        gap:14px;
+        overflow-x:auto;
+      }
+
+      .nav-link{
+        font-size:13px;
+      }
+
+      .logo{
+        font-size:23px;
+      }
+
+      .name-grid,
+      .level-select{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="achievement.html" class="nav-link">Жетістіктер</a>
+    <a href="guide.html" class="nav-link">Нұсқаулық</a>
+    <a href="about.html" class="nav-link">Біз туралы</a>
+    <a href="login.html" class="nav-link login-link">Кіру</a>
+  </nav>
+</header>
+
+<main class="register-page">
+  <section class="register-shell">
+    <div class="register-info">
+      <div class="info-top">
+        <div class="info-badge">
+          <i class="fa-solid fa-user-plus"></i>
+          Жаңа аккаунт
+        </div>
+
+        <h1>PhysX платформасына тіркел</h1>
+        <p>
+          Жеке оқу картаңды ашып, сабақ прогресіңді, практика нәтижелеріңді,
+          жұлдыздарыңды және жетістіктеріңді сақта.
+        </p>
+      </div>
+
+      <div class="info-steps">
+        <div class="step">
+          <i class="fa-solid fa-id-card"></i>
+          <div>
+            <b>Оқушы паспорты</b>
+            <span>Аты-жөнің және email сақталады.</span>
+          </div>
+        </div>
+
+        <div class="step">
+          <i class="fa-solid fa-layer-group"></i>
+          <div>
+            <b>Деңгей таңдау</b>
+            <span>Жаңадан бастаушы оқушы алдымен деңгей анықтау тестінен өтеді.</span>
+          </div>
+        </div>
+
+        <div class="step">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <b>Кіру қорғанысы</b>
+            <span>Тіркелген email мен құпия сөз арқылы ғана кіресің.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="register-panel">
+      <div class="register-card">
+        <h2>Тіркелу</h2>
+        <p class="register-subtitle">Жаңа аккаунт ашып, қажет болса деңгей анықтау тестінен өт.</p>
+
+        <form class="register-form" id="registerForm">
+          <div class="name-grid">
+            <div class="form-group">
+              <label for="firstname">Аты</label>
+              <div class="input-box">
+                <i class="fa-solid fa-user"></i>
+                <input id="firstname" type="text" placeholder="Атың" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastname">Тегі</label>
+              <div class="input-box">
+                <i class="fa-solid fa-user"></i>
+                <input id="lastname" type="text" placeholder="Тегің" required>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label for="middlename">Әкесінің аты</label>
+              <div class="input-box">
+                <i class="fa-solid fa-user-pen"></i>
+                <input id="middlename" type="text" placeholder="Әкеңнің аты" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-box">
+              <i class="fa-regular fa-envelope"></i>
+              <input id="email" type="email" placeholder="example@mail.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Оқу деңгейі</label>
+            <div class="level-select">
+              <button type="button" class="level-option active" onclick="setLevel('newbie', this)">
+                <span><i class="fa-solid fa-circle-question"></i> Жаңадан бастаушы</span>
+              </button>
+
+              <button type="button" class="level-option" onclick="setLevel('beginner', this)">
+                <span><i class="fa-solid fa-seedling"></i> Beginner</span>
+              </button>
+
+              <button type="button" class="level-option" onclick="setLevel('intermediate', this)">
+                <span><i class="fa-solid fa-person-running"></i> Intermediate</span>
+              </button>
+
+              <button type="button" class="level-option" onclick="setLevel('advanced', this)">
+                <span><i class="fa-solid fa-rocket"></i> Advanced</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Құпия сөз</label>
+            <div class="input-box password-box">
+              <i class="fa-solid fa-lock"></i>
+              <input id="password" type="password" placeholder="••••••••" required minlength="4">
+              <button type="button" class="toggle-password" onclick="togglePassword('password', 'eyeIcon1')">
+                <i class="fa-regular fa-eye" id="eyeIcon1"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-password">Құпия сөзді растау</label>
+            <div class="input-box password-box">
+              <i class="fa-solid fa-lock"></i>
+              <input id="confirm-password" type="password" placeholder="••••••••" required minlength="4">
+              <button type="button" class="toggle-password" onclick="togglePassword('confirm-password', 'eyeIcon2')">
+                <i class="fa-regular fa-eye" id="eyeIcon2"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="register-btn">Тіркелу</button>
+        </form>
+
+        <div class="register-extra">
+          <span>Аккаунтың бар ма?</span>
+          <a href="login.html">Кіру</a>
+        </div>
+
+        <div class="mini-note">
+          <i class="fa-solid fa-circle-check"></i>
+          Жаңадан бастаушыны таңдасаң, тіркелгеннен кейін деңгей анықтау тестіне өтесің.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  let selectedLevel = "newbie";
+
+  function setLevel(level, btn) {
+    selectedLevel = level;
+
+    document.querySelectorAll(".level-option").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+  }
+
+  function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
+  document.getElementById("registerForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname = document.getElementById("lastname").value.trim();
+    const middlename = document.getElementById("middlename").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (!firstname || !lastname || !middlename || !email || !password || !confirmPassword) {
+      alert("Барлық өрісті толық толтырыңыз!");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Құпия сөздер сәйкес келмейді!");
+      return;
+    }
+
+    const accounts = JSON.parse(localStorage.getItem("physxAccounts")) || [];
+    const alreadyExists = accounts.some(item => String(item.email || "").toLowerCase() === email.toLowerCase());
+
+    if (alreadyExists) {
+      alert("Бұл email бұрын тіркелген. Login беті арқылы кіріңіз.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const userData = {
+      firstname,
+      lastname,
+      middlename,
+      name: `${lastname} ${firstname}`,
+      fullname: `${lastname} ${firstname} ${middlename}`,
+      fullName: `${lastname} ${firstname} ${middlename}`,
+      email,
+      password,
+      avatar: "",
+      role: "student",
+      studyLevel: selectedLevel === "newbie" ? "newbie" : selectedLevel,
+      needsLevelTest: selectedLevel === "newbie",
+      isLoggedIn: true,
+      progress: {
+        level: 1,
+        points: 0,
+        lessonsCompleted: []
+      },
+      createdAt: new Date().toISOString()
+    };
+
+    accounts.push(userData);
+
+    localStorage.setItem("physxAccounts", JSON.stringify(accounts));
+    localStorage.setItem("physxUser", JSON.stringify(userData));
+    localStorage.setItem("physxEmail", email);
+    localStorage.setItem("physxRole", "student");
+    localStorage.setItem("physxUserRole", "student");
+
+    if (selectedLevel === "newbie") {
+      alert("Тіркелу сәтті аяқталды! Енді деңгей анықтау тестінен өтіңіз.");
+      window.location.href = "placement-test.html";
+    } else {
+      alert("Тіркелу сәтті аяқталды!");
+      window.location.href = "profile.html";
+    }
+  });
+</script>
+
+</body>
+</html>

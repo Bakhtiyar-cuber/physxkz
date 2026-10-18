@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PhysX | Формула тренажері</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#115cff;
+      --blue2:#0ea5ff;
+      --dark:#061650;
+      --text:#334466;
+      --border:#d8e8ff;
+      --green:#10b981;
+      --orange:#ff8a00;
+      --purple:#7c3aed;
+      --red:#ef4444;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      color:var(--dark);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 56%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input,select{font-family:inherit}
+
+    .navbar{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid #d6e6fb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 18px rgba(15,23,42,.04);
+      backdrop-filter:blur(14px);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:27px;
+      font-weight:900;
+      letter-spacing:-.6px;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:26px;
+      font-weight:850;
+      color:var(--dark);
+      font-size:14px;
+    }
+
+    .nav-links a{
+      position:relative;
+      padding:22px 0;
+      opacity:.92;
+      transition:.25s ease;
+      white-space:nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--blue);
+      opacity:1;
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:8px;
+      height:3px;
+      border-radius:999px;
+      background:var(--blue);
+      box-shadow:0 4px 10px rgba(17,92,255,.35);
+    }
+
+    .page{
+      width:min(100% - 34px,1280px);
+      margin:0 auto;
+      padding:18px 0 44px;
+    }
+
+    .hero{
+      min-height:320px;
+      border-radius:30px;
+      overflow:hidden;
+      padding:38px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 360px;
+      gap:26px;
+      align-items:center;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.90) 0%,rgba(255,255,255,.72) 44%,rgba(255,255,255,.18) 100%),
+        url("image/practice/formula-bg.png") center right/cover no-repeat;
+      border:1px solid rgba(191,219,254,.78);
+      box-shadow:0 22px 54px rgba(13,71,161,.12);
+      margin-bottom:18px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(124,58,237,.12);
+      border:1px solid rgba(124,58,237,.22);
+      color:#6d28d9;
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      color:#061650;
+      font-size:48px;
+      line-height:1.05;
+      letter-spacing:-.075em;
+      font-weight:900;
+      margin-bottom:16px;
+      max-width:760px;
+      text-shadow:0 2px 8px rgba(255,255,255,.72);
+    }
+
+    .hero p{
+      color:#26364f;
+      max-width:690px;
+      font-size:16px;
+      line-height:1.7;
+      font-weight:800;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .score-card{
+      min-height:220px;
+      border-radius:28px;
+      padding:24px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px);
+    }
+
+    .score-card h2{
+      color:#061650;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.04em;
+      margin-bottom:14px;
+    }
+
+    .score-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .score-mini{
+      padding:12px;
+      border-radius:18px;
+      background:rgba(124,58,237,.08);
+      border:1px solid rgba(124,58,237,.14);
+      text-align:center;
+    }
+
+    .score-mini strong{
+      display:block;
+      color:#061650;
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .score-mini span{
+      display:block;
+      margin-top:5px;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .tip{
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(216,232,255,.95);
+      color:#43526a;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:330px minmax(0,1fr);
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.66)),
+        url("image/profile/profile-panel-bg.png") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.88);
+      border-radius:28px;
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      backdrop-filter:blur(14px);
+      padding:22px;
+    }
+
+    .panel h2{
+      font-size:23px;
+      color:#061650;
+      margin-bottom:14px;
+      letter-spacing:-.04em;
+    }
+
+    .mode-list{
+      display:grid;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .mode-btn{
+      min-height:74px;
+      width:100%;
+      border:1px solid rgba(216,232,255,.95);
+      border-radius:20px;
+      background:rgba(255,255,255,.78);
+      display:grid;
+      grid-template-columns:48px minmax(0,1fr);
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      cursor:pointer;
+      text-align:left;
+      transition:.22s ease;
+    }
+
+    .mode-btn:hover,
+    .mode-btn.active{
+      transform:translateY(-1px);
+      border-color:rgba(17,92,255,.35);
+      box-shadow:0 12px 26px rgba(17,92,255,.10);
+    }
+
+    .mode-btn i{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#7c3aed,#115cff);
+      color:#fff;
+      font-size:19px;
+    }
+
+    .mode-btn:nth-child(2) i{background:linear-gradient(135deg,#10b981,#0ea5ff)}
+    .mode-btn:nth-child(3) i{background:linear-gradient(135deg,#f59e0b,#facc15)}
+
+    .mode-btn b{
+      display:block;
+      color:#061650;
+      font-size:14px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .mode-btn span{
+      color:#64748b;
+      font-size:11.5px;
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .formula-list{
+      display:grid;
+      gap:8px;
+      max-height:430px;
+      overflow:auto;
+      padding-right:4px;
+    }
+
+    .formula-chip{
+      border:1px solid rgba(216,232,255,.95);
+      background:rgba(255,255,255,.72);
+      border-radius:16px;
+      padding:12px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .formula-chip:hover,
+    .formula-chip.active{
+      border-color:rgba(124,58,237,.35);
+      box-shadow:0 10px 20px rgba(124,58,237,.08);
+      transform:translateY(-1px);
+    }
+
+    .formula-chip b{
+      color:#061650;
+      font-size:14px;
+      font-weight:900;
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .formula-chip span{
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .trainer{
+      display:grid;
+      gap:16px;
+    }
+
+    .train-card{
+      border-radius:28px;
+      padding:24px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.90);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+    }
+
+    .train-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .train-title h2{
+      color:#061650;
+      font-size:27px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:-.05em;
+      margin-bottom:6px;
+    }
+
+    .train-title p{
+      color:#526383;
+      font-size:13.5px;
+      line-height:1.5;
+      font-weight:800;
+      max-width:720px;
+    }
+
+    .pill{
+      min-height:36px;
+      padding:0 13px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#f5f3ff;
+      border:1px solid #ddd6fe;
+      color:#6d28d9;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .formula-display{
+      min-height:116px;
+      border-radius:24px;
+      padding:22px;
+      background:
+        linear-gradient(135deg,rgba(124,58,237,.10),rgba(17,92,255,.06));
+      border:1px solid rgba(124,58,237,.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      margin-bottom:16px;
+    }
+
+    .formula-display strong{
+      color:#061650;
+      font-size:42px;
+      font-weight:900;
+      letter-spacing:-.04em;
+      line-height:1.1;
+    }
+
+    .question{
+      padding:18px;
+      border-radius:22px;
+      background:rgba(17,92,255,.07);
+      border:1px solid rgba(17,92,255,.14);
+      color:#061650;
+      font-size:18px;
+      line-height:1.5;
+      font-weight:900;
+      margin-bottom:16px;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .option{
+      min-height:58px;
+      border-radius:18px;
+      border:1px solid rgba(216,232,255,.95);
+      background:rgba(255,255,255,.84);
+      color:#061650;
+      cursor:pointer;
+      padding:12px 14px;
+      text-align:left;
+      font-size:14px;
+      line-height:1.35;
+      font-weight:850;
+      transition:.18s ease;
+    }
+
+    .option:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 24px rgba(13,71,161,.08);
+      border-color:rgba(17,92,255,.25);
+    }
+
+    .option.correct{background:#ecfdf5;border-color:#86efac;color:#065f46}
+    .option.wrong{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+
+    .answer-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 150px 140px;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .answer-row input{
+      min-height:48px;
+      padding:0 14px;
+      border-radius:16px;
+      border:1px solid #cfe0f4;
+      background:#fff;
+      color:#061650;
+      font-size:15px;
+      font-weight:850;
+      outline:none;
+    }
+
+    .answer-row input:focus{
+      border-color:#115cff;
+      box-shadow:0 0 0 4px rgba(17,92,255,.08);
+    }
+
+    .btn{
+      min-height:48px;
+      border:0;
+      border-radius:16px;
+      padding:0 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      color:#fff;
+      background:#115cff;
+      font-size:12px;
+      font-weight:950;
+      box-shadow:0 12px 24px rgba(17,92,255,.20);
+    }
+
+    .btn.green{background:#10b981}
+    .btn.orange{background:#f59e0b}
+    .btn.purple{background:#7c3aed}
+    .btn.light{
+      background:rgba(255,255,255,.85);
+      color:#115cff;
+      border:1px solid rgba(17,92,255,.18);
+      box-shadow:0 10px 20px rgba(13,71,161,.06);
+    }
+
+    .feedback{
+      display:none;
+      margin-top:12px;
+      padding:15px 16px;
+      border-radius:18px;
+      font-size:13.5px;
+      line-height:1.55;
+      font-weight:800;
+      border:1px solid rgba(216,232,255,.95);
+      background:rgba(255,255,255,.78);
+      color:#43526a;
+    }
+
+    .feedback.show{display:block}
+    .feedback.ok{background:#ecfdf5;border-color:#bbf7d0;color:#065f46}
+    .feedback.bad{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .explain{
+      display:none;
+      margin-top:14px;
+      border-radius:22px;
+      padding:18px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(216,232,255,.95);
+    }
+
+    .explain.show{display:block}
+
+    .explain h3{
+      color:#061650;
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .explain p{
+      color:#43526a;
+      font-size:14px;
+      line-height:1.7;
+      font-weight:800;
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .info-card{
+      padding:18px;
+      border-radius:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.90);
+      box-shadow:0 14px 32px rgba(13,71,161,.08);
+    }
+
+    .info-card h3{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      color:#061650;
+      font-size:17px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .info-card h3 i{color:#7c3aed}
+
+    .info-card p{
+      color:#526383;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .progress-line{
+      height:9px;
+      border-radius:999px;
+      background:#dbe7f5;
+      overflow:hidden;
+      margin-top:12px;
+    }
+
+    .progress-line div{
+      height:100%;
+      width:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#7c3aed,#115cff);
+      transition:.25s ease;
+    }
+
+    @media(max-width:1050px){
+      .hero,.layout{grid-template-columns:1fr}
+      .score-card{max-width:420px}
+      .info-grid{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media(max-width:760px){
+      .navbar{padding:0 14px}
+      .logo{font-size:24px}
+      .nav-links{gap:14px;overflow-x:auto}
+      .nav-links a{font-size:13px}
+      .page{width:min(100% - 22px,1280px)}
+      .hero{padding:24px 20px;border-radius:24px}
+      .hero h1{font-size:36px}
+      .train-head{flex-direction:column}
+      .options,.answer-row,.info-grid{grid-template-columns:1fr}
+      .formula-display strong{font-size:32px}
+    }
+  </style>
+</head>
+
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav-links">
+    <a href="index.html">Басты бет</a>
+    <a href="levels_map.html">Оқу картасы</a>
+    <a href="personal_plan.html">Жеке жоспар</a>
+    <a href="practice.html" class="active">Практика</a>
+    <a href="achievement.html">Жетістіктер</a>
+    <a href="guide.html">Нұсқаулық</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Профиль</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div>
+      <div class="badge">
+        <i class="fa-solid fa-square-root-variable"></i>
+        Формула тренажері
+      </div>
+
+      <h1>Формуланы түсініп қолдан</h1>
+
+      <p>
+        Формуланы жаттап қана қоймай, оны таңдау, түрлендіру, белгісіз шаманы табу
+        және өлшем бірліктерді сәйкестендіру арқылы бекіт.
+      </p>
+    </div>
+
+    <div class="score-card">
+      <h2>Формула нәтижесі</h2>
+      <div class="score-grid">
+        <div class="score-mini">
+          <strong id="formulaSolved">0</strong>
+          <span>Тапсырма</span>
+        </div>
+        <div class="score-mini">
+          <strong id="formulaCorrect">0</strong>
+          <span>Дұрыс</span>
+        </div>
+        <div class="score-mini">
+          <strong id="formulaXP">0</strong>
+          <span>XP</span>
+        </div>
+      </div>
+      <div class="tip">
+        Кеңес: алдымен формуланың қандай шамаларды байланыстыратынын түсін. Кейін белгісіз шаманы оңай табасың.
+      </div>
+    </div>
+  </section>
+
+  <section class="layout">
+    <aside class="panel">
+      <h2>Жаттығу режимі</h2>
+
+      <div class="mode-list">
+        <button class="mode-btn active" onclick="setMode('choose', this)">
+          <i class="fa-solid fa-list-check"></i>
+          <div>
+            <b>Формуланы таңдау</b>
+            <span>Қандай формула керек екенін анықтау</span>
+          </div>
+        </button>
+
+        <button class="mode-btn" onclick="setMode('transform', this)">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <div>
+            <b>Түрлендіру</b>
+            <span>Белгісіз шаманы формуладан шығару</span>
+          </div>
+        </button>
+
+        <button class="mode-btn" onclick="setMode('unit', this)">
+          <i class="fa-solid fa-ruler-combined"></i>
+          <div>
+            <b>Өлшем бірлік</b>
+            <span>Шама мен өлшем бірлікті сәйкестендіру</span>
+          </div>
+        </button>
+      </div>
+
+      <h2>Формула карталары</h2>
+      <div class="formula-list" id="formulaList"></div>
+    </aside>
+
+    <section class="trainer">
+      <div class="train-card">
+        <div class="train-head">
+          <div class="train-title">
+            <h2 id="modeTitle">Формуланы таңдау</h2>
+            <p id="modeDesc">Берілген жағдайға сәйкес дұрыс формуланы таңда.</p>
+          </div>
+
+          <span class="pill" id="taskNumber">
+            <i class="fa-solid fa-list-ol"></i>
+            1/6
+          </span>
+        </div>
+
+        <div class="formula-display">
+          <strong id="formulaDisplay">?</strong>
+        </div>
+
+        <div class="question" id="questionText">
+          Дененің жолын жылдамдық пен уақыт арқылы табу үшін қандай формула қолданылады?
+        </div>
+
+        <div class="options" id="optionsBox"></div>
+
+        <div class="answer-row" id="answerRow" style="display:none;">
+          <input type="text" id="answerInput" placeholder="Жауапты енгіз">
+          <input type="text" id="unitInput" placeholder="Өлшем бірлік">
+          <button class="btn purple" onclick="checkTextAnswer()">
+            <i class="fa-solid fa-check"></i>
+            Тексеру
+          </button>
+        </div>
+
+        <div class="actions">
+          <button class="btn light" onclick="showExplain()">
+            <i class="fa-solid fa-eye"></i>
+            Түсіндірме
+          </button>
+
+          <button class="btn orange" onclick="nextTask()">
+            <i class="fa-solid fa-forward"></i>
+            Келесі
+          </button>
+
+          <a href="practice.html" class="btn light">
+            <i class="fa-solid fa-arrow-left"></i>
+            Практикаға қайту
+          </a>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="explain" id="explainBox">
+          <h3>Түсіндірме</h3>
+          <p id="explainText">Формула физикалық шамалар арасындағы байланысты көрсетеді.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h3><i class="fa-solid fa-bullseye"></i> Мақсат</h3>
+          <p id="goalText">Формуланы жағдайға қарай дұрыс таңдау.</p>
+        </div>
+
+        <div class="info-card">
+          <h3><i class="fa-solid fa-star"></i> Жұлдыз</h3>
+          <p>6 тапсырманың 4-еуі дұрыс болса — 3★, 5-еуі дұрыс болса — 4★, бәрі дұрыс болса — 5★.</p>
+        </div>
+
+        <div class="info-card">
+          <h3><i class="fa-solid fa-chart-line"></i> Прогресс</h3>
+          <p id="progressText">0/6 тапсырма орындалды.</p>
+          <div class="progress-line"><div id="progressBar"></div></div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script>
+const formulas = [
+  {name:"Жол", formula:"s = v · t", desc:"Бірқалыпты қозғалыста жол жылдамдық пен уақыттың көбейтіндісіне тең."},
+  {name:"Жылдамдық", formula:"v = s / t", desc:"Жылдамдық жолдың уақытқа қатынасына тең."},
+  {name:"Күш", formula:"F = m · a", desc:"Ньютонның екінші заңы: күш масса мен үдеудің көбейтіндісіне тең."},
+  {name:"Қысым", formula:"p = F / S", desc:"Қысым күштің ауданға қатынасына тең."},
+  {name:"Тығыздық", formula:"ρ = m / V", desc:"Тығыздық массаның көлемге қатынасына тең."},
+  {name:"Жұмыс", formula:"A = F · s", desc:"Механикалық жұмыс күш пен орын ауыстыру көбейтіндісіне тең."},
+  {name:"Қуат", formula:"N = A / t", desc:"Қуат жұмыстың уақытқа қатынасына тең."},
+  {name:"Импульс", formula:"p = m · v", desc:"Импульс масса мен жылдамдықтың көбейтіндісіне тең."},
+  {name:"Кинетикалық энергия", formula:"Eₖ = m v² / 2", desc:"Қозғалыстағы дененің энергиясы."},
+  {name:"Потенциалдық энергия", formula:"Eₚ = m g h", desc:"Биіктіктегі дененің энергиясы."}
+];
+
+const tasks = {
+  choose:[
+    {
+      display:"?",
+      q:"Дененің жолын жылдамдық пен уақыт арқылы табу үшін қандай формула қолданылады?",
+      options:["s = v · t","F = m · a","p = F / S","ρ = m / V"],
+      answer:"s = v · t",
+      explain:"Бірқалыпты қозғалыста дененің жүрген жолы жылдамдық пен уақыттың көбейтіндісі арқылы табылады."
+    },
+    {
+      display:"?",
+      q:"Ньютонның екінші заңын көрсететін формула қайсы?",
+      options:["F = m · a","v = s / t","A = F · s","N = A / t"],
+      answer:"F = m · a",
+      explain:"Күш дененің массасы мен үдеуіне тәуелді: F = ma."
+    },
+    {
+      display:"?",
+      q:"Қысымды есептеу үшін қандай формула қолданылады?",
+      options:["p = F / S","E = mgh","p = mv","s = vt"],
+      answer:"p = F / S",
+      explain:"Қысым күштің әсер ететін ауданға қатынасы арқылы табылады."
+    },
+    {
+      display:"?",
+      q:"Механикалық жұмыс формуласы қайсы?",
+      options:["A = F · s","N = A / t","ρ = m / V","v = s / t"],
+      answer:"A = F · s",
+      explain:"Күш орын ауыстыру бағытымен әсер етсе, жұмыс A = F · s формуласымен есептеледі."
+    },
+    {
+      display:"?",
+      q:"Тығыздықты табу формуласы қандай?",
+      options:["ρ = m / V","F = ma","p = F/S","E = mv²/2"],
+      answer:"ρ = m / V",
+      explain:"Тығыздық массаның көлемге қатынасына тең."
+    },
+    {
+      display:"?",
+      q:"Кинетикалық энергия формуласы қайсы?",
+      options:["Eₖ = m v² / 2","Eₚ = mgh","A = Fs","N = A/t"],
+      answer:"Eₖ = m v² / 2",
+      explain:"Кинетикалық энергия жылдамдықтың квадратына тәуелді."
+    }
+  ],
+  transform:[
+    {
+      display:"s = v · t",
+      q:"Осы формуладан v шамасын шығар.",
+      answer:"v=s/t",
+      unit:"v",
+      explain:"s = vt теңдеуінде v-ны табу үшін екі жақты t-ға бөлеміз: v = s/t."
+    },
+    {
+      display:"F = m · a",
+      q:"Осы формуладан a шамасын шығар.",
+      answer:"a=f/m",
+      unit:"a",
+      explain:"F = ma теңдеуінде a-ны табу үшін F-ті m-ге бөлеміз: a = F/m."
+    },
+    {
+      display:"p = F / S",
+      q:"Осы формуладан F шамасын шығар.",
+      answer:"f=p*s",
+      unit:"F",
+      explain:"p = F/S теңдеуінен F = pS шығады."
+    },
+    {
+      display:"ρ = m / V",
+      q:"Осы формуладан m шамасын шығар.",
+      answer:"m=ρ*v",
+      unit:"m",
+      explain:"ρ = m/V теңдеуінен m = ρV."
+    },
+    {
+      display:"N = A / t",
+      q:"Осы формуладан A шамасын шығар.",
+      answer:"a=n*t",
+      unit:"A",
+      explain:"N = A/t теңдеуінен A = Nt."
+    },
+    {
+      display:"Eₚ = m g h",
+      q:"Осы формуладан h шамасын шығар.",
+      answer:"h=e/(m*g)",
+      unit:"h",
+      explain:"E = mgh теңдеуінен h = E/(mg)."
+    }
+  ],
+  unit:[
+    {
+      display:"F",
+      q:"Күштің SI жүйесіндегі өлшем бірлігі қандай?",
+      options:["Ньютон","Джоуль","Паскаль","Ватт"],
+      answer:"Ньютон",
+      explain:"Күш Ньютонмен өлшенеді: Н."
+    },
+    {
+      display:"A",
+      q:"Жұмыстың өлшем бірлігі қандай?",
+      options:["Джоуль","Ньютон","Килограмм","Метр"],
+      answer:"Джоуль",
+      explain:"Жұмыс пен энергияның өлшем бірлігі — Джоуль."
+    },
+    {
+      display:"p",
+      q:"Қысымның өлшем бірлігі қандай?",
+      options:["Паскаль","Герц","Ватт","Ньютон"],
+      answer:"Паскаль",
+      explain:"Қысым Паскальмен өлшенеді: Па."
+    },
+    {
+      display:"N",
+      q:"Қуаттың өлшем бірлігі қандай?",
+      options:["Ватт","Джоуль","Ньютон","Паскаль"],
+      answer:"Ватт",
+      explain:"Қуат Ваттпен өлшенеді: Вт."
+    },
+    {
+      display:"ρ",
+      q:"Тығыздықтың негізгі өлшем бірлігі қандай?",
+      options:["кг/м³","м/с","Н","Па"],
+      answer:"кг/м³",
+      explain:"SI жүйесінде тығыздық кг/м³ арқылы өлшенеді."
+    },
+    {
+      display:"v",
+      q:"Жылдамдықтың өлшем бірлігі қандай?",
+      options:["м/с","м/с²","Н","Дж"],
+      answer:"м/с",
+      explain:"Жылдамдық — жолдың уақытқа қатынасы, өлшемі м/с."
+    }
+  ]
+};
+
+let currentMode = "choose";
+let currentIndex = 0;
+let correctSession = 0;
+let solvedSession = 0;
+let locked = false;
+
+function el(id){return document.getElementById(id);}
+function getSaved(key){return Number(localStorage.getItem(key) || 0);}
+function setSaved(key,value){localStorage.setItem(key,String(value));}
+
+function renderTotals(){
+  el("formulaSolved").textContent = getSaved("physxFormulaSolved");
+  el("formulaCorrect").textContent = getSaved("physxFormulaCorrect");
+  el("formulaXP").textContent = getSaved("physxFormulaXP");
+}
+
+function renderFormulaList(){
+  el("formulaList").innerHTML = formulas.map((f, index) => `
+    <div class="formula-chip ${index === 0 ? "active" : ""}" onclick="showFormulaCard(${index}, this)">
+      <b>${f.formula}</b>
+      <span>${f.name}</span>
+    </div>
+  `).join("");
+}
+
+function showFormulaCard(index, card){
+  document.querySelectorAll(".formula-chip").forEach(c => c.classList.remove("active"));
+  card.classList.add("active");
+  const f = formulas[index];
+  el("formulaDisplay").innerHTML = f.formula;
+  el("questionText").textContent = f.desc;
+  el("optionsBox").innerHTML = "";
+  el("answerRow").style.display = "none";
+  el("feedback").className = "feedback";
+  el("explainBox").classList.add("show");
+  el("explainText").textContent = f.desc;
+}
+
+function setMode(mode, button){
+  currentMode = mode;
+  currentIndex = 0;
+  correctSession = 0;
+  solvedSession = 0;
+  locked = false;
+
+  document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+  renderTask();
+}
+
+function normalizeFormula(text){
+  return String(text)
+    .toLowerCase()
+    .replaceAll(" ","")
+    .replaceAll("·","*")
+    .replaceAll("×","*")
+    .replaceAll("ρ","ρ")
+    .replaceAll("f","f")
+    .replaceAll("е","e")
+    .replaceAll("ₚ","")
+    .replaceAll("ₖ","");
+}
+
+function renderTask(){
+  locked = false;
+  const task = tasks[currentMode][currentIndex];
+
+  const modeInfo = {
+    choose:["Формуланы таңдау","Берілген жағдайға сәйкес дұрыс формуланы таңда.","Формуланы жағдайға қарай дұрыс таңдау."],
+    transform:["Формуланы түрлендіру","Берілген формуладан белгісіз шаманы шығарып жаз.","Белгісіз шаманы формуладан дұрыс шығару."],
+    unit:["Өлшем бірлік","Физикалық шаманың өлшем бірлігін таңда.","Шама мен өлшем бірлікті сәйкестендіру."]
+  };
+
+  el("modeTitle").textContent = modeInfo[currentMode][0];
+  el("modeDesc").textContent = modeInfo[currentMode][1];
+  el("goalText").textContent = modeInfo[currentMode][2];
+  el("taskNumber").innerHTML = `<i class="fa-solid fa-list-ol"></i> ${currentIndex + 1}/6`;
+  el("formulaDisplay").textContent = task.display;
+  el("questionText").textContent = task.q;
+  el("feedback").className = "feedback";
+  el("explainBox").className = "explain";
+  el("explainText").textContent = task.explain;
+
+  if(currentMode === "transform"){
+    el("optionsBox").innerHTML = "";
+    el("answerRow").style.display = "grid";
+    el("answerInput").value = "";
+    el("unitInput").value = task.unit || "";
+  }else{
+    el("answerRow").style.display = "none";
+    const shuffled = [...task.options].sort(() => Math.random() - 0.5);
+    el("optionsBox").innerHTML = shuffled.map(option => `
+      <button class="option" onclick="chooseOption('${escapeText(option)}', this)">${option}</button>
+    `).join("");
+  }
+
+  updateProgress();
+}
+
+function escapeText(text){
+  return String(text).replaceAll("'","\\'");
+}
+
+function chooseOption(value, button){
+  if(locked) return;
+  locked = true;
+
+  const task = tasks[currentMode][currentIndex];
+  const buttons = [...document.querySelectorAll(".option")];
+
+  buttons.forEach(btn => {
+    btn.disabled = true;
+    if(btn.textContent.trim() === task.answer) btn.classList.add("correct");
+  });
+
+  if(value === task.answer){
+    button.classList.add("correct");
+    markCorrect();
+  }else{
+    button.classList.add("wrong");
+    markWrong(`Дұрыс жауап: ${task.answer}.`);
+  }
+}
+
+function checkTextAnswer(){
+  if(locked) return;
+
+  const task = tasks[currentMode][currentIndex];
+  const input = normalizeFormula(el("answerInput").value);
+  const answer = normalizeFormula(task.answer);
+
+  if(!input){
+    const fb = el("feedback");
+    fb.className = "feedback show bad";
+    fb.innerHTML = "<b>Жауап енгізілмеді.</b> Белгісіз шаманы шығарып жаз.";
+    return;
+  }
+
+  locked = true;
+
+  if(input === answer){
+    markCorrect();
+  }else{
+    markWrong(`Дұрыс түрлендіру: ${task.answer}.`);
+  }
+}
+
+function markCorrect(){
+  correctSession++;
+  solvedSession++;
+  const xp = currentMode === "transform" ? 8 : 6;
+
+  setSaved("physxFormulaSolved", getSaved("physxFormulaSolved") + 1);
+  setSaved("physxFormulaCorrect", getSaved("physxFormulaCorrect") + 1);
+  setSaved("physxFormulaXP", getSaved("physxFormulaXP") + xp);
+
+  const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+  if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+  user.progress.points = Number(user.progress.points || 0) + xp;
+  localStorage.setItem("physxUser", JSON.stringify(user));
+
+  const fb = el("feedback");
+  fb.className = "feedback show ok";
+  fb.innerHTML = `<b>Дұрыс!</b> Формула жақсы бекітілді. +${xp} XP.`;
+
+  if(correctSession >= 4){
+    localStorage.setItem(`${currentMode}-formula-trainer-stars`, Math.min(5, correctSession));
+  }
+
+  renderTotals();
+  updateProgress();
+}
+
+function markWrong(extra){
+  solvedSession++;
+  setSaved("physxFormulaSolved", getSaved("physxFormulaSolved") + 1);
+
+  const fb = el("feedback");
+  fb.className = "feedback show bad";
+  fb.innerHTML = `<b>Қате емес, тәжірибе!</b> ${extra} Түсіндірмені қара.`;
+
+  renderTotals();
+  updateProgress();
+}
+
+function updateProgress(){
+  el("progressText").textContent = `${solvedSession}/6 тапсырма орындалды.`;
+  el("progressBar").style.width = `${(solvedSession/6)*100}%`;
+}
+
+function showExplain(){
+  el("explainBox").classList.add("show");
+}
+
+function nextTask(){
+  currentIndex++;
+  if(currentIndex >= tasks[currentMode].length){
+    const stars = correctSession >= 6 ? 5 : correctSession >= 5 ? 4 : correctSession >= 4 ? 3 : correctSession >= 2 ? 2 : 1;
+    alert(`Режим аяқталды! Нәтиже: ${correctSession}/6 дұрыс. Жұлдыз: ${stars}★`);
+    currentIndex = 0;
+    correctSession = 0;
+    solvedSession = 0;
+  }
+  renderTask();
+}
+
+renderTotals();
+renderFormulaList();
+renderTask();
+</script>
+</body>
+</html>

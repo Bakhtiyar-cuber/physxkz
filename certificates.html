@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysX - Сертификат</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(#d2dff1 1px, transparent 1px),
+        linear-gradient(180deg, #f8fbff, #edf5ff);
+      background-size: 28px 28px, 100% 100%;
+      color: #061b55;
+    }
+
+    .header {
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid #d6e6fb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #0d47a1;
+      text-decoration: none;
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav a {
+      color: #0b2f77;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .cert-page {
+      width: min(100% - 32px, 1180px);
+      margin: 0 auto;
+      padding: 34px 0 50px;
+    }
+
+    .cert-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .cert-top h1 {
+      margin: 0 0 6px;
+      font-size: 34px;
+      color: #061b55;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .cert-top p {
+      margin: 0;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .cert-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 13px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .btn-primary {
+      background: #145cff;
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(20, 92, 255, 0.18);
+    }
+
+    .btn-light {
+      background: #fff;
+      color: #145cff;
+      border: 1px solid #dbeafe;
+    }
+
+    .certificate-wrap {
+      position: relative;
+    }
+
+    .certificate-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 680px;
+      border-radius: 34px;
+      padding: 54px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.96), rgba(239,246,255,.92)),
+        radial-gradient(circle at 12% 18%, rgba(20,92,255,.12), transparent 26%),
+        radial-gradient(circle at 88% 78%, rgba(245,158,11,.16), transparent 24%);
+      border: 2px solid #bfdbfe;
+      box-shadow: 0 28px 70px rgba(13, 71, 161, 0.13);
+    }
+
+    .certificate-card::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border: 2px solid rgba(20, 92, 255, .18);
+      border-radius: 26px;
+      pointer-events: none;
+    }
+
+    .certificate-card::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -80px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(20, 92, 255, .07);
+    }
+
+    .cert-inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .cert-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #0d47a1;
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 30px;
+    }
+
+    .cert-brand i {
+      font-size: 24px;
+    }
+
+    .cert-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #145cff;
+      border: 1px solid #bfdbfe;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .certificate-card h2 {
+      margin: 0 0 18px;
+      font-size: 58px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      color: #061b55;
+      font-weight: 900;
+    }
+
+    .cert-small {
+      margin: 0 0 16px;
+      color: #64748b;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .student-name {
+      margin: 0 auto 18px;
+      max-width: 850px;
+      color: #145cff;
+      font-size: 42px;
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      border-bottom: 2px solid #bfdbfe;
+      padding-bottom: 14px;
+    }
+
+    .cert-text {
+      max-width: 760px;
+      margin: 0 auto 34px;
+      color: #334155;
+      font-size: 18px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    .cert-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 0 auto 42px;
+      max-width: 880px;
+    }
+
+    .cert-info-box {
+      min-height: 82px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid #dbeafe;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+    }
+
+    .cert-info-box span {
+      display: block;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .cert-info-box b {
+      display: block;
+      color: #061b55;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .cert-footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 30px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .signature {
+      width: 260px;
+    }
+
+    .signature-line {
+      height: 2px;
+      background: #93c5fd;
+      margin-bottom: 8px;
+    }
+
+    .signature b {
+      display: block;
+      color: #061b55;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .signature span {
+      display: block;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .cert-seal {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #f59e0b, #facc15);
+      color: #fff;
+      font-size: 46px;
+      box-shadow: 0 18px 36px rgba(245, 158, 11, .22);
+      border: 5px solid rgba(255,255,255,.8);
+    }
+
+    .locked-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      border-radius: 34px;
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(8px);
+      z-index: 5;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .locked-overlay.show {
+      display: flex;
+    }
+
+    .locked-box {
+      max-width: 460px;
+      padding: 28px;
+      border-radius: 24px;
+      background: #fff;
+      border: 1px solid #dbeafe;
+      box-shadow: 0 18px 44px rgba(13,71,161,.12);
+    }
+
+    .locked-box i {
+      font-size: 38px;
+      color: #145cff;
+      margin-bottom: 14px;
+    }
+
+    .locked-box h3 {
+      margin: 0 0 10px;
+      color: #061b55;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .locked-box p {
+      margin: 0;
+      color: #64748b;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 800px) {
+      .cert-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .certificate-card {
+        padding: 34px 22px;
+        min-height: auto;
+      }
+
+      .certificate-card h2 {
+        font-size: 38px;
+      }
+
+      .student-name {
+        font-size: 28px;
+      }
+
+      .cert-info {
+        grid-template-columns: 1fr;
+      }
+
+      .cert-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+      }
+
+      .header,
+      .cert-top,
+      .locked-overlay {
+        display: none !important;
+      }
+
+      .cert-page {
+        width: 100%;
+        padding: 0;
+      }
+
+      .certificate-card {
+        box-shadow: none;
+        border-radius: 0;
+        min-height: 100vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html">Басты бет</a>
+    <a href="levels_map.html">Оқу картасы</a>
+    <a href="achivment.html">Жетістіктер</a>
+    <a href="profile.html">Профиль</a>
+  </nav>
+</header>
+
+<main class="cert-page">
+
+  <div class="cert-top">
+    <div>
+      <h1>Сертификат</h1>
+      <p>Деңгей толық аяқталғанда сертификат автоматты түрде ашылады.</p>
+    </div>
+
+    <div class="cert-actions">
+      <a href="achivment.html" class="btn btn-light">
+        <i class="fa-solid fa-arrow-left"></i>
+        Артқа қайту
+      </a>
+
+      <button class="btn btn-primary" id="printBtn" onclick="downloadCertificate()">
+        <i class="fa-solid fa-file-pdf"></i>
+        PDF ретінде сақтау
+      </button>
+    </div>
+  </div>
+
+  <div class="certificate-wrap">
+    <section class="certificate-card" id="certificateArea">
+      <div class="cert-inner">
+
+        <div class="cert-brand">
+          <i class="fa-solid fa-graduation-cap"></i>
+          PhysX
+        </div>
+
+        <div class="cert-label">
+          <i class="fa-solid fa-award"></i>
+          Ресми оқу сертификаты
+        </div>
+
+        <h2>СЕРТИФИКАТ</h2>
+
+        <p class="cert-small">Осы сертификат</p>
+
+        <h1 class="student-name" id="studentName">Оқушы аты-жөні</h1>
+
+        <p class="cert-text">
+          PhysX — адаптивті заманауи білім беру платформасында
+          механика бөлімі бойынша оқу курсын сәтті аяқтағаны үшін беріледі.
+        </p>
+
+        <div class="cert-info">
+          <div class="cert-info-box">
+            <span>Деңгей</span>
+            <b id="certLevel">Beginner — A деңгей</b>
+          </div>
+
+          <div class="cert-info-box">
+            <span>Аяқталған сабақ</span>
+            <b id="certLessons">30 сабақ</b>
+          </div>
+
+          <div class="cert-info-box">
+            <span>Берілген күні</span>
+            <b id="certDate">16.06.2026</b>
+          </div>
+        </div>
+
+        <div class="cert-footer">
+          <div class="signature">
+            <div class="signature-line"></div>
+            <b>PhysX платформасы</b>
+            <span>Адаптивті білім беру жүйесі</span>
+          </div>
+
+          <div class="cert-seal">
+            <i class="fa-solid fa-award"></i>
+          </div>
+
+          <div class="signature">
+            <div class="signature-line"></div>
+            <b>Оқу нәтижесі расталды</b>
+            <span>Автоматты түрде берілді</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="locked-overlay" id="lockedOverlay">
+      <div class="locked-box">
+        <i class="fa-solid fa-lock"></i>
+        <h3>Сертификат әлі ашылған жоқ</h3>
+        <p id="lockedText">
+          Сертификат алу үшін деңгейдегі барлық сабақтарды аяқтау қажет.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem("physxUser")) || {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function formatLevel(level) {
+  if (level === "beginner") return "Beginner — A деңгей";
+  if (level === "intermediate") return "Intermediate — B деңгей";
+  if (level === "advanced") return "Advanced — C деңгей";
+  return "Beginner — A деңгей";
+}
+
+function requiredLessons(level) {
+  if (level === "advanced") return 60;
+  if (level === "intermediate") return 30;
+  return 30;
+}
+
+function loadCertificate() {
+  const user = getUser();
+
+  const studentName = user.name || user.fullName || user.email || "Оқушы аты-жөні";
+  const level = user.studyLevel || "beginner";
+  const completed = user.progress?.lessonsCompleted || [];
+  const required = requiredLessons(level);
+
+  const today = new Date();
+  const dateText = today.toLocaleDateString("kk-KZ", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+
+  document.getElementById("studentName").textContent = studentName;
+  document.getElementById("certLevel").textContent = formatLevel(level);
+  document.getElementById("certLessons").textContent = `${Math.min(completed.length, required)} / ${required} сабақ`;
+  document.getElementById("certDate").textContent = dateText;
+
+  const lockedOverlay = document.getElementById("lockedOverlay");
+  const printBtn = document.getElementById("printBtn");
+  const lockedText = document.getElementById("lockedText");
+
+  if (completed.length < required) {
+    lockedOverlay.classList.add("show");
+    printBtn.disabled = true;
+    printBtn.style.opacity = "0.5";
+    printBtn.style.cursor = "not-allowed";
+
+    lockedText.textContent = `Сертификат алу үшін ${required} сабақтың бәрін аяқтау қажет. Қазір аяқталғаны: ${completed.length}.`;
+  } else {
+    lockedOverlay.classList.remove("show");
+    printBtn.disabled = false;
+  }
+}
+
+function downloadCertificate() {
+  const btn = document.getElementById("printBtn");
+  if (btn.disabled) return;
+
+  window.print();
+}
+
+loadCertificate();
+</script>
+
+</body>
+</html>

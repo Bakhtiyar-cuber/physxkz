@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PhysX | Практика</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    :root {
+      --blue: #115cff;
+      --blue2: #0ea5ff;
+      --dark: #061650;
+      --text: #334466;
+      --soft: #f4f9ff;
+      --border: #d8e8ff;
+      --green: #10b981;
+      --orange: #ff8a00;
+      --purple: #7c3aed;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(17, 92, 255, 0.08), transparent 32%),
+        linear-gradient(180deg, #f7fbff 0%, #eef6ff 100%);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    /* ================= HEADER ================= */
+
+    .navbar {
+      height: 58px;
+      background: #fff;
+      border-bottom: 1px solid #d6e6fb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 18px rgba(15,23,42,.04);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #0d47a1;
+      text-decoration: none;
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+    }
+
+    .logo i {
+      font-size: 22px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      font-weight: 850;
+      color: var(--dark);
+      font-size: 15px;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding: 22px 0;
+      opacity: 0.92;
+      transition: 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--blue);
+      opacity: 1;
+    }
+
+    .nav-links a.active {
+      color: var(--blue);
+      opacity: 1;
+    }
+
+    .nav-links a.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 8px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 4px 10px rgba(17, 92, 255, 0.35);
+    }
+
+    .login-btn {
+      border: none;
+      background: linear-gradient(135deg, #1455ff, #008cff);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 14px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(17, 92, 255, 0.28);
+      transition: 0.25s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(17, 92, 255, 0.38);
+    }
+
+
+    /* ============= AUTH AREA: КІРУ / ПРОФИЛЬ ============= */
+
+    #authArea {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .profile-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      position: relative;
+      padding: 22px 0;
+      color: var(--dark);
+      font-weight: 850;
+      font-size: 15px;
+      opacity: 0.92;
+      transition: 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .profile-link i {
+      font-size: 14px;
+      color: var(--dark);
+      transition: 0.25s ease;
+    }
+
+    .profile-link:hover,
+    .profile-link:hover i {
+      color: var(--blue);
+      opacity: 1;
+    }
+
+    .profile-link::after {
+      display: none !important;
+      content: none !important;
+    }
+
+    /* ================= PAGE ================= */
+
+    .page {
+      padding: 18px 18px 36px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* ================= HERO ================= */
+
+    .hero {
+      min-height: 210px;
+      border-radius: 22px;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(3, 28, 105, 0.88) 0%,
+          rgba(5, 71, 200, 0.66) 34%,
+          rgba(17, 92, 255, 0.18) 58%,
+          rgba(255, 255, 255, 0.00) 100%
+        ),
+        url("image/practice/practice-hero-bg.png");
+      background-size: cover;
+      background-position: center right;
+      padding: 32px 38px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.8fr;
+      align-items: center;
+      gap: 28px;
+      box-shadow: 0 18px 44px rgba(30, 105, 220, 0.20);
+      position: relative;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,0.12), transparent 18%),
+        radial-gradient(circle at 55% 0%, rgba(255,255,255,0.08), transparent 24%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+  border-radius: 26px;
+  padding: 28px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7, 35, 125, 0.78),
+      rgba(15, 91, 255, 0.42)
+    ),
+    url("image/practice/hero-info-bg.png");
+
+  background-size: cover;
+  background-position: center right;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.25),
+    0 18px 42px rgba(0, 92, 255, 0.16);
+}
+
+.hero-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(3, 18, 70, 0.30),
+    rgba(3, 18, 70, 0.04)
+  );
+  pointer-events: none;
+}
+
+.hero-content h1,
+.hero-content p,
+.hero-pills {
+  position: relative;
+  z-index: 2;
+}
+    .hero-content h1 {
+      color: white;
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.05;
+      margin-bottom: 14px;
+      letter-spacing: -0.9px;
+      text-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .hero-content p {
+      color: rgba(255, 255, 255, 0.96);
+      max-width: 540px;
+      font-size: 17px;
+      line-height: 1.55;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .hero-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hero-pills span {
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--blue);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 950;
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .goal-card {
+      border-radius: 26px;
+      padding: 28px;
+      background: linear-gradient(135deg, #0f5bff, #16b7ff);
+      color: white;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.28),
+        0 18px 42px rgba(0, 92, 255, 0.28);
+      overflow: hidden;
+      min-height: 168px;
+      position: relative;
+    }
+
+    .goal-card::after {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      right: -50px;
+      top: -45px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .goal-card::before {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      right: 35px;
+      bottom: -55px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .goal-card .small,
+    .goal-card h2,
+    .goal-card .progress-line,
+    .goal-card p {
+      position: relative;
+      z-index: 2;
+    }
+
+    .goal-card .small {
+      font-weight: 950;
+      font-size: 17px;
+      margin-bottom: 12px;
+    }
+
+    .goal-card h2 {
+      font-size: 42px;
+      margin-bottom: 18px;
+      letter-spacing: -1px;
+    }
+
+    .progress-line {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-line span {
+      display: block;
+      width: 56%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffffff, #8fe8ff);
+    }
+
+    .goal-card p {
+      font-weight: 850;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    /* ================= STATS ================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 14px 34px rgba(14, 70, 140, 0.08);
+      transition: 0.25s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 42px rgba(14, 70, 140, 0.13);
+    }
+
+    .stat-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 28px;
+      font-weight: 950;
+      flex: 0 0 auto;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.14);
+    }
+
+    .blue {
+      background: linear-gradient(135deg, #0c63ff, #08a5ff);
+    }
+
+    .green {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+    }
+
+    .orange {
+      background: linear-gradient(135deg, #ff8a00, #ffbe18);
+    }
+
+    .purple {
+      background: linear-gradient(135deg, #7c3aed, #9b5cff);
+    }
+
+    .stat-card p {
+      font-size: 14px;
+      color: #526383;
+      font-weight: 800;
+    }
+
+    .stat-card h3 {
+      font-size: 30px;
+      color: var(--dark);
+      line-height: 1;
+      margin: 5px 0;
+      letter-spacing: -0.5px;
+    }
+
+    /* ================= MAIN GRID ================= */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 14px 34px rgba(14, 70, 140, 0.08);
+      overflow: hidden;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title h2 {
+      font-size: 24px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.4px;
+    }
+
+    .recommend-btn {
+      border: 1px solid #bcd8ff;
+      background: #eef6ff;
+      color: var(--blue);
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-weight: 950;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ================= TASKS ================= */
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-card {
+      display: grid;
+      grid-template-columns: 66px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      transition: 0.25s ease;
+    }
+
+    .task-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue);
+      box-shadow: 0 16px 32px rgba(17, 92, 255, 0.14);
+    }
+
+    .task-card.featured {
+      border: 2px solid var(--blue);
+      box-shadow: 0 14px 34px rgba(17, 92, 255, 0.10);
+    }
+
+    .task-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 25px;
+      font-weight: 950;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.14);
+    }
+
+    .task-info h3 {
+      font-size: 19px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .task-info p {
+      color: #4c5d7d;
+      font-size: 14px;
+      font-weight: 750;
+      margin-bottom: 9px;
+      line-height: 1.35;
+    }
+
+    .tags {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tag-blue {
+      background: #eef6ff;
+      color: var(--blue);
+      border-color: #bcd8ff;
+    }
+
+    .tag-green {
+      background: #e9fff4;
+      color: #079455;
+      border-color: #b7f0d2;
+    }
+
+    .tag-orange {
+      background: #fff3e5;
+      color: #f97316;
+      border-color: #ffd5a8;
+    }
+
+    .task-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .time {
+      font-size: 13px;
+      font-weight: 950;
+      color: #526383;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: white;
+      white-space: nowrap;
+    }
+
+    .action-btn {
+      border: none;
+      color: white;
+      font-weight: 950;
+      border-radius: 14px;
+      padding: 12px 20px;
+      cursor: pointer;
+      min-width: 116px;
+      box-shadow: 0 12px 24px rgba(17, 92, 255, 0.23);
+      transition: 0.25s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.03);
+    }
+
+    /* ================= RIGHT COLUMN ================= */
+
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .progress-card {
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.82), rgba(255,255,255,0.38)),
+        url("image/practice/progress-bg.png");
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+    }
+
+    .progress-card p {
+      font-weight: 800;
+      color: #064e3b;
+      margin-bottom: 12px;
+      max-width: 600px;
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #dfeeff;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .progress-track span {
+      display: block;
+      height: 100%;
+      width: 55%;
+      background: linear-gradient(90deg, #10b981, #22c55e);
+      border-radius: inherit;
+    }
+
+    .status-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .adaptive-card .mini-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      background: rgba(255,255,255,0.88);
+      transition: 0.25s ease;
+    }
+
+    .adaptive-card .mini-item:hover {
+      border-color: var(--blue);
+      box-shadow: 0 12px 26px rgba(17, 92, 255, 0.10);
+    }
+
+    .mini-item h4 {
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 3px;
+    }
+
+    .mini-item p {
+      font-size: 13px;
+      color: #526383;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .mini-item button {
+      border: none;
+      background: var(--blue);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 950;
+      cursor: pointer;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 22px rgba(17, 92, 255, 0.22);
+    }
+
+    .rule-card {
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.84), rgba(255,255,255,0.40)),
+        url("image/practice/rule-bg.png");
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      min-height: 124px;
+    }
+
+    .rule-card h2 {
+      margin-bottom: 8px;
+      font-size: 23px;
+    }
+
+    .rule-card strong {
+      display: block;
+      color: var(--dark);
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .rule-card p {
+      max-width: 480px;
+      color: #064e3b;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    /* ================= TYPES ================= */
+
+    .types-section {
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 14px 34px rgba(14, 70, 140, 0.08);
+    }
+
+    .types-section h2 {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 14px;
+      letter-spacing: -0.4px;
+    }
+
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .type-card {
+      min-height: 150px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: right center;
+      background-repeat: no-repeat;
+      position: relative;
+      transition: 0.25s ease;
+    }
+
+    .type-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px rgba(14, 70, 140, 0.13);
+    }
+
+    .type-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.86),
+        rgba(255,255,255,0.52),
+        rgba(255,255,255,0.08)
+      );
+    }
+
+    .type-card > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .type-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 22px;
+      margin-bottom: 12px;
+      font-weight: 950;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.13);
+    }
+
+    .type-card h3 {
+      color: var(--dark);
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .type-card p {
+      color: #526383;
+      font-weight: 800;
+      font-size: 13px;
+      line-height: 1.35;
+      max-width: 230px;
+      margin-bottom: 12px;
+    }
+
+    .type-card button {
+      border: 1px solid #bcd8ff;
+      background: rgba(255,255,255,0.86);
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 950;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .type-card button:hover {
+      background: var(--blue);
+      color: white;
+    }
+
+    .game-bg {
+      background-image: url("image/practice/game-bg.png");
+    }
+
+    .lab-bg {
+      background-image: url("image/practice/lab-bg.png");
+    }
+
+    .problem-bg {
+      background-image: url("image/practice/problem-bg.png");
+    }
+
+    .formula-bg {
+      background-image: url("image/practice/formula-bg.png");
+    }
+
+
+    .type-card .type-btn {
+      border: 1px solid #bcd8ff;
+      background: rgba(255,255,255,0.86);
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 950;
+      cursor: pointer;
+      transition: 0.25s ease;
+      display: inline-flex;
+      width: max-content;
+    }
+
+    .type-card .type-btn:hover {
+      background: var(--blue);
+      color: white;
+    }
+
+    .action-btn {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 1150px) {
+      .hero,
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats,
+      .type-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .nav-links {
+        gap: 18px;
+        font-size: 14px;
+      }
+
+      .hero {
+        background-position: center right;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .navbar {
+        padding: 0 16px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .page {
+        padding: 14px;
+      }
+
+      .hero {
+        padding: 26px 20px;
+        border-radius: 20px;
+      }
+
+      .hero-content h1 {
+        font-size: 32px;
+      }
+
+      .goal-card h2 {
+        font-size: 34px;
+      }
+
+      .stats,
+      .type-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .task-card {
+        grid-template-columns: 1fr;
+      }
+
+      .task-action {
+        align-items: stretch;
+      }
+
+      .action-btn {
+        width: 100%;
+      }
+
+      .panel-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .adaptive-card .mini-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .mini-item button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      PhysX
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Басты бет</a>
+      <a href="levels_map.html">Оқу картасы</a>
+      <a href="personal_plan.html">Жеке жоспар</a>
+      <a href="practice.html" class="active">Практика</a>
+      <a href="achievement.html">Жетістіктер</a>
+      <span id="authArea"></span>
+    </nav>
+  </header>
+
+  <main class="page">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Практика орталығы</h1>
+        <p>
+          Теорияны бекітіп, білімді іс жүзінде қолдан!
+          Есептерді шығар, тест тапсырып, виртуалды тәжірибелер арқылы физиканы меңгер.
+        </p>
+
+        <div class="hero-pills">
+          <span>✨ Түсінікті</span>
+          <span>♻ Интерактивті</span>
+          <span>🎯 Нәтижеге бағытталған</span>
+        </div>
+      </div>
+
+      
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+      <div class="stat-card">
+        <div class="stat-icon blue">▦</div>
+        <div>
+          <p>Есептер</p>
+          <h3>3</h3>
+          <p>Шығарылған есеп</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon green">✓</div>
+        <div>
+          <p>Дұрыс жауап</p>
+          <h3>0%</h3>
+          <p>Орташа нәтиже</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon orange">★</div>
+        <div>
+          <p>Жұлдыз</p>
+          <h3>0</h3>
+          <p>Практикадан жиналды</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon purple">⚗</div>
+        <div>
+          <p>Лаборатория</p>
+          <h3>1</h3>
+          <p>Аяқталған тәжірибе</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN -->
+    <section class="main-grid">
+
+      <!-- LEFT -->
+      <div class="panel">
+        <div class="panel-title">
+          <h2>▣ Бүгінгі практика</h2>
+          <button class="recommend-btn">✦ Адаптивті ұсыныс</button>
+        </div>
+
+        <div class="task-list">
+
+          <div class="task-card featured">
+            <div class="task-icon blue">▦</div>
+
+            <div class="task-info">
+              <h3>Есеп тренажері: 8-сабақ</h3>
+              <p>Формуланы қолданып, 3 қысқа есеп шығар.</p>
+
+              <div class="tags">
+                <span class="tag tag-blue">Есеп</span>
+                <span class="tag tag-green">3 тапсырма</span>
+                <span class="tag tag-orange">+2 ★</span>
+              </div>
+            </div>
+
+            <div class="task-action">
+              <span class="time">≈ 20 мин</span>
+              <a href="problem-trainer.html" class="action-btn blue">Бастау →</a>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-icon green">⚗</div>
+
+            <div class="task-info">
+              <h3>Виртуалды тәжірибе</h3>
+              <p>Қозғалыс пен күштің байланысын интерактивті түрде тексер.</p>
+
+              <div class="tags">
+                <span class="tag tag-blue">Лаборатория</span>
+                <span class="tag tag-green">Интерактивті</span>
+                <span class="tag tag-orange">+1 ★</span>
+              </div>
+            </div>
+
+            <div class="task-action">
+              <span class="time">≈ 15 мин</span>
+              <a href="virtual-lab.html" class="action-btn green">Бастау →</a>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-icon orange">?</div>
+
+            <div class="task-info">
+              <h3>Қысқа тест</h3>
+              <p>5 сұрақ арқылы бүгінгі практика нәтижесін тексер.</p>
+
+              <div class="tags">
+                <span class="tag tag-blue">Тест</span>
+                <span class="tag tag-green">5 сұрақ</span>
+                <span class="tag tag-orange">Жылдам</span>
+              </div>
+            </div>
+
+            <div class="task-action">
+              <span class="time">≈ 10 мин</span>
+              <a href="practice-test.html" class="action-btn blue">Тест →</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-col">
+
+        <div class="panel progress-card">
+          <div class="panel-title">
+            <h2>⌁ Практика прогресі</h2>
+          </div>
+
+          <p>Алдымен теорияны қысқаша қайталап, жеңіл есептерден баста.</p>
+
+          <div class="progress-track">
+            <span></span>
+          </div>
+
+          <div class="status-row">
+            <span class="status tag-green">✓ 1/3 орындалды</span>
+            <span class="status tag-orange">★ +3 жұлдыз</span>
+            <span class="status tag-blue">⏱ 45 мин</span>
+          </div>
+        </div>
+
+        <div class="panel adaptive-card">
+          <div class="panel-title">
+            <h2>🎯 Адаптивті ұсыныс</h2>
+          </div>
+
+          <div class="mini-item">
+            <div>
+              <h4>Заттың тығыздығы</h4>
+              <p>Формула: ρ = m / V. Өлшем бірлігін қайталау керек.</p>
+            </div>
+            <button>Қайталау →</button>
+          </div>
+
+          <div class="mini-item">
+            <div>
+              <h4>Графиктік есептер</h4>
+              <p>s(t), v(t) графиктерін оқуға көбірек практика қажет.</p>
+            </div>
+            <button>Есеп →</button>
+          </div>
+        </div>
+
+        <div class="panel rule-card">
+          <h2>💡 Қысқа ереже</h2>
+          <strong>1 практика = 1 нақты мақсат</strong>
+          <p>Бірден көп тақырыпқа шашырама. Алдымен бір ұғымды толық бекіт.</p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- TYPES -->
+    <section class="types-section">
+      <h2>▦ Практика түрлері</h2>
+
+      <div class="type-grid">
+
+        <div class="type-card game-bg">
+          <div class="type-icon blue">🎮</div>
+          <h3>Ойындар</h3>
+          <p>Физикалық ұғымдарды ойын арқылы бекіту.</p>
+          <a href="practice-games.html" class="type-btn">Ойнау →</a>
+        </div>
+
+        <div class="type-card lab-bg">
+          <div class="type-icon green">⚗</div>
+          <h3>Виртуалды лаборатория</h3>
+          <p>Қозғалыс, күш, энергияны интерактивті зерттеу.</p>
+          <a href="virtual-lab.html" class="type-btn">Лаборатория →</a>
+        </div>
+
+        <div class="type-card problem-bg">
+          <div class="type-icon orange">▦</div>
+          <h3>Есеп тренажері</h3>
+          <p>Қадамдық есептер арқылы формулаларды қолдану.</p>
+          <a href="problem-trainer.html" class="type-btn">Есептеу →</a>
+        </div>
+
+        <div class="type-card formula-bg">
+          <div class="type-icon purple">√x</div>
+          <h3>Формула тренажері</h3>
+          <p>Формуланы таңдау, түрлендіру және өлшем бірліктер.</p>
+          <a href="formula-trainer.html" class="type-btn">Формулалар →</a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <script>
+    /*
+      Егер қолданушы кірмеген болса — "Кіру" батырмасы шығады.
+      Егер localStorage ішінде қолданушы дерегі болса — "Профиль" шығады.
+
+      Login бетінде мына деректердің бірін сақтаса жеткілікті:
+      localStorage.setItem("physxLoggedIn", "true");
+      localStorage.setItem("physxUser", JSON.stringify({name:"Бахтияр"}));
+    */
+
+    function isPhysXLoggedIn() {
+      const directFlags = [
+        "physxLoggedIn",
+        "isLoggedIn",
+        "loggedIn",
+        "auth"
+      ];
+
+      for (const key of directFlags) {
+        const value = localStorage.getItem(key);
+        if (value === "true" || value === "1" || value === "yes") {
+          return true;
+        }
+      }
+
+      const userKeys = [
+        "physxUser",
+        "currentUser",
+        "loggedInUser",
+        "user"
+      ];
+
+      for (const key of userKeys) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+
+          const user = JSON.parse(raw);
+
+          if (
+            user &&
+            (
+              user.name ||
+              user.fullName ||
+              user.email ||
+              user.phone ||
+              user.username ||
+              user.isLoggedIn === true
+            )
+          ) {
+            return true;
+          }
+        } catch (e) {
+          const raw = localStorage.getItem(key);
+          if (raw && raw !== "null" && raw !== "undefined") {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    function renderAuthButton() {
+      const authArea = document.getElementById("authArea");
+      if (!authArea) return;
+
+      if (isPhysXLoggedIn()) {
+        authArea.innerHTML = `
+          <a href="profile.html" class="profile-link">
+            <i class="fa-solid fa-user"></i>
+            Профиль
+          </a>
+        `;
+      } else {
+        authArea.innerHTML = `
+          <button class="login-btn" onclick="window.location.href='login.html'">
+            Кіру
+          </button>
+        `;
+      }
+    }
+
+    renderAuthButton();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhysX - Профиль</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#2f8cff;
+      --dark:#061b55;
+      --text:#102544;
+      --muted:#64748b;
+      --line:#d7e5f7;
+      --green:#12b76a;
+      --orange:#f59e0b;
+      --red:#ef4444;
+      --purple:#7c3aed;
+      --font:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 54%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{text-decoration:none}
+    button,input,select,textarea,a,span,div,p,h1,h2,h3,h4,h5,h6{
+      font-family:var(--font);
+    }
+
+    /* HEADER */
+    .header{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border-bottom:1px solid #cfe0f4;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 4px 22px rgba(15,23,42,.045);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.045em;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:26px;
+    }
+
+    .nav-link{
+      color:#0b2f77;
+      font-weight:850;
+      font-size:14px;
+      padding:20px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{color:#ff9800}
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:6px;
+      height:3px;
+      border-radius:999px;
+      background:#ff9800;
+    }
+
+    .profile-link{
+      background:#145cff;
+      color:#fff!important;
+      padding:12px 18px!important;
+      border-radius:13px;
+      box-shadow:0 12px 24px rgba(20,92,255,.18);
+    }
+
+    /* LAYOUT */
+    .layout{
+      width:min(100% - 34px,1260px);
+      margin:0 auto;
+      padding:18px 0 46px;
+      display:grid;
+      grid-template-columns:86px minmax(0,1fr);
+      gap:12px;
+      align-items:start;
+    }
+
+    /* LEFT SIDEBAR LIKE LEARNING MAP */
+    .side-rail{
+      position:sticky;
+      top:76px;
+      min-height:calc(100vh - 98px);
+      border-radius:28px;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      background:linear-gradient(180deg,#1c6bff,#0c3f9f);
+      box-shadow:0 20px 44px rgba(20,92,255,.22);
+      border:1px solid rgba(255,255,255,.45);
+    }
+
+    .rail-btn{
+      width:54px;
+      height:54px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.20);
+      background:rgba(255,255,255,.13);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.16);
+      transition:.2s;
+      position:relative;
+    }
+
+    .rail-btn:hover,
+    .rail-btn.active{
+      background:rgba(255,255,255,.28);
+      transform:translateY(-1px);
+    }
+
+    .rail-spacer{
+      flex:1;
+    }
+
+    .rail-rocket{
+      width:62px;
+      height:74px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      font-size:34px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.22);
+      margin-top:auto;
+    }
+
+    .content{
+      min-width:0;
+    }
+
+    /* HERO */
+    .profile-hero{
+      min-height:470px;
+      border-radius:30px;
+      padding:48px 58px;
+      position:relative;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 360px;
+      gap:24px;
+      align-items:center;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.88) 0%,rgba(255,255,255,.65) 38%,rgba(255,255,255,.18) 68%,rgba(255,255,255,.04) 100%),
+        url("image/profile/profile-map-hero-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(191,219,254,.72);
+      box-shadow:0 22px 54px rgba(13,71,161,.10);
+      margin-bottom:18px;
+      isolation:isolate;
+    }
+
+    .profile-hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 13% 12%,rgba(20,92,255,.10),transparent 23%),
+        radial-gradient(circle at 82% 20%,rgba(255,255,255,.24),transparent 24%);
+    }
+
+    .hero-left{
+      display:flex;
+      align-items:center;
+      gap:30px;
+      min-width:0;
+    }
+
+    .avatar-zone{
+      width:152px;
+      flex-shrink:0;
+      display:grid;
+      justify-items:center;
+      gap:12px;
+    }
+
+    .avatar{
+      width:138px;
+      height:138px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+      background:#fff;
+      color:#145cff;
+      font-size:54px;
+      border:8px solid rgba(255,255,255,.92);
+      box-shadow:
+        0 22px 45px rgba(13,71,161,.20),
+        inset 0 0 0 1px rgba(207,224,244,.90);
+    }
+
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:none;
+    }
+
+    .avatar.has-image img{display:block}
+    .avatar.has-image i{display:none}
+
+    #avatarInput{display:none}
+
+    .avatar-actions{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      align-items:center;
+    }
+
+    .avatar-btn{
+      min-height:32px;
+      padding:0 12px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      background:rgba(255,255,255,.86);
+      color:#145cff;
+      border:1px solid rgba(255,255,255,.94);
+      font-size:11px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 10px 20px rgba(13,71,161,.08);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
+    .avatar-btn.danger{color:#ef4444}
+
+    .hero-text h1{
+      margin:0 0 11px;
+      color:#061b55;
+      font-size:56px;
+      line-height:.98;
+      letter-spacing:-.078em;
+      font-weight:900;
+      text-shadow:0 2px 8px rgba(255,255,255,.76);
+    }
+
+    .hero-text p{
+      margin:0 0 18px;
+      max-width:620px;
+      color:#26364f;
+      font-size:16px;
+      line-height:1.55;
+      font-weight:800;
+      text-shadow:0 1px 3px rgba(255,255,255,.70);
+    }
+
+    .hero-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .chip{
+      min-height:36px;
+      padding:0 14px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.94);
+      color:#145cff;
+      font-size:12px;
+      font-weight:900;
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      box-shadow:0 10px 20px rgba(13,71,161,.06);
+    }
+
+    .level-card{
+      min-height:220px;
+      border-radius:30px;
+      padding:25px;
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.56)),
+        url("image/profile/profile-level-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.82);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px) saturate(1.12);
+      -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    }
+
+    .level-card::after{
+      content:"";
+      position:absolute;
+      right:-32px;
+      bottom:-32px;
+      width:170px;
+      height:170px;
+      border-radius:50%;
+      background:rgba(20,92,255,.10);
+    }
+
+    .level-card span{
+      display:block;
+      color:#64748b;
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .level-card strong{
+      display:block;
+      color:#061b55;
+      font-size:29px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:-.045em;
+      margin-bottom:10px;
+      text-shadow:0 1px 3px rgba(255,255,255,.70);
+      max-width:290px;
+    }
+
+    .level-card p{
+      margin:0;
+      color:#334155;
+      font-size:12.5px;
+      line-height:1.45;
+      font-weight:800;
+      max-width:270px;
+    }
+
+    .level-tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:16px;
+      position:relative;
+      z-index:2;
+    }
+
+    .level-tags em{
+      font-style:normal;
+      height:30px;
+      padding:0 10px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(255,255,255,.86);
+      color:#145cff;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    /* PANEL */
+    .panel-card{
+      border-radius:30px;
+      padding:24px;
+      margin-bottom:16px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.84),rgba(255,255,255,.64)),
+        url("image/profile/profile-panel-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.82);
+      box-shadow:0 18px 44px rgba(13,71,161,.08);
+      backdrop-filter:blur(14px) saturate(1.12);
+      -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:16px;
+    }
+
+    .panel-head h2,
+    .main-card h2{
+      margin:0 0 5px;
+      color:#061b55;
+      font-size:26px;
+      line-height:1.1;
+      letter-spacing:-.045em;
+      font-weight:900;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .panel-head p{
+      margin:0;
+      color:#475569;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .edit-profile-btn{
+      min-height:40px;
+      padding:0 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.86);
+      background:#145cff;
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 12px 24px rgba(20,92,255,.18);
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .info-item{
+      min-height:92px;
+      border-radius:21px;
+      padding:15px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 12px 26px rgba(13,71,161,.06);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
+    .info-item.wide{grid-column:span 2}
+
+    .info-item span{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .info-item span i{color:#145cff}
+
+    .info-item strong{
+      display:block;
+      color:#061b55;
+      font-size:16px;
+      line-height:1.25;
+      font-weight:900;
+      word-break:break-word;
+    }
+
+    .level-row{
+      display:grid;
+      grid-template-columns:64px minmax(0,1fr) auto;
+      gap:16px;
+      align-items:center;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.54)),
+        url("image/profile/profile-soft-bg.png") center center / cover no-repeat;
+    }
+
+    .level-icon{
+      width:64px;
+      height:64px;
+      border-radius:21px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-size:25px;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+      border:1px solid rgba(255,255,255,.62);
+    }
+
+    .level-content span{
+      display:block;
+      color:#64748b;
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .level-content h2{
+      margin:0 0 6px;
+      color:#061b55;
+      font-size:28px;
+      line-height:1.1;
+      letter-spacing:-.045em;
+      font-weight:900;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .level-content p{
+      margin:0;
+      color:#475569;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .level-test-btn{
+      min-height:42px;
+      padding:0 15px;
+      border-radius:14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      background:#145cff;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+      box-shadow:0 12px 24px rgba(20,92,255,.18);
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .action{
+      min-height:108px;
+      border-radius:23px;
+      padding:17px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(255,255,255,.88);
+      display:flex;
+      align-items:center;
+      gap:13px;
+      color:#061b55;
+      box-shadow:0 12px 26px rgba(13,71,161,.07);
+      transition:.2s;
+      cursor:pointer;
+      text-align:left;
+    }
+
+    .action:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(13,71,161,.10);
+    }
+
+    .action i{
+      width:48px;
+      height:48px;
+      border-radius:17px;
+      display:grid;
+      place-items:center;
+      background:#145cff;
+      color:#fff;
+      flex-shrink:0;
+      font-size:18px;
+    }
+
+    .action:nth-child(2) i{background:#12b76a}
+    .action:nth-child(3) i{background:#7c3aed}
+    .action:nth-child(4) i{background:#f59e0b}
+    .action.logout i{background:#ef4444}
+
+    .action b{
+      display:block;
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .action span{
+      display:block;
+      color:#64748b;
+      font-size:12px;
+      font-weight:750;
+      line-height:1.35;
+    }
+
+    /* MODAL */
+    .profile-modal{
+      position:fixed;
+      inset:0;
+      z-index:5000;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(6,27,85,.28);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
+    .profile-modal.active{display:flex}
+
+    .profile-modal-box{
+      width:min(100%,760px);
+      max-height:85vh;
+      overflow:auto;
+      position:relative;
+      border-radius:30px;
+      padding:34px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.76)),
+        url("image/profile/profile-panel-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 28px 70px rgba(13,71,161,.18);
+    }
+
+    .modal-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:38px;
+      height:38px;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.86);
+      background:rgba(255,255,255,.78);
+      color:#061b55;
+      cursor:pointer;
+      font-size:18px;
+    }
+
+    .modal-icon{
+      width:62px;
+      height:62px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      margin-bottom:16px;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-size:25px;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+    }
+
+    .profile-modal-box h2{
+      margin:0 0 14px;
+      color:#061b55;
+      font-size:30px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:-.045em;
+    }
+
+    .profile-modal-box p{
+      color:#475569;
+      font-size:14px;
+      line-height:1.65;
+      font-weight:750;
+    }
+
+    .modal-list{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .modal-list div{
+      padding:14px 16px;
+      border-radius:16px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(255,255,255,.86);
+      color:#061b55;
+      font-weight:850;
+    }
+
+    .background-options{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .bg-option{
+      min-height:94px;
+      border-radius:18px;
+      border:2px solid rgba(255,255,255,.86);
+      overflow:hidden;
+      cursor:pointer;
+      background-size:cover;
+      background-position:center;
+      position:relative;
+    }
+
+    .bg-option span{
+      position:absolute;
+      left:8px;
+      bottom:8px;
+      padding:6px 9px;
+      border-radius:999px;
+      background:rgba(255,255,255,.84);
+      color:#061b55;
+      font-size:11px;
+      font-weight:900;
+    }
+
+
+    /* ==================================================
+       EXPANDABLE SIDE RAIL
+       Сол жақ мәзір ашылып-жабылады
+    ================================================== */
+
+    .layout.rail-open{
+      grid-template-columns:220px minmax(0,1fr);
+    }
+
+    .side-rail{
+      width:86px;
+      transition:.25s ease;
+      overflow:visible;
+    }
+
+    .side-rail.expanded{
+      width:220px;
+      align-items:stretch;
+      padding:12px;
+    }
+
+    .rail-toggle{
+      width:54px;
+      height:38px;
+      border-radius:15px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:18px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.16);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.16);
+      transition:.2s;
+      margin-bottom:2px;
+    }
+
+    .side-rail.expanded .rail-toggle{
+      width:100%;
+      display:flex;
+      justify-content:flex-start;
+      gap:10px;
+      padding:0 15px;
+    }
+
+    .rail-toggle:hover{
+      background:rgba(255,255,255,.28);
+      transform:translateY(-1px);
+    }
+
+    .rail-toggle span{
+      display:none;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .side-rail.expanded .rail-toggle span{
+      display:inline;
+    }
+
+    .side-rail.expanded .rail-btn{
+      width:100%;
+      grid-template-columns:42px minmax(0,1fr);
+      justify-content:start;
+      padding:0 12px;
+      gap:10px;
+    }
+
+    .rail-btn span{
+      display:none;
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
+      letter-spacing:-.015em;
+    }
+
+    .side-rail.expanded .rail-btn span{
+      display:block;
+    }
+
+    .side-rail.expanded .rail-rocket{
+      width:100%;
+      height:58px;
+      font-size:30px;
+    }
+
+    .side-rail.expanded .rail-rocket::after{
+      content:" Алға!";
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      margin-left:8px;
+    }
+
+    .side-rail.expanded .rail-rocket{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    @media(max-width:1100px){
+      .layout.rail-open{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:1100px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+
+      .side-rail{
+        display:none;
+      }
+
+      .profile-hero{
+        grid-template-columns:1fr;
+      }
+
+      .actions{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:760px){
+      .header{padding:0 14px}
+      .logo{font-size:24px}
+      .nav{gap:14px;overflow-x:auto}
+      .nav-link{font-size:13px}
+      .layout{width:min(100% - 22px,1260px)}
+      .profile-hero{padding:28px 20px;border-radius:26px;min-height:auto}
+      .hero-left{flex-direction:column;align-items:flex-start}
+      .hero-text h1{font-size:40px}
+      .info-grid,.actions,.background-options{grid-template-columns:1fr}
+      .info-item.wide{grid-column:span 1}
+      .panel-head{flex-direction:column;align-items:flex-start}
+      .level-row{grid-template-columns:1fr}
+    }
+  
+    /* ==================================================
+       PROFILE NAV SOFT STYLE
+       Профиль батырмасы қатты ерекшеленбейді
+    ================================================== */
+
+    .profile-link{
+      background:transparent !important;
+      color:#0b2f77 !important;
+      padding:20px 0 !important;
+      border-radius:0 !important;
+      border:none !important;
+      box-shadow:none !important;
+    }
+
+    .profile-link.active{
+      color:#145cff !important;
+    }
+
+    .profile-link.active::after,
+    .nav-link.profile-link.active::after{
+      display:none !important;
+    }
+
+    .profile-link i{
+      color:inherit !important;
+      margin-right:4px;
+    }
+
+</style>
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="achievement.html" class="nav-link">Жетістіктер</a>
+    <a href="profile.html" class="nav-link active profile-link">
+      <i class="fa-solid fa-user"></i>
+      Профиль
+    </a>
+  </nav>
+</header>
+
+<div class="layout">
+
+  <aside class="side-rail" id="sideRail">
+    <button class="rail-toggle" type="button" onclick="toggleSideRail()" title="Мәзірді ашу/жабу">
+      <i class="fa-solid fa-bars"></i>
+      <span>Мәзір</span>
+    </button>
+
+    <a href="profile.html" class="rail-btn active" title="Профиль">
+      <i class="fa-solid fa-user-graduate"></i>
+      <span>Профиль</span>
+    </a>
+
+    <a href="#studentInfo" class="rail-btn" title="Ақпарат">
+      <i class="fa-solid fa-id-card"></i>
+      <span>Ақпарат</span>
+    </a>
+
+    <a href="#levelBlock" class="rail-btn" title="Деңгей">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Деңгей</span>
+    </a>
+
+    <button class="rail-btn" type="button" title="Баптаулар" onclick="openProfileModal('settings')">
+      <i class="fa-solid fa-gear"></i>
+      <span>Баптаулар</span>
+    </button>
+    <a href="guide.html" class="rail-btn" title="Нұсқаулық">
+      <i class="fa-solid fa-book-open-reader"></i>
+      <span>Нұсқаулық</span>
+    </a>
+
+    <button class="rail-btn" type="button" title="Көмек" onclick="openProfileModal('help')">
+      <i class="fa-solid fa-headset"></i>
+      <span>Көмек</span>
+    </button>
+
+    <div class="rail-spacer"></div>
+    <div class="rail-rocket">🚀</div>
+  </aside>
+
+  <main class="content">
+
+    <section class="profile-hero">
+      <div class="hero-left">
+        <div class="avatar-zone">
+          <div class="avatar" id="profileAvatar">
+            <i class="fa-solid fa-user-graduate"></i>
+            <img id="avatarImage" alt="Профиль суреті">
+          </div>
+
+          <div class="avatar-actions">
+            <label class="avatar-btn" for="avatarInput">
+              <i class="fa-solid fa-camera"></i>
+              Сурет қою
+            </label>
+            <button class="avatar-btn danger" id="removeAvatarBtn" type="button">
+              <i class="fa-solid fa-trash"></i>
+              Өшіру
+            </button>
+          </div>
+
+          <input type="file" id="avatarInput" accept="image/*">
+        </div>
+
+        <div class="hero-text">
+          <h1 id="profileName">Менің профилім</h1>
+          <p id="profileInfo">Оқушы мәліметтері мен оқу деңгейі осы жерде сақталады.</p>
+
+          <div class="hero-chips">
+            <span class="chip"><i class="fa-solid fa-id-card"></i> Оқушы паспорты</span>
+            <span class="chip"><i class="fa-solid fa-layer-group"></i> Деңгей сақталады</span>
+            <span class="chip"><i class="fa-solid fa-shield-halved"></i> Жеке дерек</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="level-card">
+        <span>Қазіргі оқу деңгейі</span>
+        <strong id="passportLevel">Beginner / Бастапқы деңгей</strong>
+        <p id="passportText">Деңгейіңді анықтау үшін бастапқы тест тапсыр.</p>
+
+        <div class="level-tags">
+          <em><i class="fa-solid fa-book"></i> PhysX</em>
+          <em><i class="fa-solid fa-bolt"></i> Adaptive</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-card" id="studentInfo">
+      <div class="panel-head">
+        <div>
+          <h2>Оқушы туралы ақпарат</h2>
+          <p>Аты-жөні, сыныбы және оқу мақсаты профильде сақталады.</p>
+        </div>
+
+        <button class="edit-profile-btn" type="button" onclick="editStudentInfo()">
+          <i class="fa-solid fa-pen-to-square"></i>
+          Ақпаратты өзгерту
+        </button>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span><i class="fa-solid fa-user"></i> Аты-жөні</span>
+          <strong id="studentFullName">Аты-жөні енгізілмеген</strong>
+        </div>
+
+        <div class="info-item">
+          <span><i class="fa-solid fa-envelope"></i> Email</span>
+          <strong id="studentEmail">Email енгізілмеген</strong>
+        </div>
+
+        <div class="info-item">
+          <span><i class="fa-solid fa-layer-group"></i> Оқу деңгейі</span>
+          <strong id="studentLevel">Beginner</strong>
+        </div>
+
+        <div class="info-item">
+          <span><i class="fa-solid fa-school"></i> Сынып / топ</span>
+          <strong id="studentClass">Сынып енгізілмеген</strong>
+        </div>
+
+        <div class="info-item wide">
+          <span><i class="fa-solid fa-bullseye"></i> Оқу мақсаты</span>
+          <strong id="studentGoal">Мақсат енгізілмеген</strong>
+        </div>
+
+        <div class="info-item">
+          <span><i class="fa-solid fa-calendar-check"></i> Тіркелген күні</span>
+          <strong id="studentDate">Бүгін</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-card level-row" id="levelBlock">
+      <div class="level-icon">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+
+      <div class="level-content">
+        <span>Қазіргі деңгей</span>
+        <h2 id="cleanLevelTitle">Beginner / Бастапқы деңгей</h2>
+        <p id="cleanLevelText">Оқушының оқу деңгейі осы жерде ғана көрсетіледі.</p>
+      </div>
+
+      <a href="placement-test.html" class="level-test-btn">
+        <i class="fa-solid fa-bullseye"></i>
+        Деңгей анықтау
+      </a>
+    </section>
+
+    <section class="panel-card main-card">
+      <h2>Жеке кабинет</h2>
+
+      <div class="actions">
+        <button class="action" type="button" onclick="openProfileModal('settings')">
+          <i class="fa-solid fa-gear"></i>
+          <div>
+            <b>Баптаулар</b>
+            <span>Фон, интерфейс және сайт көрінісін өзгерту.</span>
+          </div>
+        </button>
+
+      
+
+        <a class="action" href="guide.html">
+          <i class="fa-solid fa-book-open-reader"></i>
+          <div>
+            <b>Нұсқаулық</b>
+            <span>Платформаны қалай қолдану керектігі.</span>
+          </div>
+        </a>
+
+        <button class="action" type="button" onclick="openProfileModal('help')">
+          <i class="fa-solid fa-headset"></i>
+          <div>
+            <b>Көмек</b>
+            <span>Сұрақтар, қолдау және кеңестер.</span>
+          </div>
+        </button>
+
+        <button class="action logout" type="button" onclick="logoutUser(event)">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <div>
+            <b>Шығу</b>
+            <span>Аккаунттан шығып, басты бетке оралу.</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="profile-modal" id="profileModal">
+  <div class="profile-modal-box">
+    <button class="modal-close" onclick="closeProfileModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="modal-icon" id="modalIcon">
+      <i class="fa-solid fa-gear"></i>
+    </div>
+
+    <h2 id="modalTitle">Баптаулар</h2>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+
+function toggleSideRail(){
+  const rail = document.getElementById("sideRail");
+  const layout = document.querySelector(".layout");
+  if(!rail || !layout) return;
+
+  rail.classList.toggle("expanded");
+  layout.classList.toggle("rail-open");
+
+  localStorage.setItem("physxSideRailExpanded", rail.classList.contains("expanded") ? "1" : "0");
+}
+
+function applySavedSideRail(){
+  const rail = document.getElementById("sideRail");
+  const layout = document.querySelector(".layout");
+  if(!rail || !layout) return;
+
+  if(localStorage.getItem("physxSideRailExpanded") === "1"){
+    rail.classList.add("expanded");
+    layout.classList.add("rail-open");
+  }
+}
+
+function getUser(){
+  const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+  if(!user.studyLevel) user.studyLevel = "beginner";
+  if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+  if(!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+  return user;
+}
+
+function getLevelName(level){
+  const levelNames = {
+    beginner:"Beginner / Бастапқы деңгей",
+    intermediate:"Intermediate / Орташа деңгей",
+    advanced:"Advanced / Жоғары деңгей"
+  };
+  return levelNames[level || "beginner"] || "Деңгей анықталмаған";
+}
+
+function renderProfile(){
+  const user = getUser();
+  const progress = user.progress || {lessonsCompleted:[]};
+  const lessons = Array.isArray(progress.lessonsCompleted) ? progress.lessonsCompleted : [];
+  const level = user.studyLevel || "beginner";
+
+  const title = user.fullName || user.name || "Менің профилім";
+  const info = user.email || "Оқушы мәліметтері мен оқу деңгейі осы жерде сақталады.";
+  const levelText = getLevelName(level);
+  const subText = lessons.length > 0
+    ? `${lessons.length} сабақ аяқталды. Оқу деңгейің сақталды.`
+    : "Деңгейіңді анықтау үшін бастапқы тест тапсыр.";
+
+  document.getElementById("profileName").textContent = title;
+  document.getElementById("profileInfo").textContent = info;
+  document.getElementById("passportLevel").textContent = levelText;
+  document.getElementById("passportText").textContent = subText;
+  document.getElementById("cleanLevelTitle").textContent = levelText;
+  document.getElementById("cleanLevelText").textContent = subText;
+}
+
+function renderStudentInfo(){
+  const user = getUser();
+
+  const registeredDate = user.registeredDate || localStorage.getItem("physxRegisteredDate") || new Date().toLocaleDateString("kk-KZ");
+  if(!localStorage.getItem("physxRegisteredDate")){
+    localStorage.setItem("physxRegisteredDate", registeredDate);
+  }
+
+  const fullName = user.fullName || user.name || "";
+  const email = user.email || "";
+  const studentClass = user.studentClass || localStorage.getItem("physxStudentClass") || "";
+  const goal = user.learningGoal || localStorage.getItem("physxLearningGoal") || "";
+
+  const setText = (id, text, fallback) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = text || fallback;
+  };
+
+  setText("studentFullName", fullName, "Аты-жөні енгізілмеген");
+  setText("studentEmail", email, "Email енгізілмеген");
+  setText("studentLevel", getLevelName(user.studyLevel || "beginner"), "Beginner / Бастапқы деңгей");
+  setText("studentClass", studentClass, "Сынып енгізілмеген");
+  setText("studentGoal", goal, "Мақсат енгізілмеген");
+  setText("studentDate", registeredDate, "Бүгін");
+}
+
+function editStudentInfo(){
+  const user = getUser();
+
+  const fullName = prompt("Оқушының аты-жөні:", user.fullName || user.name || "");
+  if(fullName !== null){
+    user.fullName = fullName.trim();
+    user.name = fullName.trim() || user.name;
+  }
+
+  const email = prompt("Email:", user.email || "");
+  if(email !== null){
+    user.email = email.trim();
+  }
+
+  const studentClass = prompt("Сынып / топ:", user.studentClass || localStorage.getItem("physxStudentClass") || "");
+  if(studentClass !== null){
+    user.studentClass = studentClass.trim();
+    localStorage.setItem("physxStudentClass", studentClass.trim());
+  }
+
+  const goal = prompt("Оқу мақсаты:", user.learningGoal || localStorage.getItem("physxLearningGoal") || "Механика бөлімін толық меңгеру");
+  if(goal !== null){
+    user.learningGoal = goal.trim();
+    localStorage.setItem("physxLearningGoal", goal.trim());
+  }
+
+  if(!user.registeredDate){
+    user.registeredDate = localStorage.getItem("physxRegisteredDate") || new Date().toLocaleDateString("kk-KZ");
+  }
+
+  localStorage.setItem("physxUser", JSON.stringify(user));
+  renderProfile();
+  renderStudentInfo();
+}
+
+function initAvatarUpload(){
+  const input = document.getElementById("avatarInput");
+  const avatar = document.getElementById("profileAvatar");
+  const avatarImage = document.getElementById("avatarImage");
+  const removeBtn = document.getElementById("removeAvatarBtn");
+
+  if(!input || !avatar || !avatarImage) return;
+
+  const savedAvatar = localStorage.getItem("physxProfileAvatar");
+  if(savedAvatar){
+    avatarImage.src = savedAvatar;
+    avatar.classList.add("has-image");
+  }
+
+  input.addEventListener("change", function(){
+    const file = this.files && this.files[0];
+    if(!file) return;
+
+    if(!file.type.startsWith("image/")){
+      alert("Тек сурет файлын таңдаңыз.");
+      return;
+    }
+
+    if(file.size > 2.5 * 1024 * 1024){
+      alert("Сурет көлемі 2.5 MB-тан аспасын. Кішірек сурет таңдаңыз.");
+      this.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const imageData = e.target.result;
+      localStorage.setItem("physxProfileAvatar", imageData);
+      avatarImage.src = imageData;
+      avatar.classList.add("has-image");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if(removeBtn){
+    removeBtn.addEventListener("click", function(){
+      localStorage.removeItem("physxProfileAvatar");
+      avatarImage.removeAttribute("src");
+      avatar.classList.remove("has-image");
+      input.value = "";
+    });
+  }
+}
+
+function openProfileModal(type){
+  const modal = document.getElementById("profileModal");
+  const title = document.getElementById("modalTitle");
+  const content = document.getElementById("modalContent");
+  const icon = document.getElementById("modalIcon");
+
+  const data = {
+    settings:{
+      title:"Баптаулар",
+      icon:'<i class="fa-solid fa-gear"></i>',
+      content:`
+        <p>Бұл бөлім арқылы профиль бетінің көрінісін өз қалауыңа қарай өзгерте аласың.</p>
+
+        <div class="modal-list">
+          <div>Фондық суреттерді таңдау</div>
+          <div>Профиль суретін жүктеу</div>
+          <div>Оқушы мәліметін өзгерту</div>
+          <div>Интерфейс стилін баптау</div>
+        </div>
+
+        <div class="background-options">
+          <div class="bg-option" onclick="setProfileBg('image/profile/profile-map-hero-bg.png')" style="background-image:url('image/profile/profile-map-hero-bg.png')">
+            <span>Оқу картасы стилі</span>
+          </div>
+          <div class="bg-option" onclick="setProfileBg('image/profile/profile-level-bg.png')" style="background-image:url('image/profile/profile-level-bg.png')">
+            <span>Жетістік жолы</span>
+          </div>
+          <div class="bg-option" onclick="setProfileBg('image/profile/profile-panel-bg.png')" style="background-image:url('image/profile/profile-panel-bg.png')">
+            <span>Ғылыми стиль</span>
+          </div>
+          <div class="bg-option" onclick="setProfileBg('image/profile/profile-soft-bg.png')" style="background-image:url('image/profile/profile-soft-bg.png')">
+            <span>Жұмсақ фон</span>
+          </div>
+        </div>
+      `
+    },
+
+    about:{
+      title:"Біз туралы",
+      icon:'<i class="fa-solid fa-circle-info"></i>',
+      content:`
+        <p>PhysX — механика бөлімін оқушы деңгейіне қарай бейімдеп оқытуға арналған заманауи білім беру платформасы.</p>
+        <div class="modal-list">
+          <div>Оқушы деңгейін анықтайды</div>
+          <div>Жеке оқу жолын ұсынады</div>
+          <div>Механика бөлімін жүйелі меңгеруге көмектеседі</div>
+          <div>Профиль, практика және жетістік жүйесін біріктіреді</div>
+        </div>
+      `
+    },
+
+    help:{
+      title:"Көмек",
+      icon:'<i class="fa-solid fa-headset"></i>',
+      content:`
+        <p>Қиындық туындаса, мына кеңестерді қолдан:</p>
+        <div class="modal-list">
+          <div>Фото шықпаса — 2.5 MB-тан кіші сурет таңда</div>
+          <div>Деңгей көрінбесе — деңгей анықтау тестін қайта тапсыр</div>
+          <div>Ақпарат сақталмаса — браузер localStorage рұқсатын тексер</div>
+          <div>Фон өзгермесе — бетті жаңартып көр</div>
+        </div>
+      `
+    }
+  };
+
+  title.textContent = data[type].title;
+  icon.innerHTML = data[type].icon;
+  content.innerHTML = data[type].content;
+  modal.classList.add("active");
+}
+
+function closeProfileModal(){
+  document.getElementById("profileModal").classList.remove("active");
+}
+
+function setProfileBg(url){
+  localStorage.setItem("physxProfileBg", url);
+  const hero = document.querySelector(".profile-hero");
+  if(hero){
+    hero.style.background =
+      `linear-gradient(90deg,rgba(255,255,255,.88) 0%,rgba(255,255,255,.65) 38%,rgba(255,255,255,.18) 68%,rgba(255,255,255,.04) 100%), url("${url}") center center / cover no-repeat`;
+  }
+}
+
+function applySavedProfileBg(){
+  const savedBg = localStorage.getItem("physxProfileBg");
+  if(savedBg) setProfileBg(savedBg);
+}
+
+function logoutUser(event){
+  if(event) event.preventDefault();
+
+  const savedUser = JSON.parse(localStorage.getItem("physxUser")) || {};
+  delete savedUser.isLoggedIn;
+  delete savedUser.name;
+  delete savedUser.email;
+
+  localStorage.setItem("physxUser", JSON.stringify(savedUser));
+  window.location.href = "index.html";
+}
+
+document.addEventListener("keydown", function(event){
+  if(event.key === "Escape"){
+    closeProfileModal();
+  }
+});
+
+document.getElementById("profileModal").addEventListener("click", function(event){
+  if(event.target === this){
+    closeProfileModal();
+  }
+});
+
+renderProfile();
+renderStudentInfo();
+initAvatarUpload();
+applySavedProfileBg();
+applySavedSideRail();
+</script>
+</body>
+</html>

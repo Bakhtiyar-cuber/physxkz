@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhysX | Практикалық ойындар</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#1ea7ff;
+      --dark:#061b55;
+      --text:#102544;
+      --muted:#64748b;
+      --line:#d7e5f7;
+      --green:#12b76a;
+      --orange:#f59e0b;
+      --red:#ef4444;
+      --purple:#7c3aed;
+      --font:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 54%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{text-decoration:none}
+    button,input,select,textarea,a,span,div,p,h1,h2,h3,h4,h5,h6,b,strong,small{
+      font-family:var(--font);
+    }
+
+    .header{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border-bottom:1px solid #cfe0f4;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 4px 22px rgba(15,23,42,.045);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.045em;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:24px;
+    }
+
+    .nav-link{
+      color:#0b2f77;
+      font-weight:850;
+      font-size:14px;
+      padding:20px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{color:#145cff}
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:6px;
+      height:3px;
+      border-radius:999px;
+      background:#145cff;
+    }
+
+    .profile-link{
+      background:transparent!important;
+      color:#0b2f77!important;
+      padding:20px 0!important;
+      border-radius:0!important;
+      box-shadow:none!important;
+    }
+
+    .page{
+      width:min(100% - 34px,1200px);
+      margin:0 auto;
+      padding:18px 0 46px;
+    }
+
+    .hero{
+      min-height:360px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 360px;
+      gap:26px;
+      align-items:center;
+      padding:42px;
+      border-radius:30px;
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(191,219,254,.78);
+      box-shadow:0 22px 54px rgba(13,71,161,.12);
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.70) 45%,rgba(255,255,255,.25) 100%),
+        url("image/profile/profile-map-hero-bg.png") center center / cover no-repeat;
+      isolation:isolate;
+      margin-bottom:18px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      background:
+        radial-gradient(circle at 13% 12%,rgba(20,92,255,.12),transparent 24%),
+        radial-gradient(circle at 82% 18%,rgba(255,255,255,.28),transparent 26%);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(20,92,255,.12);
+      border:1px solid rgba(20,92,255,.18);
+      color:#145cff;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      margin:0 0 16px;
+      color:#061b55;
+      font-size:48px;
+      line-height:1.05;
+      letter-spacing:-.075em;
+      font-weight:900;
+      text-shadow:0 2px 8px rgba(255,255,255,.72);
+      max-width:760px;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:720px;
+      color:#26364f;
+      font-size:16px;
+      line-height:1.72;
+      font-weight:800;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .score-card{
+      min-height:245px;
+      border-radius:30px;
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+
+    .score-card h2{
+      margin:0 0 14px;
+      color:#061b55;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .score-row{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .score-mini{
+      padding:12px;
+      border-radius:18px;
+      background:rgba(20,92,255,.08);
+      border:1px solid rgba(20,92,255,.14);
+      text-align:center;
+    }
+
+    .score-mini strong{
+      display:block;
+      color:#061b55;
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .score-mini span{
+      display:block;
+      margin-top:5px;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .score-tip{
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(220,235,255,.92);
+      color:#43526a;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:760;
+    }
+
+    .section{
+      border-radius:30px;
+      padding:28px;
+      margin-top:18px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.66)),
+        url("image/profile/profile-panel-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.86);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      backdrop-filter:blur(14px) saturate(1.12);
+      -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    }
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .section-head h2{
+      margin:0;
+      color:#061b55;
+      font-size:28px;
+      line-height:1.1;
+      letter-spacing:-.045em;
+      font-weight:900;
+    }
+
+    .pill{
+      min-height:32px;
+      padding:0 12px;
+      border-radius:999px;
+      background:rgba(20,92,255,.10);
+      border:1px solid rgba(20,92,255,.18);
+      color:#145cff;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      font-size:11.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .games-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+      gap:14px;
+    }
+
+    .game-card{
+      min-height:210px;
+      border-radius:24px;
+      padding:20px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 14px 32px rgba(13,71,161,.08);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      overflow:hidden;
+      position:relative;
+      transition:.22s ease;
+    }
+
+    .game-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 20px 42px rgba(13,71,161,.12);
+    }
+
+    .game-card::after{
+      content:"";
+      position:absolute;
+      right:-30px;
+      bottom:-30px;
+      width:130px;
+      height:130px;
+      border-radius:50%;
+      background:rgba(20,92,255,.08);
+    }
+
+    .game-icon{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:22px;
+      box-shadow:0 14px 28px rgba(20,92,255,.16);
+      position:relative;
+      z-index:2;
+    }
+
+    .g1{background:linear-gradient(135deg,#145cff,#1ea7ff)}
+    .g2{background:linear-gradient(135deg,#12b76a,#1ea7ff)}
+    .g3{background:linear-gradient(135deg,#f59e0b,#facc15)}
+    .g4{background:linear-gradient(135deg,#7c3aed,#145cff)}
+    .g5{background:linear-gradient(135deg,#ff8a00,#145cff)}
+
+    .game-card h3{
+      margin:16px 0 8px;
+      color:#061b55;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.03em;
+      position:relative;
+      z-index:2;
+    }
+
+    .game-card p{
+      margin:0 0 16px;
+      color:#475569;
+      font-size:13px;
+      line-height:1.55;
+      font-weight:760;
+      position:relative;
+      z-index:2;
+    }
+
+    .play-btn,
+    .play-btn:visited{
+      min-height:40px;
+      padding:0 14px;
+      border:0;
+      border-radius:14px;
+      background:#145cff;
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:900;
+      box-shadow:0 12px 24px rgba(20,92,255,.18);
+      width:max-content;
+      position:relative;
+      z-index:2;
+    }
+
+    .game-area{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 320px;
+      gap:16px;
+      align-items:start;
+    }
+
+    .quiz-box{
+      min-height:390px;
+      border-radius:26px;
+      padding:24px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 14px 32px rgba(13,71,161,.08);
+    }
+
+    .game-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .game-title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .game-title .round-icon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-size:20px;
+      flex-shrink:0;
+    }
+
+    .game-title h2{
+      margin:0 0 4px;
+      color:#061b55;
+      font-size:23px;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .game-title span{
+      color:#64748b;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .timer{
+      min-height:38px;
+      padding:0 13px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      gap:7px;
+      background:rgba(245,158,11,.12);
+      border:1px solid rgba(245,158,11,.22);
+      color:#b45309;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .question{
+      margin:0 0 18px;
+      padding:20px;
+      border-radius:22px;
+      background:rgba(20,92,255,.07);
+      border:1px solid rgba(20,92,255,.14);
+      color:#061b55;
+      font-size:20px;
+      line-height:1.45;
+      font-weight:900;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+
+    .option{
+      min-height:58px;
+      border-radius:18px;
+      border:1px solid rgba(220,235,255,.92);
+      background:rgba(255,255,255,.84);
+      color:#061b55;
+      cursor:pointer;
+      padding:12px 14px;
+      text-align:left;
+      font-size:14px;
+      line-height:1.35;
+      font-weight:850;
+      transition:.18s ease;
+    }
+
+    .option:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 24px rgba(13,71,161,.08);
+      border-color:rgba(20,92,255,.25);
+    }
+
+    .option.correct{
+      background:#ecfdf5;
+      border-color:#86efac;
+      color:#065f46;
+    }
+
+    .option.wrong{
+      background:#fff1f2;
+      border-color:#fecdd3;
+      color:#9f1239;
+    }
+
+    .feedback{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(220,235,255,.92);
+      color:#43526a;
+      font-size:13.5px;
+      line-height:1.55;
+      font-weight:780;
+      display:none;
+    }
+
+    .feedback.show{display:block}
+
+    .feedback.ok{
+      background:#ecfdf5;
+      color:#065f46;
+      border-color:#bbf7d0;
+    }
+
+    .feedback.bad{
+      background:#fff7ed;
+      color:#9a3412;
+      border-color:#fed7aa;
+    }
+
+    .side-panel{
+      border-radius:26px;
+      padding:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 14px 32px rgba(13,71,161,.08);
+    }
+
+    .side-panel h3{
+      margin:0 0 14px;
+      color:#061b55;
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .mini-stat{
+      display:grid;
+      grid-template-columns:44px minmax(0,1fr);
+      gap:11px;
+      align-items:center;
+      padding:12px;
+      border-radius:18px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(220,235,255,.92);
+      margin-bottom:10px;
+    }
+
+    .mini-stat i{
+      width:44px;
+      height:44px;
+      border-radius:15px;
+      display:grid;
+      place-items:center;
+      background:#145cff;
+      color:#fff;
+      font-size:17px;
+    }
+
+    .mini-stat b{
+      display:block;
+      color:#061b55;
+      font-size:18px;
+      font-weight:900;
+      line-height:1;
+      margin-bottom:4px;
+    }
+
+    .mini-stat span{
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:800;
+    }
+
+    .progress-line{
+      height:9px;
+      border-radius:999px;
+      background:#dbe7f5;
+      overflow:hidden;
+      margin:14px 0;
+    }
+
+    .progress-line div{
+      height:100%;
+      width:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#145cff,#12b76a);
+      transition:.25s ease;
+    }
+
+    .side-actions{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .side-btn{
+      min-height:42px;
+      border-radius:14px;
+      border:0;
+      padding:0 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      background:#145cff;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+      box-shadow:0 12px 24px rgba(20,92,255,.18);
+    }
+
+    .side-btn.secondary{
+      background:rgba(255,255,255,.84);
+      color:#145cff;
+      border:1px solid rgba(20,92,255,.16);
+      box-shadow:0 10px 20px rgba(13,71,161,.06);
+    }
+
+    .finish-box{
+      display:none;
+      padding:22px;
+      border-radius:24px;
+      background:linear-gradient(135deg,#ecfdf5,#fff);
+      border:1px solid #bbf7d0;
+      margin-top:16px;
+    }
+
+    .finish-box.show{display:block}
+
+    .finish-box h3{
+      margin:0 0 8px;
+      color:#065f46;
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .finish-box p{
+      margin:0 0 12px;
+      color:#166534;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    @media(max-width:1050px){
+      .hero,.game-area{grid-template-columns:1fr}
+      .games-grid{grid-template-columns:repeat(2,1fr)}
+      .score-card{max-width:420px}
+    }
+
+    @media(max-width:760px){
+      .header{padding:0 14px}
+      .logo{font-size:24px}
+      .nav{gap:14px;overflow-x:auto}
+      .nav-link{font-size:13px}
+      .page{width:min(100% - 22px,1200px)}
+      .hero{padding:26px 20px;border-radius:26px}
+      .hero h1{font-size:36px}
+      .games-grid,.options{grid-template-columns:1fr}
+      .section{padding:22px;border-radius:26px}
+      .section-head{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link active">Практика</a>
+    <a href="achievement.html" class="nav-link">Жетістіктер</a>
+    <a href="guide.html" class="nav-link">Нұсқаулық</a>
+    <a href="about.html" class="nav-link">Біз туралы</a>
+    <a href="profile.html" class="nav-link profile-link">
+      <i class="fa-solid fa-user"></i> Профиль
+    </a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div>
+      <div class="badge">
+        <i class="fa-solid fa-gamepad"></i>
+        Практикалық ойындар
+      </div>
+
+      <h1>Физиканы ойын арқылы бекіт</h1>
+
+      <p>
+        Бұл бөлімде оқушы механика формулаларын, өлшем бірліктерін, графиктерді және есеп шығару
+        қадамдарын ойын түрінде қайталайды. Әр дұрыс жауап XP мен практика ұпайын арттырады.
+      </p>
+    </div>
+
+    <div class="score-card">
+      <h2>Ойын нәтижесі</h2>
+      <div class="score-row">
+        <div class="score-mini">
+          <strong id="totalScore">0</strong>
+          <span>Ұпай</span>
+        </div>
+        <div class="score-mini">
+          <strong id="totalCorrect">0</strong>
+          <span>Дұрыс</span>
+        </div>
+        <div class="score-mini">
+          <strong id="totalXP">0</strong>
+          <span>XP</span>
+        </div>
+      </div>
+      <div class="score-tip">
+        Кеңес: алдымен “Формуланы тап” ойынынан баста. Ол барлық есептерге қажет негізгі формулаларды бекітеді.
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Ойын түрлері</h2>
+      <span class="pill"><i class="fa-solid fa-wand-magic-sparkles"></i> 4 мини-ойын</span>
+    </div>
+
+    <div class="games-grid">
+      <div class="game-card">
+        <div>
+          <div class="game-icon g1"><i class="fa-solid fa-square-root-variable"></i></div>
+          <h3>Формуланы тап</h3>
+          <p>Берілген физикалық жағдайға сәйкес дұрыс формуланы таңда.</p>
+        </div>
+        <button class="play-btn" onclick="startGame('formula')">Ойнау <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="game-card">
+        <div>
+          <div class="game-icon g2"><i class="fa-solid fa-ruler-combined"></i></div>
+          <h3>Бірлікті сәйкестендір</h3>
+          <p>Физикалық шамалар мен олардың өлшем бірліктерін дұрыс сәйкестендір.</p>
+        </div>
+        <button class="play-btn" onclick="startGame('unit')">Ойнау <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="game-card">
+        <div>
+          <div class="game-icon g3"><i class="fa-solid fa-bug"></i></div>
+          <h3>Қатені тап</h3>
+          <p>Есеп шығару жолындағы қате қадамды тауып, дұрыс нұсқасын таңда.</p>
+        </div>
+        <button class="play-btn" onclick="startGame('mistake')">Ойнау <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="game-card">
+        <div>
+          <div class="game-icon g4"><i class="fa-solid fa-bolt"></i></div>
+          <h3>Жылдам жауап</h3>
+          <p>Қысқа сұрақтарға тез жауап беріп, уақытпен жарыс.</p>
+        </div>
+        <button class="play-btn" onclick="startGame('speed')">Ойнау <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="game-card">
+        <div>
+          <div class="game-icon g5"><i class="fa-solid fa-brain"></i></div>
+          <h3>Quiz Ultra</h3>
+          <p>Механика бойынша толық интерактивті тест: деңгей, уақыт, combo, XP және мүмкіндік жүйесі.</p>
+        </div>
+        <a class="play-btn" href="quiz.html">Quiz ашу <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section" id="playArea">
+    <div class="section-head">
+      <h2>Ойын алаңы</h2>
+      <span class="pill"><i class="fa-solid fa-circle-play"></i> Таңда да баста</span>
+    </div>
+
+    <div class="game-area">
+      <div class="quiz-box">
+        <div class="game-top">
+          <div class="game-title">
+            <div class="round-icon" id="gameIcon"><i class="fa-solid fa-gamepad"></i></div>
+            <div>
+              <h2 id="gameName">Ойын таңда</h2>
+              <span id="gameDesc">Жоғарыдағы карточкалардың бірін бас.</span>
+            </div>
+          </div>
+
+          <div class="timer">
+            <i class="fa-solid fa-clock"></i>
+            <span id="timerText">00:00</span>
+          </div>
+        </div>
+
+        <div class="question" id="questionText">
+          Ойын бастау үшін жоғарыдағы “Ойнау” батырмасын бас.
+        </div>
+
+        <div class="options" id="optionsBox">
+          <button class="option" disabled>Формуланы тап</button>
+          <button class="option" disabled>Бірлікті сәйкестендір</button>
+          <button class="option" disabled>Қатені тап</button>
+          <button class="option" disabled>Жылдам жауап</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="finish-box" id="finishBox">
+          <h3>Ойын аяқталды!</h3>
+          <p id="finishText">Нәтижең сақталды.</p>
+          <button class="side-btn" onclick="restartCurrentGame()">
+            <i class="fa-solid fa-rotate-right"></i>
+            Қайта ойнау
+          </button>
+        </div>
+      </div>
+
+      <aside class="side-panel">
+        <h3>Ағымдағы ойын</h3>
+
+        <div class="mini-stat">
+          <i class="fa-solid fa-list-check"></i>
+          <div>
+            <b id="currentStep">0/0</b>
+            <span>Сұрақ саны</span>
+          </div>
+        </div>
+
+        <div class="mini-stat">
+          <i class="fa-solid fa-check"></i>
+          <div>
+            <b id="currentCorrect">0</b>
+            <span>Дұрыс жауап</span>
+          </div>
+        </div>
+
+        <div class="mini-stat">
+          <i class="fa-solid fa-star"></i>
+          <div>
+            <b id="currentStars">0★</b>
+            <span>Болжамды жұлдыз</span>
+          </div>
+        </div>
+
+        <div class="progress-line">
+          <div id="gameProgress"></div>
+        </div>
+
+        <div class="side-actions">
+          <button class="side-btn secondary" onclick="showHint()">
+            <i class="fa-solid fa-lightbulb"></i>
+            Көмек алу
+          </button>
+
+          <a href="practice.html" class="side-btn secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+            Практикаға қайту
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<script>
+const games = {
+  formula: {
+    name: "Формуланы тап",
+    desc: "Жағдайға сәйкес формуланы таңда.",
+    icon: "fa-square-root-variable",
+    time: 60,
+    questions: [
+      {
+        q: "Дене бірқалыпты қозғалады. Жолды табу формуласы қандай?",
+        options: ["s = v · t", "F = ma", "p = m · v", "A = F · s"],
+        answer: 0,
+        hint: "Жылдамдық пен уақыт белгілі болса, жол табылады."
+      },
+      {
+        q: "Ньютонның екінші заңы қай формуламен жазылады?",
+        options: ["F = ma", "ρ = m/V", "v = s/t", "E = mgh"],
+        answer: 0,
+        hint: "Күш масса мен үдеудің көбейтіндісіне тең."
+      },
+      {
+        q: "Қысымның негізгі формуласы қандай?",
+        options: ["p = F/S", "A = F · s", "N = A/t", "P = mg"],
+        answer: 0,
+        hint: "Қысым күштің ауданға қатынасы."
+      },
+      {
+        q: "Импульс формуласы қандай?",
+        options: ["p = m · v", "F = kx", "E = mv²/2", "T = 2π√(l/g)"],
+        answer: 0,
+        hint: "Импульс масса мен жылдамдыққа тәуелді."
+      }
+    ]
+  },
+
+  unit: {
+    name: "Бірлікті сәйкестендір",
+    desc: "Шамаға сәйкес өлшем бірлікті таңда.",
+    icon: "fa-ruler-combined",
+    time: 60,
+    questions: [
+      {
+        q: "Күштің SI жүйесіндегі өлшем бірлігі қандай?",
+        options: ["Ньютон", "Джоуль", "Паскаль", "Ватт"],
+        answer: 0,
+        hint: "Күш Ньютонмен өлшенеді."
+      },
+      {
+        q: "Жұмыстың өлшем бірлігі қандай?",
+        options: ["Джоуль", "Ньютон", "Килограмм", "Метр"],
+        answer: 0,
+        hint: "Жұмыс пен энергия бірлігі бірдей."
+      },
+      {
+        q: "Қысымның өлшем бірлігі қандай?",
+        options: ["Паскаль", "Ватт", "Герц", "Ньютон"],
+        answer: 0,
+        hint: "Қысым Па арқылы белгіленеді."
+      },
+      {
+        q: "Жылдамдықтың өлшем бірлігі қандай?",
+        options: ["м/с", "м/с²", "Н", "кг/м³"],
+        answer: 0,
+        hint: "Жолдың уақытқа қатынасы."
+      }
+    ]
+  },
+
+  mistake: {
+    name: "Қатені тап",
+    desc: "Шығарудағы қате қадамды анықта.",
+    icon: "fa-bug",
+    time: 75,
+    questions: [
+      {
+        q: "Есеп: m=2 кг, a=3 м/с². Оқушы F=m/a=2/3 деп шығарды. Қате қай жерде?",
+        options: ["F = ma болуы керек", "a орнына v алу керек", "m өлшемі м/с болуы керек", "Күш Дж-мен өлшенеді"],
+        answer: 0,
+        hint: "Ньютонның екінші заңы көбейту арқылы жазылады."
+      },
+      {
+        q: "Есеп: s=20 м, t=4 c. Оқушы v=s·t=80 м/с деді. Қате қандай?",
+        options: ["v = s/t болуы керек", "s орнына F алу керек", "t квадратталуы керек", "Жауап Н болу керек"],
+        answer: 0,
+        hint: "Жылдамдық жолды уақытқа бөлу арқылы табылады."
+      },
+      {
+        q: "Есеп: F=100 Н, S=2 м². Оқушы p=F·S=200 Па деді. Қате қандай?",
+        options: ["p = F/S болуы керек", "p = S/F болуы керек", "F кг-мен өлшенеді", "Жауап Дж болуы керек"],
+        answer: 0,
+        hint: "Қысым аудан артқан сайын азаяды."
+      },
+      {
+        q: "Есеп: m=5 кг, g=10 Н/кг. Оқушы P=m+g=15 Н деді. Қате қандай?",
+        options: ["P = mg болуы керек", "P = m/g болуы керек", "g=1 болуы керек", "P Паскальмен өлшенеді"],
+        answer: 0,
+        hint: "Ауырлық күші масса мен g көбейтіндісі."
+      }
+    ]
+  },
+
+  speed: {
+    name: "Жылдам жауап",
+    desc: "Қысқа сұрақтарға тез жауап бер.",
+    icon: "fa-bolt",
+    time: 45,
+    questions: [
+      {
+        q: "g шамамен нешеге тең?",
+        options: ["9,8 м/с²", "3 м/с", "100 Н", "1 Па"],
+        answer: 0,
+        hint: "Еркін түсу үдеуі."
+      },
+      {
+        q: "Тығыздық белгісі қандай?",
+        options: ["ρ", "F", "v", "A"],
+        answer: 0,
+        hint: "Грек әрпі rho."
+      },
+      {
+        q: "Гук заңы қай формула?",
+        options: ["F = kx", "F = ma", "p = F/S", "A = Nt"],
+        answer: 0,
+        hint: "Серіппе деформациясына қатысты заң."
+      },
+      {
+        q: "Қуаттың өлшем бірлігі қандай?",
+        options: ["Ватт", "Джоуль", "Ньютон", "Паскаль"],
+        answer: 0,
+        hint: "Қуат W әрпімен белгіленеді."
+      },
+      {
+        q: "Кинетикалық энергия формуласы қандай?",
+        options: ["E = mv²/2", "E = mgh", "F = ma", "v = s/t"],
+        answer: 0,
+        hint: "Қозғалыстағы дененің энергиясы."
+      }
+    ]
+  }
+};
+
+let currentType = null;
+let currentIndex = 0;
+let currentCorrect = 0;
+let currentScore = 0;
+let totalScore = Number(localStorage.getItem("physxGameScore") || 0);
+let totalCorrect = Number(localStorage.getItem("physxGameCorrect") || 0);
+let totalXP = Number(localStorage.getItem("physxGameXP") || 0);
+let timer = null;
+let timeLeft = 0;
+let locked = false;
+
+const el = (id) => document.getElementById(id);
+
+function shuffleQuestion(q){
+  const pairs = q.options.map((text, index) => ({text, correct:index === q.answer}));
+  for(let i = pairs.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+  }
+  return {
+    q:q.q,
+    options:pairs.map(p => p.text),
+    answer:pairs.findIndex(p => p.correct),
+    hint:q.hint
+  };
+}
+
+function updateTotals(){
+  el("totalScore").textContent = totalScore;
+  el("totalCorrect").textContent = totalCorrect;
+  el("totalXP").textContent = totalXP;
+}
+
+function startGame(type){
+  currentType = type;
+  currentIndex = 0;
+  currentCorrect = 0;
+  currentScore = 0;
+  locked = false;
+
+  const game = games[type];
+  game.playQuestions = game.questions.map(shuffleQuestion);
+  timeLeft = game.time;
+
+  clearInterval(timer);
+  timer = setInterval(tickTimer, 1000);
+
+  el("finishBox").classList.remove("show");
+  el("gameName").textContent = game.name;
+  el("gameDesc").textContent = game.desc;
+  el("gameIcon").innerHTML = `<i class="fa-solid ${game.icon}"></i>`;
+
+  document.getElementById("playArea").scrollIntoView({behavior:"smooth", block:"start"});
+  renderQuestion();
+  updateSide();
+}
+
+function tickTimer(){
+  timeLeft--;
+  const m = String(Math.floor(timeLeft / 60)).padStart(2,"0");
+  const s = String(timeLeft % 60).padStart(2,"0");
+  el("timerText").textContent = `${m}:${s}`;
+
+  if(timeLeft <= 0){
+    finishGame();
+  }
+}
+
+function renderQuestion(){
+  if(!currentType) return;
+
+  const game = games[currentType];
+  const q = game.playQuestions[currentIndex];
+
+  if(!q){
+    finishGame();
+    return;
+  }
+
+  locked = false;
+  el("feedback").className = "feedback";
+  el("feedback").textContent = "";
+  el("questionText").textContent = q.q;
+
+  el("optionsBox").innerHTML = q.options.map((option, index) => `
+    <button class="option" onclick="chooseAnswer(${index})">${option}</button>
+  `).join("");
+
+  updateSide();
+}
+
+function chooseAnswer(index){
+  if(locked || !currentType) return;
+  locked = true;
+
+  const game = games[currentType];
+  const q = game.playQuestions[currentIndex];
+  const buttons = [...document.querySelectorAll(".option")];
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if(i === q.answer) btn.classList.add("correct");
+    if(i === index && i !== q.answer) btn.classList.add("wrong");
+  });
+
+  const feedback = el("feedback");
+
+  if(index === q.answer){
+    currentCorrect++;
+    currentScore += 10;
+    feedback.className = "feedback show ok";
+    feedback.innerHTML = `<b>Дұрыс!</b> Жақсы жауап. +10 ұпай`;
+  }else{
+    feedback.className = "feedback show bad";
+    feedback.innerHTML = `<b>Қате емес, тәжірибе!</b> Дұрыс жауап: ${q.options[q.answer]}. ${q.hint}`;
+  }
+
+  updateSide();
+
+  setTimeout(() => {
+    currentIndex++;
+    renderQuestion();
+  }, 1200);
+}
+
+function updateSide(){
+  const game = currentType ? games[currentType] : null;
+  const total = game ? game.playQuestions.length : 0;
+  const progress = total ? (currentIndex / total) * 100 : 0;
+  const stars = total ? Math.round((currentCorrect / total) * 5) : 0;
+
+  el("currentStep").textContent = `${Math.min(currentIndex + 1, total)}/${total}`;
+  el("currentCorrect").textContent = currentCorrect;
+  el("currentStars").textContent = `${stars}★`;
+  el("gameProgress").style.width = Math.min(100, progress) + "%";
+}
+
+function finishGame(){
+  if(!currentType) return;
+  clearInterval(timer);
+
+  const game = games[currentType];
+  const total = game.playQuestions.length;
+  const stars = Math.round((currentCorrect / total) * 5);
+  const xp = currentCorrect * 3;
+  const solved = Number(localStorage.getItem("physxPracticeSolved") || 0) + currentCorrect;
+
+  totalScore += currentScore;
+  totalCorrect += currentCorrect;
+  totalXP += xp;
+
+  localStorage.setItem("physxGameScore", totalScore);
+  localStorage.setItem("physxGameCorrect", totalCorrect);
+  localStorage.setItem("physxGameXP", totalXP);
+  localStorage.setItem("physxPracticeSolved", solved);
+
+  const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+  if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+  user.progress.points = Number(user.progress.points || 0) + xp;
+  localStorage.setItem("physxUser", JSON.stringify(user));
+
+  el("optionsBox").innerHTML = "";
+  el("questionText").textContent = "Ойын аяқталды. Нәтиже төменде көрсетілді.";
+  el("finishBox").classList.add("show");
+  el("finishText").textContent = `${game.name}: ${currentCorrect}/${total} дұрыс жауап, ${stars}★, +${xp} XP.`;
+  el("gameProgress").style.width = "100%";
+
+  updateTotals();
+
+  currentType = null;
+}
+
+function restartCurrentGame(){
+  const name = el("gameName").textContent;
+  const found = Object.entries(games).find(([key, value]) => value.name === name);
+  if(found) startGame(found[0]);
+}
+
+function showHint(){
+  if(!currentType){
+    alert("Алдымен ойын таңда.");
+    return;
+  }
+
+  const game = games[currentType];
+  const q = game.playQuestions[currentIndex];
+  if(!q){
+    alert("Ойын аяқталды.");
+    return;
+  }
+
+  const feedback = el("feedback");
+  feedback.className = "feedback show";
+  feedback.innerHTML = `<b>Көмек:</b> ${q.hint}`;
+}
+
+updateTotals();
+el("timerText").textContent = "00:00";
+</script>
+</body>
+</html>

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PhysX | Виртуалды лаборатория</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#115cff;
+      --blue2:#0ea5ff;
+      --dark:#061650;
+      --text:#334466;
+      --border:#d8e8ff;
+      --green:#10b981;
+      --orange:#ff8a00;
+      --purple:#7c3aed;
+      --red:#ef4444;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      color:var(--dark);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 56%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input{font-family:inherit}
+
+    .navbar{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid #d6e6fb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 18px rgba(15,23,42,.04);
+      backdrop-filter:blur(14px);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:27px;
+      font-weight:900;
+      letter-spacing:-.6px;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:26px;
+      font-weight:850;
+      color:var(--dark);
+      font-size:14px;
+    }
+
+    .nav-links a{
+      position:relative;
+      padding:22px 0;
+      opacity:.92;
+      transition:.25s ease;
+      white-space:nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--blue);
+      opacity:1;
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:8px;
+      height:3px;
+      border-radius:999px;
+      background:var(--blue);
+      box-shadow:0 4px 10px rgba(17,92,255,.35);
+    }
+
+    .page{
+      width:min(100% - 34px,1280px);
+      margin:0 auto;
+      padding:18px 0 44px;
+    }
+
+    .hero{
+      min-height:330px;
+      border-radius:30px;
+      overflow:hidden;
+      padding:38px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 360px;
+      gap:26px;
+      align-items:center;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.90) 0%,rgba(255,255,255,.72) 44%,rgba(255,255,255,.18) 100%),
+        url("image/practice/lab-bg.png") center right/cover no-repeat;
+      border:1px solid rgba(191,219,254,.78);
+      box-shadow:0 22px 54px rgba(13,71,161,.12);
+      margin-bottom:18px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(16,185,129,.12);
+      border:1px solid rgba(16,185,129,.22);
+      color:#079455;
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      color:#061650;
+      font-size:48px;
+      line-height:1.05;
+      letter-spacing:-.075em;
+      font-weight:900;
+      margin-bottom:16px;
+      max-width:760px;
+      text-shadow:0 2px 8px rgba(255,255,255,.72);
+    }
+
+    .hero p{
+      color:#26364f;
+      max-width:690px;
+      font-size:16px;
+      line-height:1.7;
+      font-weight:800;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .hero-card{
+      min-height:220px;
+      border-radius:28px;
+      padding:24px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px);
+    }
+
+    .hero-card h2{
+      color:#061650;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.04em;
+      margin-bottom:14px;
+    }
+
+    .mini-stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .mini{
+      padding:12px;
+      border-radius:18px;
+      background:rgba(17,92,255,.08);
+      border:1px solid rgba(17,92,255,.14);
+      text-align:center;
+    }
+
+    .mini strong{
+      display:block;
+      color:#061650;
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .mini span{
+      display:block;
+      margin-top:5px;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:310px minmax(0,1fr);
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.66)),
+        url("image/profile/profile-panel-bg.png") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.88);
+      border-radius:28px;
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      backdrop-filter:blur(14px);
+      padding:22px;
+    }
+
+    .panel h2{
+      font-size:23px;
+      color:#061650;
+      margin-bottom:14px;
+      letter-spacing:-.04em;
+    }
+
+    .lab-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .lab-btn{
+      min-height:72px;
+      width:100%;
+      border:1px solid rgba(216,232,255,.95);
+      border-radius:20px;
+      background:rgba(255,255,255,.78);
+      display:grid;
+      grid-template-columns:48px minmax(0,1fr);
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      cursor:pointer;
+      text-align:left;
+      transition:.22s ease;
+    }
+
+    .lab-btn:hover,
+    .lab-btn.active{
+      transform:translateY(-1px);
+      border-color:rgba(17,92,255,.35);
+      box-shadow:0 12px 26px rgba(17,92,255,.10);
+    }
+
+    .lab-btn i{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#10b981,#0ea5ff);
+      color:#fff;
+      font-size:19px;
+    }
+
+    .lab-btn b{
+      display:block;
+      color:#061650;
+      font-size:14px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .lab-btn span{
+      color:#64748b;
+      font-size:11.5px;
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .lab-main{
+      display:grid;
+      gap:16px;
+    }
+
+    .sim-card{
+      min-height:440px;
+      border-radius:28px;
+      padding:22px;
+      background:rgba(255,255,255,.80);
+      border:1px solid rgba(255,255,255,.90);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .sim-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .sim-head h2{
+      margin:0 0 6px;
+      color:#061650;
+      font-size:27px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:-.05em;
+    }
+
+    .sim-head p{
+      color:#526383;
+      font-size:13.5px;
+      line-height:1.5;
+      font-weight:800;
+      max-width:720px;
+    }
+
+    .xp-badge{
+      min-height:36px;
+      padding:0 13px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#ecfdf5;
+      border:1px solid #bbf7d0;
+      color:#059669;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .simulation{
+      border-radius:24px;
+      padding:20px;
+      background:
+        linear-gradient(180deg,rgba(239,246,255,.92),rgba(255,255,255,.82));
+      border:1px solid rgba(216,232,255,.95);
+    }
+
+    .track{
+      height:140px;
+      border-radius:24px;
+      background:
+        linear-gradient(180deg,#dff1ff,#f8fcff);
+      border:1px solid #cfe4ff;
+      position:relative;
+      overflow:hidden;
+      margin-bottom:16px;
+    }
+
+    .track::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:28px;
+      height:7px;
+      background:linear-gradient(90deg,#94a3b8,#cbd5e1);
+      box-shadow:0 8px 16px rgba(15,23,42,.08);
+    }
+
+    .marks{
+      position:absolute;
+      left:22px;
+      right:22px;
+      bottom:12px;
+      display:flex;
+      justify-content:space-between;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .car{
+      position:absolute;
+      left:22px;
+      bottom:42px;
+      width:76px;
+      height:42px;
+      border-radius:16px 20px 12px 12px;
+      background:linear-gradient(135deg,#115cff,#0ea5ff);
+      box-shadow:0 14px 26px rgba(17,92,255,.20);
+      transform:translateX(0);
+      transition:transform .08s linear;
+    }
+
+    .car::before{
+      content:"";
+      position:absolute;
+      left:14px;
+      top:8px;
+      width:28px;
+      height:14px;
+      border-radius:10px;
+      background:rgba(255,255,255,.70);
+    }
+
+    .car::after{
+      content:"";
+      position:absolute;
+      left:10px;
+      bottom:-8px;
+      width:58px;
+      height:16px;
+      background:
+        radial-gradient(circle at 12px 8px,#061650 0 6px,transparent 7px),
+        radial-gradient(circle at 46px 8px,#061650 0 6px,transparent 7px);
+    }
+
+    .result-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .result{
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(216,232,255,.95);
+      text-align:center;
+    }
+
+    .result b{
+      display:block;
+      color:#061650;
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .result span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+      margin-top:5px;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:16px;
+    }
+
+    .control{
+      padding:16px;
+      border-radius:20px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(216,232,255,.95);
+    }
+
+    .control label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:#061650;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .control label span{
+      color:#115cff;
+    }
+
+    input[type="range"]{
+      width:100%;
+      accent-color:#115cff;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .btn{
+      min-height:42px;
+      border:0;
+      border-radius:15px;
+      padding:0 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      color:#fff;
+      background:#115cff;
+      font-size:12px;
+      font-weight:950;
+      box-shadow:0 12px 24px rgba(17,92,255,.20);
+    }
+
+    .btn.green{background:#10b981}
+    .btn.orange{background:#f59e0b}
+    .btn.light{
+      background:rgba(255,255,255,.85);
+      color:#115cff;
+      border:1px solid rgba(17,92,255,.18);
+      box-shadow:0 10px 20px rgba(13,71,161,.06);
+    }
+
+    .graph-card{
+      border-radius:28px;
+      padding:22px;
+      background:rgba(255,255,255,.80);
+      border:1px solid rgba(255,255,255,.90);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+    }
+
+    .graph-card h2{
+      color:#061650;
+      font-size:23px;
+      font-weight:900;
+      letter-spacing:-.04em;
+      margin-bottom:12px;
+    }
+
+    canvas{
+      width:100%;
+      height:260px;
+      border-radius:20px;
+      background:#ffffff;
+      border:1px solid #d8e8ff;
+    }
+
+    .conclusion{
+      margin-top:14px;
+      padding:16px;
+      border-radius:20px;
+      background:rgba(236,253,245,.90);
+      border:1px solid #bbf7d0;
+      color:#065f46;
+      font-size:13.5px;
+      line-height:1.6;
+      font-weight:850;
+    }
+
+    @media(max-width:1050px){
+      .hero,.layout{grid-template-columns:1fr}
+      .hero-card{max-width:420px}
+      .result-grid{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media(max-width:760px){
+      .navbar{padding:0 14px}
+      .logo{font-size:24px}
+      .nav-links{gap:14px;overflow-x:auto}
+      .nav-links a{font-size:13px}
+      .page{width:min(100% - 22px,1280px)}
+      .hero{padding:24px 20px;border-radius:24px}
+      .hero h1{font-size:36px}
+      .controls{grid-template-columns:1fr}
+      .result-grid{grid-template-columns:1fr}
+      .sim-head{flex-direction:column}
+    }
+  </style>
+</head>
+
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav-links">
+    <a href="index.html">Басты бет</a>
+    <a href="levels_map.html">Оқу картасы</a>
+    <a href="personal_plan.html">Жеке жоспар</a>
+    <a href="practice.html" class="active">Практика</a>
+    <a href="achievement.html">Жетістіктер</a>
+    <a href="guide.html">Нұсқаулық</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Профиль</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div>
+      <div class="badge">
+        <i class="fa-solid fa-flask-vial"></i>
+        Виртуалды лаборатория
+      </div>
+
+      <h1>Механиканы тәжірибе арқылы зертте</h1>
+
+      <p>
+        Жылдамдықты, уақытты және қозғалыс параметрлерін өзгертіп, дененің қозғалысын
+        бақыла. Нәтижені график арқылы талдап, қорытынды шығар.
+      </p>
+    </div>
+
+    <div class="hero-card">
+      <h2>Лаборатория нәтижесі</h2>
+      <div class="mini-stats">
+        <div class="mini">
+          <strong id="labCount">0</strong>
+          <span>Лаб</span>
+        </div>
+        <div class="mini">
+          <strong id="labXP">0</strong>
+          <span>XP</span>
+        </div>
+        <div class="mini">
+          <strong id="labStars">0★</strong>
+          <span>Жұлдыз</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="layout">
+    <aside class="panel">
+      <h2>Лабораториялар</h2>
+
+      <div class="lab-list">
+        <button class="lab-btn active" onclick="selectLab('motion', this)">
+          <i class="fa-solid fa-car-side"></i>
+          <div>
+            <b>Бірқалыпты қозғалыс</b>
+            <span>s = v · t заңын тексеру</span>
+          </div>
+        </button>
+
+        <button class="lab-btn" onclick="selectLab('accelerated', this)">
+          <i class="fa-solid fa-gauge-high"></i>
+          <div>
+            <b>Үдемелі қозғалыс</b>
+            <span>v = v₀ + at байланысы</span>
+          </div>
+        </button>
+
+        <button class="lab-btn" onclick="selectLab('fall', this)">
+          <i class="fa-solid fa-arrow-down"></i>
+          <div>
+            <b>Еркін түсу</b>
+            <span>g үдеуін бақылау</span>
+          </div>
+        </button>
+
+        <button class="lab-btn" onclick="selectLab('newton', this)">
+          <i class="fa-solid fa-weight-hanging"></i>
+          <div>
+            <b>Ньютонның II заңы</b>
+            <span>F = ma тәуелділігі</span>
+          </div>
+        </button>
+
+        <button class="lab-btn" onclick="selectLab('pendulum', this)">
+          <i class="fa-solid fa-wave-square"></i>
+          <div>
+            <b>Маятник</b>
+            <span>T = 2π√(l/g)</span>
+          </div>
+        </button>
+      </div>
+    </aside>
+
+    <section class="lab-main">
+      <div class="sim-card">
+        <div class="sim-head">
+          <div>
+            <h2 id="labTitle">Бірқалыпты қозғалыс</h2>
+            <p id="labDesc">Жылдамдық пен уақытты өзгертіп, жүрілген жолдың қалай өзгеретінін бақыла.</p>
+          </div>
+          <div class="xp-badge">
+            <i class="fa-solid fa-bolt"></i>
+            +10 XP аяқтағанда
+          </div>
+        </div>
+
+        <div class="simulation">
+          <div class="track">
+            <div class="car" id="car"></div>
+            <div class="marks">
+              <span>0 м</span>
+              <span>25 м</span>
+              <span>50 м</span>
+              <span>75 м</span>
+              <span>100 м</span>
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <div class="result">
+              <b id="rSpeed">5</b>
+              <span>v, м/с</span>
+            </div>
+            <div class="result">
+              <b id="rTime">8</b>
+              <span>t, с</span>
+            </div>
+            <div class="result">
+              <b id="rDistance">40</b>
+              <span>s, м</span>
+            </div>
+            <div class="result">
+              <b id="rFormula">s=vt</b>
+              <span>формула</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="control">
+              <label>
+                Жылдамдық
+                <span id="speedValue">5 м/с</span>
+              </label>
+              <input type="range" id="speedRange" min="1" max="12" value="5" oninput="updateLab()">
+            </div>
+
+            <div class="control">
+              <label>
+                Уақыт
+                <span id="timeValue">8 с</span>
+              </label>
+              <input type="range" id="timeRange" min="1" max="15" value="8" oninput="updateLab()">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" onclick="startSimulation()">
+              <i class="fa-solid fa-play"></i>
+              Қозғалысты бастау
+            </button>
+
+            <button class="btn green" onclick="completeLab()">
+              <i class="fa-solid fa-check"></i>
+              Лабораторияны аяқтау
+            </button>
+
+            <button class="btn light" onclick="resetLab()">
+              <i class="fa-solid fa-rotate-right"></i>
+              Қайта қою
+            </button>
+
+            <a href="practice.html" class="btn light">
+              <i class="fa-solid fa-arrow-left"></i>
+              Практикаға қайту
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="graph-card">
+        <h2>График: s(t)</h2>
+        <canvas id="graph" width="900" height="320"></canvas>
+
+        <div class="conclusion" id="conclusion">
+          Қорытынды: бірқалыпты қозғалыста жол уақытқа тура пропорционал. Жылдамдық артса, графиктің көлбеулігі де артады.
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script>
+const labs = {
+  motion:{
+    title:"Бірқалыпты қозғалыс",
+    desc:"Жылдамдық пен уақытты өзгертіп, жүрілген жолдың қалай өзгеретінін бақыла.",
+    formula:"s=vt",
+    speedLabel:"Жылдамдық",
+    timeLabel:"Уақыт",
+    conclusion:"Қорытынды: бірқалыпты қозғалыста жол уақытқа тура пропорционал. Жылдамдық артса, графиктің көлбеулігі де артады."
+  },
+  accelerated:{
+    title:"Үдемелі қозғалыс",
+    desc:"Бастапқы жылдамдық 0 деп алып, s = at²/2 заңын бақыла.",
+    formula:"s=at²/2",
+    speedLabel:"Үдеу",
+    timeLabel:"Уақыт",
+    conclusion:"Қорытынды: үдемелі қозғалыста жол уақыттың квадратына тәуелді. Уақыт артқан сайын жүрілген жол тез өседі."
+  },
+  fall:{
+    title:"Еркін түсу",
+    desc:"Ауаның кедергісін елемей, дененің g үдеуімен құлауын модельде.",
+    formula:"h=gt²/2",
+    speedLabel:"g",
+    timeLabel:"Уақыт",
+    conclusion:"Қорытынды: еркін түсу кезінде дене тұрақты g үдеуімен қозғалады, ал жол t² бойынша артады."
+  },
+  newton:{
+    title:"Ньютонның екінші заңы",
+    desc:"Масса тұрақты деп алып, күш артқанда үдеудің өзгерісін бақыла.",
+    formula:"F=ma",
+    speedLabel:"Күш",
+    timeLabel:"Масса",
+    conclusion:"Қорытынды: масса тұрақты болса, күш артқан сайын үдеу де артады. Бұл F = ma заңын көрсетеді."
+  },
+  pendulum:{
+    title:"Математикалық маятник",
+    desc:"Жіп ұзындығын өзгертіп, периодтың қалай өзгеретінін бақыла.",
+    formula:"T=2π√(l/g)",
+    speedLabel:"Ұзындық",
+    timeLabel:"g",
+    conclusion:"Қорытынды: маятниктің периоды жіп ұзындығына тәуелді. Ұзындық артса, период та артады."
+  }
+};
+
+let currentLab = "motion";
+let completedLabs = Number(localStorage.getItem("physxLabsDone") || 0);
+let labXP = Number(localStorage.getItem("physxLabXP") || 0);
+let labStars = Number(localStorage.getItem("physxLabStars") || 0);
+
+function el(id){ return document.getElementById(id); }
+
+function selectLab(type, button){
+  currentLab = type;
+  document.querySelectorAll(".lab-btn").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+
+  const lab = labs[type];
+  el("labTitle").textContent = lab.title;
+  el("labDesc").textContent = lab.desc;
+  el("rFormula").textContent = lab.formula;
+  el("conclusion").textContent = lab.conclusion;
+
+  updateLab();
+  resetLab();
+}
+
+function getValues(){
+  const a = Number(el("speedRange").value);
+  const t = Number(el("timeRange").value);
+
+  let result = a * t;
+  if(currentLab === "accelerated") result = (a * t * t) / 2;
+  if(currentLab === "fall") result = (a * t * t) / 2;
+  if(currentLab === "newton") result = a / t;
+  if(currentLab === "pendulum") result = 2 * Math.PI * Math.sqrt(a / t);
+
+  return {a, t, result};
+}
+
+function updateLab(){
+  const lab = labs[currentLab];
+  const {a,t,result} = getValues();
+
+  el("speedValue").textContent = currentLab === "newton" ? `${a} Н` :
+    currentLab === "pendulum" ? `${a} м` :
+    currentLab === "fall" ? `${a} м/с²` :
+    currentLab === "accelerated" ? `${a} м/с²` :
+    `${a} м/с`;
+
+  el("timeValue").textContent = currentLab === "newton" ? `${t} кг` :
+    currentLab === "pendulum" ? `${t} м/с²` :
+    `${t} с`;
+
+  el("rSpeed").textContent = a;
+  el("rTime").textContent = t;
+  el("rDistance").textContent = Number(result.toFixed(1));
+
+  drawGraph();
+}
+
+function drawGraph(){
+  const canvas = el("graph");
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  const pad = 48;
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle = "#d8e8ff";
+  ctx.lineWidth = 1;
+  for(let i=0;i<=10;i++){
+    const x = pad + (w - pad*1.5) * i/10;
+    ctx.beginPath();
+    ctx.moveTo(x, pad/2);
+    ctx.lineTo(x, h-pad);
+    ctx.stroke();
+  }
+  for(let i=0;i<=6;i++){
+    const y = pad/2 + (h - pad*1.5) * i/6;
+    ctx.beginPath();
+    ctx.moveTo(pad, y);
+    ctx.lineTo(w-pad/2, y);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = "#061650";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(pad, h-pad);
+  ctx.lineTo(w-pad/2, h-pad);
+  ctx.moveTo(pad, h-pad);
+  ctx.lineTo(pad, pad/2);
+  ctx.stroke();
+
+  const {a,t,result} = getValues();
+  let points = [];
+  const maxT = Math.max(10,t);
+  const maxS = Math.max(100,result);
+
+  for(let i=0;i<=maxT;i++){
+    let yVal = a*i;
+    if(currentLab === "accelerated" || currentLab === "fall") yVal = a*i*i/2;
+    if(currentLab === "newton") yVal = a / Math.max(1,i || 1);
+    if(currentLab === "pendulum") yVal = 2*Math.PI*Math.sqrt(a/Math.max(1,t));
+    const x = pad + (w - pad*1.5) * i/maxT;
+    const y = h - pad - (h - pad*1.5) * Math.min(yVal,maxS)/maxS;
+    points.push({x,y});
+  }
+
+  ctx.strokeStyle = "#115cff";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  points.forEach((p,i)=> i === 0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+
+  ctx.fillStyle = "#115cff";
+  points.forEach((p,i)=>{
+    if(i % 2 === 0){
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,4,0,Math.PI*2);
+      ctx.fill();
+    }
+  });
+
+  ctx.fillStyle = "#64748b";
+  ctx.font = "bold 16px Inter, Arial";
+  ctx.fillText("t", w - pad/2 - 12, h - pad + 30);
+  ctx.fillText(currentLab === "pendulum" ? "T" : currentLab === "newton" ? "a" : "s", pad - 30, pad/2 + 8);
+}
+
+function startSimulation(){
+  const {result} = getValues();
+  const track = document.querySelector(".track");
+  const car = el("car");
+  const maxMove = track.clientWidth - 120;
+  const distance = Math.min(100, result);
+  const move = maxMove * distance / 100;
+
+  car.style.transition = "none";
+  car.style.transform = "translateX(0)";
+  setTimeout(()=>{
+    car.style.transition = "transform 1.8s cubic-bezier(.2,.8,.2,1)";
+    car.style.transform = `translateX(${move}px)`;
+  },50);
+}
+
+function resetLab(){
+  el("car").style.transition = "transform .2s ease";
+  el("car").style.transform = "translateX(0)";
+}
+
+function completeLab(){
+  completedLabs += 1;
+  labXP += 10;
+  labStars += 1;
+
+  localStorage.setItem("physxLabsDone", completedLabs);
+  localStorage.setItem("physxLabXP", labXP);
+  localStorage.setItem("physxLabStars", labStars);
+
+  const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+  if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+  user.progress.points = Number(user.progress.points || 0) + 10;
+  localStorage.setItem("physxUser", JSON.stringify(user));
+
+  renderStats();
+  alert("Лаборатория аяқталды! +10 XP және +1★ қосылды.");
+}
+
+function renderStats(){
+  el("labCount").textContent = completedLabs;
+  el("labXP").textContent = labXP;
+  el("labStars").textContent = `${labStars}★`;
+}
+
+renderStats();
+updateLab();
+</script>
+</body>
+</html>

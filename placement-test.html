@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysX | Механика бөлімінен деңгей анықтау</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+<style>
+/* ==================================================
+   PhysX | Placement Test Premium
+================================================== */
+
+:root{
+  --blue:#145cff;
+  --blue2:#1ea7ff;
+  --dark:#061b55;
+  --text:#102544;
+  --muted:#64748b;
+  --line:#d7e5f7;
+  --green:#12b76a;
+  --orange:#f59e0b;
+  --red:#ef4444;
+  --purple:#7c3aed;
+  --shadow:0 18px 44px rgba(13,71,161,.08);
+  --font:"Inter","Segoe UI",Arial,sans-serif;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:var(--font);
+  color:var(--text);
+  background:
+    radial-gradient(#cfe0f4 1px, transparent 1px),
+    linear-gradient(180deg,#fbfdff 0%,#eef6ff 54%,#f7fbff 100%);
+  background-size:28px 28px,100% 100%;
+  overflow-x:hidden;
+}
+
+a{text-decoration:none}
+
+.header{
+  height:58px;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid #cfe0f4;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 4px 22px rgba(15,23,42,.045);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#0d47a1;
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:-.045em;
+}
+
+.logo i{font-size:22px}
+
+.nav{
+  display:flex;
+  align-items:center;
+  gap:26px;
+}
+
+.nav-link{
+  color:#0b2f77;
+  font-weight:850;
+  font-size:14px;
+  padding:20px 0;
+  position:relative;
+  white-space:nowrap;
+}
+
+.profile-link{
+  background:transparent !important;
+  color:#0b2f77 !important;
+  padding:20px 0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+}
+
+.profile-link i{
+  font-size:14px !important;
+  color:#0b2f77 !important;
+}
+
+.profile-link:hover,
+.profile-link:hover i{
+  color:#145cff !important;
+}
+
+/* PAGE */
+.placement-page{
+  width:min(100% - 34px,1320px);
+  margin:0 auto;
+  padding:18px 0 44px;
+}
+
+/* HERO */
+.placement-hero{
+  min-height:230px;
+  border-radius:34px;
+  padding:34px 38px;
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 230px;
+  gap:24px;
+  align-items:center;
+  margin-bottom:16px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.86) 0%,
+      rgba(255,255,255,.62) 46%,
+      rgba(255,255,255,.18) 100%
+    ),
+    url("image/test/placement-hero-bg.png") center center / cover no-repeat !important;
+  border:1px solid rgba(191,219,254,.70);
+  box-shadow:0 24px 60px rgba(13,71,161,.12);
+}
+
+.placement-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 78% 20%,rgba(20,92,255,.08),transparent 24%),
+    radial-gradient(circle at 92% 74%,rgba(18,183,106,.07),transparent 24%),
+    linear-gradient(120deg,transparent 0%,rgba(20,92,255,.03) 100%);
+  pointer-events:none;
+}
+
+.hero-left,
+.timer-box{
+  position:relative;
+  z-index:2;
+}
+
+.test-badge{
+  width:max-content;
+  height:36px;
+  padding:0 13px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,.78);
+  color:#145cff;
+  border:1px solid rgba(191,219,254,.80);
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:18px;
+  backdrop-filter:blur(12px);
+}
+
+.placement-hero h1{
+  margin:0 0 12px;
+  color:#061b55;
+  font-size:clamp(34px,4.2vw,58px);
+  line-height:1.02;
+  letter-spacing:-.065em;
+  font-weight:900;
+  text-shadow:0 2px 8px rgba(255,255,255,.70);
+}
+
+.placement-hero p{
+  margin:0;
+  max-width:720px;
+  color:#334155;
+  font-size:16px;
+  line-height:1.55;
+  font-weight:750;
+}
+
+.hero-mini-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:18px;
+}
+
+.hero-mini-stats span{
+  height:34px;
+  padding:0 12px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:rgba(255,255,255,.76);
+  border:1px solid rgba(255,255,255,.88);
+  color:#0b2f77;
+  font-size:12px;
+  font-weight:900;
+}
+
+.timer-box{
+  min-height:128px;
+  border-radius:28px;
+  padding:22px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  background:rgba(255,255,255,.66);
+  border:1px solid rgba(255,255,255,.86);
+  box-shadow:0 18px 40px rgba(13,71,161,.09);
+  backdrop-filter:blur(14px) saturate(1.12);
+}
+
+.timer-box i{
+  width:58px;
+  height:58px;
+  border-radius:19px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#145cff,#1ea7ff);
+  color:#fff;
+  font-size:22px;
+}
+
+.timer-box small{
+  display:block;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+
+.timer-box span{
+  color:#061b55;
+  font-size:34px;
+  font-weight:900;
+  line-height:1;
+}
+
+/* CONTENT */
+.placement-content{
+  display:grid;
+  grid-template-columns:260px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+}
+
+.test-sidebar{
+  position:sticky;
+  top:76px;
+  border-radius:30px;
+  padding:18px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.84),rgba(255,255,255,.62)),
+    linear-gradient(135deg,#eaf6ff,#f8fbff);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(14px) saturate(1.12);
+}
+
+.side-brand{
+  min-height:98px;
+  border-radius:24px;
+  padding:16px;
+  background:linear-gradient(135deg,#145cff,#1ea7ff);
+  color:#fff;
+  margin-bottom:12px;
+  box-shadow:0 16px 34px rgba(20,92,255,.18);
+}
+
+.side-brand i{
+  width:42px;
+  height:42px;
+  border-radius:15px;
+  background:rgba(255,255,255,.18);
+  display:grid;
+  place-items:center;
+  margin-bottom:10px;
+  font-size:19px;
+}
+
+.side-brand strong{
+  display:block;
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:3px;
+}
+
+.side-brand span{
+  display:block;
+  font-size:12px;
+  font-weight:750;
+  opacity:.92;
+}
+
+.side-item{
+  width:100%;
+  min-height:46px;
+  border:none;
+  border-radius:16px;
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(255,255,255,.86);
+  color:#0b2f77;
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:8px;
+  cursor:pointer;
+  box-shadow:0 10px 20px rgba(13,71,161,.045);
+}
+
+.side-item i{
+  width:22px;
+  text-align:center;
+}
+
+.side-item.active,
+.side-item:hover{
+  background:#145cff;
+  color:#fff;
+}
+
+.side-levels{
+  margin-top:14px;
+  padding:14px;
+  border-radius:20px;
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(255,255,255,.86);
+}
+
+.side-levels b{
+  display:block;
+  color:#061b55;
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.side-levels p{
+  margin:0 0 8px;
+  color:#475569;
+  font-size:12px;
+  font-weight:800;
+}
+
+.side-levels span{
+  display:inline-flex;
+  width:22px;
+  height:22px;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  background:#145cff;
+  color:#fff;
+  font-size:11px;
+  margin-right:4px;
+}
+
+.test-main{
+  display:grid;
+  gap:16px;
+}
+
+.answer-map-card,
+.question-card{
+  border-radius:30px;
+  padding:22px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.84),rgba(255,255,255,.64)),
+    linear-gradient(135deg,#f8fbff,#eaf6ff);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(14px) saturate(1.12);
+}
+
+.answer-map-header{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.answer-map-header h3{
+  margin:0;
+  color:#061b55;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-.045em;
+}
+
+.answer-map-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  color:#64748b;
+  font-size:11px;
+  font-weight:850;
+}
+
+.answer-map-legend span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.answer-map-legend i{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.legend-current{background:#145cff}
+.legend-done{background:#12b76a}
+.legend-empty{background:#e2e8f0}
+
+.number-panel{
+  display:grid;
+  grid-template-columns:repeat(13,1fr);
+  gap:8px;
+}
+
+.number-btn{
+  height:38px;
+  border:none;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#0b2f77;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  border:1px solid #d7e5f7;
+}
+
+.number-btn.current{
+  background:#145cff;
+  color:#fff;
+  box-shadow:0 10px 20px rgba(20,92,255,.18);
+}
+
+.number-btn.done{
+  background:#ecfdf5;
+  color:#047857;
+  border-color:#bbf7d0;
+}
+
+.question-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.question-progress{
+  height:9px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:22px;
+}
+
+.question-progress div{
+  height:100%;
+  width:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,#145cff,#12b76a);
+  transition:.25s ease;
+}
+
+.question-card h2{
+  margin:0 0 18px;
+  color:#061b55;
+  font-size:25px;
+  line-height:1.35;
+  letter-spacing:-.035em;
+  font-weight:900;
+}
+
+.options-box{
+  display:grid;
+  gap:10px;
+}
+
+.option{
+  min-height:56px;
+  border-radius:18px;
+  padding:13px 15px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(207,224,244,.95);
+  cursor:pointer;
+  transition:.18s ease;
+}
+
+.option:hover{
+  transform:translateY(-1px);
+  box-shadow:0 12px 24px rgba(13,71,161,.06);
+}
+
+.option-letter{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:#eef6ff;
+  color:#145cff;
+  font-weight:900;
+}
+
+.option-text{
+  color:#26364f;
+  font-size:14px;
+  line-height:1.45;
+  font-weight:800;
+}
+
+.option.selected{
+  background:#eff6ff;
+  border-color:#145cff;
+  box-shadow:0 12px 24px rgba(20,92,255,.10);
+}
+
+.option.selected .option-letter{
+  background:#145cff;
+  color:#fff;
+}
+
+.report-btn{
+  margin-top:14px;
+  border:none;
+  background:transparent;
+  color:#f97316;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.test-actions{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:22px;
+  flex-wrap:wrap;
+}
+
+.test-actions button{
+  min-height:46px;
+  padding:0 18px;
+  border:none;
+  border-radius:15px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+#prevBtn{
+  background:rgba(255,255,255,.76);
+  color:#145cff;
+  border:1px solid rgba(207,224,244,.95);
+}
+
+#nextBtn{
+  background:#145cff;
+  color:#fff;
+  box-shadow:0 12px 24px rgba(20,92,255,.18);
+}
+
+#finishBtn{
+  background:linear-gradient(135deg,#12b76a,#0ea5e9);
+  color:#fff;
+  box-shadow:0 12px 24px rgba(18,183,106,.16);
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed!important;
+}
+
+/* TOOLS */
+.tool-panel{
+  position:fixed;
+  right:22px;
+  top:92px;
+  width:330px;
+  z-index:3000;
+  display:none;
+  border-radius:26px;
+  padding:18px;
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(255,255,255,.90);
+  box-shadow:0 24px 60px rgba(13,71,161,.16);
+  backdrop-filter:blur(18px);
+}
+
+.tool-panel.active{display:block}
+
+.wide-tool{width:470px}
+
+.tool-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.tool-header h3{
+  margin:0;
+  color:#061b55;
+  font-size:17px;
+  font-weight:900;
+}
+
+.tool-header button{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  border:none;
+  background:#eef6ff;
+  color:#061b55;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.calc-display{
+  width:100%;
+  height:48px;
+  border-radius:15px;
+  border:1px solid #d7e5f7;
+  background:#f8fbff;
+  padding:0 13px;
+  color:#061b55;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.calc-grid button,
+.tool-actions button{
+  height:42px;
+  border:none;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#0b2f77;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.calc-grid .calc-equal{
+  background:#145cff;
+  color:#fff;
+}
+
+.notes-area{
+  width:100%;
+  min-height:210px;
+  resize:vertical;
+  border-radius:16px;
+  border:1px solid #d7e5f7;
+  background:#f8fbff;
+  padding:14px;
+  color:#061b55;
+  font-weight:750;
+  line-height:1.5;
+}
+
+.tool-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+#drawCanvas{
+  width:100%;
+  height:260px;
+  border-radius:18px;
+  background:#fff;
+  border:1px solid #d7e5f7;
+  cursor:crosshair;
+}
+
+/* MODALS */
+.report-modal,
+.result-modal{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(6,27,85,.28);
+  backdrop-filter:blur(10px);
+}
+
+.report-modal.active,
+.result-modal.active{
+  display:flex;
+}
+
+.report-box,
+.result-box{
+  width:min(100%,560px);
+  border-radius:30px;
+  padding:28px;
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(255,255,255,.88);
+  box-shadow:0 28px 70px rgba(13,71,161,.18);
+}
+
+.report-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.report-header h3{
+  margin:0;
+  color:#061b55;
+  font-size:22px;
+  font-weight:900;
+}
+
+.report-header button{
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:12px;
+  background:#eef6ff;
+  color:#061b55;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.report-desc{
+  color:#64748b;
+  font-size:14px;
+  line-height:1.55;
+  font-weight:700;
+}
+
+.report-label{
+  display:block;
+  color:#061b55;
+  font-size:12px;
+  font-weight:900;
+  margin:12px 0 6px;
+}
+
+.report-select,
+.report-textarea{
+  width:100%;
+  border-radius:15px;
+  border:1px solid #d7e5f7;
+  background:#f8fbff;
+  padding:12px;
+  color:#061b55;
+  font-weight:750;
+}
+
+.report-textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.report-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:14px;
+}
+
+.report-actions button{
+  min-height:42px;
+  padding:0 16px;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.report-cancel{
+  background:#eef6ff;
+  color:#145cff;
+}
+
+.report-send{
+  background:#145cff;
+  color:#fff;
+}
+
+/* RESULT */
+.result-box{
+  text-align:center;
+}
+
+.result-icon{
+  width:84px;
+  height:84px;
+  border-radius:28px;
+  margin:0 auto 16px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#f59e0b,#facc15);
+  color:#fff;
+  font-size:34px;
+  box-shadow:0 18px 36px rgba(245,158,11,.22);
+}
+
+.result-box h2{
+  margin:0 0 8px;
+  color:#061b55;
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:-.045em;
+}
+
+.result-box p{
+  margin:0 0 16px;
+  color:#475569;
+  font-size:14px;
+  font-weight:750;
+  line-height:1.55;
+}
+
+.result-score{
+  width:max-content;
+  margin:0 auto 20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-radius:999px;
+  background:#eef6ff;
+  color:#145cff;
+  font-weight:900;
+}
+
+.result-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.result-primary,
+.result-secondary{
+  min-height:46px;
+  padding:0 18px;
+  border-radius:15px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  border:none;
+}
+
+.result-primary{
+  background:#145cff;
+  color:#fff;
+}
+
+.result-secondary{
+  background:#eef6ff;
+  color:#145cff;
+}
+
+/* RESPONSIVE */
+@media(max-width:980px){
+  .header{
+    padding:0 14px;
+  }
+
+  .nav{
+    gap:14px;
+    overflow-x:auto;
+  }
+
+  .placement-hero,
+  .placement-content{
+    grid-template-columns:1fr;
+  }
+
+  .test-sidebar{
+    position:relative;
+    top:auto;
+  }
+
+  .number-panel{
+    grid-template-columns:repeat(5,1fr);
+  }
+
+  .tool-panel,
+  .wide-tool{
+    left:16px;
+    right:16px;
+    width:auto;
+    top:80px;
+  }
+}
+
+@media(max-width:640px){
+  .placement-page{
+    width:min(100% - 22px,1320px);
+  }
+
+  .placement-hero{
+    padding:26px 20px;
+    border-radius:24px;
+  }
+
+  .answer-map-card,
+  .question-card{
+    padding:18px;
+    border-radius:24px;
+  }
+
+  .answer-map-header,
+  .question-meta,
+  .test-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .test-actions button{
+    width:100%;
+  }
+}
+
+
+/* ==================================================
+   FIX: answered state visibility + mechanics text page
+   Жауап бергені анық көрінсін
+================================================== */
+
+.answer-map-header h3{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  flex-wrap:wrap !important;
+}
+
+.answer-map-header h3 small{
+  padding:6px 10px;
+  border-radius:999px;
+  background:#ecfdf5;
+  color:#047857;
+  border:1px solid #bbf7d0;
+  font-size:11px;
+  font-weight:900;
+}
+
+.number-btn.done{
+  background:#12b76a !important;
+  color:#ffffff !important;
+  border-color:#12b76a !important;
+  box-shadow:0 10px 20px rgba(18,183,106,.20) !important;
+  position:relative;
+}
+
+.number-btn.done::after{
+  content:"✓";
+  position:absolute;
+  top:-7px;
+  right:-6px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#ffffff;
+  color:#12b76a;
+  border:1px solid #bbf7d0;
+  font-size:11px;
+  font-weight:900;
+  box-shadow:0 6px 12px rgba(18,183,106,.18);
+}
+
+.number-btn.current{
+  background:#145cff !important;
+  color:#ffffff !important;
+  border-color:#145cff !important;
+  box-shadow:0 10px 22px rgba(20,92,255,.22) !important;
+}
+
+.option.selected{
+  background:linear-gradient(180deg,#e9f9f1,#f8fffb) !important;
+  border:2px solid #12b76a !important;
+  box-shadow:0 14px 30px rgba(18,183,106,.16) !important;
+  transform:translateY(-1px);
+}
+
+.option.selected .option-letter{
+  background:#12b76a !important;
+  color:#ffffff !important;
+  box-shadow:0 10px 20px rgba(18,183,106,.18) !important;
+}
+
+.option.selected .option-text{
+  color:#064e3b !important;
+  font-weight:900 !important;
+}
+
+.option.selected::after{
+  content:"Таңдалды";
+  justify-self:end;
+  align-self:center;
+  grid-column:2;
+  margin-top:4px;
+  width:max-content;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#dcfce7;
+  color:#047857;
+  font-size:11px;
+  font-weight:900;
+  border:1px solid #bbf7d0;
+}
+
+.side-levels p{
+  color:#26364f !important;
+}
+
+.placement-hero h1{
+  max-width:850px;
+}
+
+
+/* ==================================================
+   NAV POLISH
+   Жоғарғы меню біркелкі болсын
+================================================== */
+
+.nav{
+  align-items:center !important;
+}
+
+.nav-link{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+}
+
+.nav-link:hover{
+  color:#145cff !important;
+}
+
+.nav-link.active{
+  color:#145cff !important;
+}
+
+.nav-link.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:6px;
+  height:3px;
+  border-radius:999px;
+  background:#145cff;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="achivment.html" class="nav-link">Жетістіктер</a>
+    <a href="profile.html" class="nav-link profile-link">
+      <i class="fa-solid fa-user"></i>
+      Профиль
+    </a>
+  </nav>
+</header>
+
+<!-- Фон суретті мына жерге сақтаңыз: image/test/placement-hero-bg.png -->
+<main class="placement-page">
+
+  <section class="placement-hero compact-hero">
+    <div class="hero-left">
+      <span class="test-badge">
+        <i class="fa-solid fa-layer-group"></i>
+        Деңгей анықтау
+      </span>
+
+      <h1>Механика бөлімінен деңгейіңді анықта</h1>
+
+      <p>
+        Механика бөлімінен 25 сұраққа жауап бер. PhysX сенің нәтижеңе қарай Beginner, Intermediate немесе Advanced оқу жолын ұсынады.
+      </p>
+
+      <div class="hero-mini-stats">
+        <span><i class="fa-solid fa-list-check"></i> 25 сұрақ</span>
+        <span><i class="fa-solid fa-clock"></i> 25 минут</span>
+        <span><i class="fa-solid fa-route"></i> Жеке оқу жолы</span>
+      </div>
+    </div>
+
+    <div class="timer-box">
+      <i class="fa-solid fa-clock"></i>
+      <div>
+        <small>Қалған уақыт</small>
+        <span id="timer">25:00</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="placement-content">
+
+    <aside class="test-sidebar">
+      <div class="side-brand">
+        <i class="fa-solid fa-clipboard-question"></i>
+        <strong>Placement Test</strong>
+        <span>25 сұрақ · 25 минут</span>
+      </div>
+
+      <div class="side-item active">
+        <i class="fa-solid fa-user-graduate"></i>
+        <span>Тест</span>
+      </div>
+
+      <button type="button" class="side-item side-tool-btn" onclick="toggleTool('calculatorTool')">
+        <i class="fa-solid fa-calculator"></i>
+        <span>Калькулятор</span>
+      </button>
+
+      <button type="button" class="side-item side-tool-btn" onclick="toggleTool('notesTool')">
+        <i class="fa-solid fa-note-sticky"></i>
+        <span>Жазу беті</span>
+      </button>
+
+      <button type="button" class="side-item side-tool-btn" onclick="toggleTool('drawTool')">
+        <i class="fa-solid fa-pen-ruler"></i>
+        <span>Сызба тақтасы</span>
+      </button>
+
+      <div class="side-levels">
+        <b>Нәтиже шкаласы</b>
+        <p><span>A</span> 0–12: Beginner</p>
+        <p><span>B</span> 13–20: Intermediate</p>
+        <p><span>C</span> 21–25: Advanced</p>
+      </div>
+    </aside>
+
+    <section class="test-main">
+
+      <div class="answer-map-card">
+        <div class="answer-map-header">
+          <h3>Жауап картасы <small id="answeredCounter">0/25 жауап берілді</small></h3>
+
+          <div class="answer-map-legend">
+            <span><i class="legend-current"></i> Ағымдағы</span>
+            <span><i class="legend-done"></i> Жауап берілді</span>
+            <span><i class="legend-empty"></i> Бос</span>
+          </div>
+        </div>
+
+        <div class="number-panel" id="numberPanel"></div>
+      </div>
+
+      <div class="question-card">
+        <div class="question-meta">
+          <span id="sectionName">Бөлім: Механика</span>
+          <span id="questionCount">Сұрақ №1 / 25</span>
+        </div>
+
+        <div class="question-progress">
+          <div id="questionProgressFill"></div>
+        </div>
+
+        <h2 id="questionText"></h2>
+
+        <div id="optionsBox" class="options-box"></div>
+
+        <button type="button" class="report-btn" onclick="openReportModal()">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Қате туралы хабарлау
+        </button>
+
+        <div class="test-actions">
+          <button id="prevBtn" onclick="prevQuestion()">
+            <i class="fa-solid fa-arrow-left"></i>
+            Алдыңғы
+          </button>
+
+          <button id="nextBtn" onclick="nextQuestion()">
+            Келесі сұрақ
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+          <button id="finishBtn" onclick="confirmFinishTest()">
+            <i class="fa-solid fa-chart-simple"></i>
+            Аяқтау
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </section>
+
+  <!-- КАЛЬКУЛЯТОР -->
+  <section class="tool-panel" id="calculatorTool">
+    <div class="tool-header">
+      <h3>
+        <i class="fa-solid fa-calculator"></i>
+        Калькулятор
+      </h3>
+
+      <button type="button" onclick="closeTools()">×</button>
+    </div>
+
+    <input id="calcDisplay" class="calc-display" type="text" readonly>
+
+    <div class="calc-grid">
+      <button type="button" onclick="calcClear()">C</button>
+      <button type="button" onclick="calcAdd('(')">(</button>
+      <button type="button" onclick="calcAdd(')')">)</button>
+      <button type="button" onclick="calcAdd('/')">÷</button>
+
+      <button type="button" onclick="calcAdd('7')">7</button>
+      <button type="button" onclick="calcAdd('8')">8</button>
+      <button type="button" onclick="calcAdd('9')">9</button>
+      <button type="button" onclick="calcAdd('*')">×</button>
+
+      <button type="button" onclick="calcAdd('4')">4</button>
+      <button type="button" onclick="calcAdd('5')">5</button>
+      <button type="button" onclick="calcAdd('6')">6</button>
+      <button type="button" onclick="calcAdd('-')">−</button>
+
+      <button type="button" onclick="calcAdd('1')">1</button>
+      <button type="button" onclick="calcAdd('2')">2</button>
+      <button type="button" onclick="calcAdd('3')">3</button>
+      <button type="button" onclick="calcAdd('+')">+</button>
+
+      <button type="button" onclick="calcAdd('0')">0</button>
+      <button type="button" onclick="calcAdd('.')">.</button>
+      <button type="button" onclick="calcBack()">⌫</button>
+      <button type="button" class="calc-equal" onclick="calcResult()">=</button>
+    </div>
+  </section>
+
+  <!-- ЖАЗУ БЕТІ -->
+  <section class="tool-panel" id="notesTool">
+    <div class="tool-header">
+      <h3>
+        <i class="fa-solid fa-note-sticky"></i>
+        Жазу беті
+      </h3>
+
+      <button type="button" onclick="closeTools()">×</button>
+    </div>
+
+    <textarea id="studentNotes" class="notes-area" placeholder="Мұнда формула, ой немесе қысқаша есеп шешімін жаз..."></textarea>
+
+    <div class="tool-actions">
+      <button type="button" onclick="saveNotes()">Сақтау</button>
+      <button type="button" onclick="clearNotes()">Тазалау</button>
+    </div>
+  </section>
+
+  <!-- СЫЗБА ТАҚТАСЫ -->
+  <section class="tool-panel wide-tool" id="drawTool">
+    <div class="tool-header">
+      <h3>
+        <i class="fa-solid fa-pen-ruler"></i>
+        Сызба тақтасы
+      </h3>
+
+      <button type="button" onclick="closeTools()">×</button>
+    </div>
+
+    <canvas id="drawCanvas" width="420" height="260"></canvas>
+
+    <div class="tool-actions">
+      <button type="button" onclick="setDrawMode('pen')">
+        <i class="fa-solid fa-pen"></i>
+        Қалам
+      </button>
+
+      <button type="button" onclick="setDrawMode('eraser')">
+        <i class="fa-solid fa-eraser"></i>
+        Өшіргіш
+      </button>
+
+      <button type="button" onclick="clearCanvas()">
+        <i class="fa-solid fa-trash"></i>
+        Тазалау
+      </button>
+    </div>
+  </section>
+
+  <!-- ҚАТЕ ТУРАЛЫ ХАБАРЛАУ MODAL -->
+  <div class="report-modal" id="reportModal">
+    <div class="report-box">
+      <div class="report-header">
+        <h3>
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Қате туралы хабарлау
+        </h3>
+
+        <button type="button" onclick="closeReportModal()">×</button>
+      </div>
+
+      <p class="report-desc">
+        Егер сұрақта, жауапта немесе формулада қате байқасаңыз, қысқаша хабарлама қалдырыңыз.
+      </p>
+
+      <label class="report-label">Қате түрі</label>
+
+      <select id="reportType" class="report-select">
+        <option value="Сұрақ мәтінінде қате">Сұрақ мәтінінде қате</option>
+        <option value="Жауап нұсқасында қате">Жауап нұсқасында қате</option>
+        <option value="Дұрыс жауап дұрыс емес">Дұрыс жауап дұрыс емес</option>
+        <option value="Формула қате">Формула қате</option>
+        <option value="Басқа қате">Басқа қате</option>
+      </select>
+
+      <label class="report-label">Түсіндірме</label>
+
+      <textarea
+        id="reportText"
+        class="report-textarea"
+        placeholder="Мысалы: бұл сұрақта дұрыс жауап B емес, A болуы керек..."
+      ></textarea>
+
+      <div class="report-actions">
+        <button type="button" onclick="closeReportModal()" class="report-cancel">
+          Болдырмау
+        </button>
+
+        <button type="button" onclick="sendReport()" class="report-send">
+          Жіберу
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- НӘТИЖЕ MODAL -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-box">
+      <div class="result-icon" id="resultIcon">
+        <i class="fa-solid fa-medal"></i>
+      </div>
+
+      <h2 id="resultTitle">Нәтиже</h2>
+      <p id="resultDesc">Сенің деңгейің анықталды.</p>
+
+      <div class="result-score">
+        <span id="resultScore">0/25</span>
+        <small id="resultPercent">0%</small>
+      </div>
+
+      <div class="result-actions">
+        <a href="levels_map.html" class="result-primary">
+          <i class="fa-solid fa-map-location-dot"></i>
+          Оқу картасына өту
+        </a>
+
+        <button type="button" onclick="restartTest()" class="result-secondary">
+          <i class="fa-solid fa-rotate-right"></i>
+          Қайта тапсыру
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ==================================================
+// PhysX Placement Test
+// 0–12 Beginner, 13–20 Intermediate, 21–25 Advanced
+// ==================================================
+
+const questions = [
+  {
+    section:"Механика",
+    text:"Механикалық қозғалыс дегеніміз не?",
+    options:["Дененің пішінінің өзгеруі","Дененің басқа денелерге қатысты орнының уақыт бойынша өзгеруі","Дененің қызуы","Дененің массасының артуы"],
+    correct:1
+  },
+  {
+    section:"Кинематика",
+    text:"Жылдамдықтың негізгі өлшем бірлігі қандай?",
+    options:["м/с","Н","кг","Дж"],
+    correct:0
+  },
+  {
+    section:"Кинематика",
+    text:"Дене 100 м жолды 20 с уақытта жүрді. Жылдамдығы қандай?",
+    options:["2 м/с","4 м/с","5 м/с","10 м/с"],
+    correct:2
+  },
+  {
+    section:"Кинематика",
+    text:"Үдеу формуласы қайсы?",
+    options:["a = F/m","a = Δv/t","a = m/V","a = A/t"],
+    correct:1
+  },
+  {
+    section:"Динамика",
+    text:"Ньютонның екінші заңы қай формуламен өрнектеледі?",
+    options:["F = ma","p = mv","A = Fs","v = s/t"],
+    correct:0
+  },
+  {
+    section:"Динамика",
+    text:"Күштің өлшем бірлігі қандай?",
+    options:["Джоуль","Ватт","Ньютон","Паскаль"],
+    correct:2
+  },
+  {
+    section:"Динамика",
+    text:"Массасы 2 кг денеге 10 Н күш әсер етеді. Үдеу қандай?",
+    options:["2 м/с²","5 м/с²","10 м/с²","20 м/с²"],
+    correct:1
+  },
+  {
+    section:"Ауырлық күші",
+    text:"Ауырлық күші формуласы қандай?",
+    options:["F = μN","F = mg","F = kx","F = ρgV"],
+    correct:1
+  },
+  {
+    section:"Тығыздық",
+    text:"Тығыздық формуласы қайсы?",
+    options:["ρ = m/V","ρ = V/m","ρ = F/S","ρ = A/t"],
+    correct:0
+  },
+  {
+    section:"Қысым",
+    text:"Қысым формуласы қандай?",
+    options:["p = mv","p = F/S","p = ρV","p = mg"],
+    correct:1
+  },
+  {
+    section:"Жұмыс",
+    text:"Механикалық жұмыс формуласы қандай?",
+    options:["A = Fs","N = A/t","E = mgh","p = mv"],
+    correct:0
+  },
+  {
+    section:"Қуат",
+    text:"Қуат формуласы қайсы?",
+    options:["N = A/t","N = mg","N = ρV","N = F/S"],
+    correct:0
+  },
+  {
+    section:"Энергия",
+    text:"Кинетикалық энергия формуласы қандай?",
+    options:["E = mgh","E = mv²/2","E = kx","E = Ft"],
+    correct:1
+  },
+  {
+    section:"Энергия",
+    text:"Потенциалдық энергия формуласы қандай?",
+    options:["E = mgh","E = mv²/2","E = ma","E = ρgV"],
+    correct:0
+  },
+  {
+    section:"Импульс",
+    text:"Дене импульсі формуласы қандай?",
+    options:["p = mv","p = F/S","p = A/t","p = ρgh"],
+    correct:0
+  },
+  {
+    section:"Сақталу заңдары",
+    text:"Импульстің сақталу заңы көбіне қандай жүйеде орындалады?",
+    options:["Тұйық жүйеде","Ашық жүйеде","Тек тыныштықта","Тек вакуумда"],
+    correct:0
+  },
+  {
+    section:"Статика",
+    text:"Күш моменті формуласы қандай?",
+    options:["M = F·l","M = ma","M = mv","M = ρV"],
+    correct:0
+  },
+  {
+    section:"Гук заңы",
+    text:"Серпімділік күші қандай формуламен анықталады?",
+    options:["F = kx","F = mg","F = μN","F = ρgV"],
+    correct:0
+  },
+  {
+    section:"Үйкеліс",
+    text:"Үйкеліс күші формуласы қандай?",
+    options:["Fүйк = μN","Fүйк = ma","Fүйк = mg","Fүйк = kx"],
+    correct:0
+  },
+  {
+    section:"Архимед күші",
+    text:"Архимед күші формуласы қандай?",
+    options:["FA = ρgV","FA = ma","FA = kx","FA = mv"],
+    correct:0
+  },
+  {
+    section:"Тербеліс",
+    text:"Период дегеніміз не?",
+    options:["Бір тербеліс жасауға кеткен уақыт","Бір секундтағы тербеліс саны","Дененің массасы","Дененің тығыздығы"],
+    correct:0
+  },
+  {
+    section:"Толқын",
+    text:"Толқын жылдамдығы формуласы қандай?",
+    options:["v = λν","v = mg","v = F/S","v = ρV"],
+    correct:0
+  },
+  {
+    section:"Кинематика",
+    text:"Бірқалыпты қозғалыста жылдамдық қалай өзгереді?",
+    options:["Тұрақты болады","Артады","Кемиді","Нөл болады"],
+    correct:0
+  },
+  {
+    section:"Динамика",
+    text:"Егер денеге әсер ететін тең әсерлі күш нөлге тең болса, дене қалай қозғалады?",
+    options:["Үдейді","Тыныштықта қалады немесе бірқалыпты түзу сызықты қозғалады","Міндетті түрде тоқтайды","Массасы артады"],
+    correct:1
+  },
+  {
+    section:"Энергия",
+    text:"Механикалық энергия қандай шамалардың қосындысына тең?",
+    options:["Кинетикалық және потенциалдық энергия","Күш пен масса","Қысым мен көлем","Жылдамдық пен уақыт"],
+    correct:0
+  }
+];
+
+let currentQuestion = 0;
+let answers = Array(questions.length).fill(null);
+let remainingSeconds = 25 * 60;
+let timerInterval = null;
+let testFinished = false;
+
+const letters = ["A","B","C","D"];
+
+function initTest(){
+  renderNumberPanel();
+  renderQuestion();
+  startTimer();
+  initNotes();
+  initCanvas();
+}
+
+function renderNumberPanel(){
+  const panel = document.getElementById("numberPanel");
+  panel.innerHTML = "";
+
+  questions.forEach((q, index) => {
+    const btn = document.createElement("button");
+    btn.className = "number-btn";
+    btn.textContent = index + 1;
+    btn.onclick = () => goToQuestion(index);
+    panel.appendChild(btn);
+  });
+
+  updateNumberPanel();
+}
+
+
+function updateAnsweredCounter(){
+  const counter = document.getElementById("answeredCounter");
+  if(!counter) return;
+  const done = answers.filter(v => v !== null).length;
+  counter.textContent = `${done}/${questions.length} жауап берілді`;
+}
+
+function updateNumberPanel(){
+  document.querySelectorAll(".number-btn").forEach((btn, index) => {
+    btn.classList.remove("current","done");
+    if(index === currentQuestion) btn.classList.add("current");
+    if(answers[index] !== null) btn.classList.add("done");
+  });
+  updateAnsweredCounter();
+}
+
+function renderQuestion(){
+  const q = questions[currentQuestion];
+
+  document.getElementById("sectionName").textContent = `Бөлім: ${q.section}`;
+  document.getElementById("questionCount").textContent = `Сұрақ №${currentQuestion + 1} / ${questions.length}`;
+  document.getElementById("questionText").textContent = q.text;
+
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  document.getElementById("questionProgressFill").style.width = `${progress}%`;
+
+  const box = document.getElementById("optionsBox");
+  box.innerHTML = "";
+
+  q.options.forEach((option, index) => {
+    const item = document.createElement("div");
+    item.className = "option";
+    if(answers[currentQuestion] === index) item.classList.add("selected");
+
+    item.innerHTML = `
+      <div class="option-letter">${letters[index]}</div>
+      <div class="option-text">${option}</div>
+    `;
+
+    item.onclick = () => selectAnswer(index);
+    box.appendChild(item);
+  });
+
+  document.getElementById("prevBtn").disabled = currentQuestion === 0;
+  document.getElementById("nextBtn").style.display = currentQuestion === questions.length - 1 ? "none" : "inline-flex";
+  document.getElementById("finishBtn").style.display = currentQuestion === questions.length - 1 ? "inline-flex" : "inline-flex";
+
+  updateNumberPanel();
+}
+
+function selectAnswer(index){
+  if(testFinished) return;
+  answers[currentQuestion] = index;
+  renderQuestion();
+}
+
+function goToQuestion(index){
+  currentQuestion = index;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(currentQuestion < questions.length - 1){
+    currentQuestion++;
+    renderQuestion();
+  }
+}
+
+function prevQuestion(){
+  if(currentQuestion > 0){
+    currentQuestion--;
+    renderQuestion();
+  }
+}
+
+function confirmFinishTest(){
+  const unanswered = answers.filter(v => v === null).length;
+
+  if(unanswered > 0){
+    const ok = confirm(`${unanswered} сұрақ жауапсыз қалды. Тестті аяқтайсыз ба?`);
+    if(!ok) return;
+  }
+
+  finishTest();
+}
+
+function finishTest(){
+  if(testFinished) return;
+
+  testFinished = true;
+  clearInterval(timerInterval);
+
+  let score = 0;
+  answers.forEach((answer, index) => {
+    if(answer === questions[index].correct) score++;
+  });
+
+  const percent = Math.round((score / questions.length) * 100);
+  const level = getLevel(score);
+  saveLevel(level.key, score, percent);
+  showResult(level, score, percent);
+}
+
+function getLevel(score){
+  if(score <= 12){
+    return {
+      key:"beginner",
+      title:"Beginner / Бастапқы деңгей",
+      desc:"Саған механиканың негізгі ұғымдарын жеңіл тақырыптардан бастап меңгеру ұсынылады.",
+      icon:"fa-seedling"
+    };
+  }
+
+  if(score <= 20){
+    return {
+      key:"intermediate",
+      title:"Intermediate / Орташа деңгей",
+      desc:"Сен негізгі формулаларды түсінесің. Енді орташа деңгейдегі есептермен дамуға болады.",
+      icon:"fa-fire"
+    };
+  }
+
+  return {
+    key:"advanced",
+    title:"Advanced / Жоғары деңгей",
+    desc:"Сен күрделі есептерге дайынсың. Жоғары деңгейдегі механика картасын жалғастыр.",
+    icon:"fa-rocket"
+  };
+}
+
+function saveLevel(levelKey, score, percent){
+  const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+  user.studyLevel = levelKey;
+  user.placementScore = score;
+  user.placementPercent = percent;
+  user.placementDate = new Date().toLocaleDateString("kk-KZ");
+  localStorage.setItem("physxUser", JSON.stringify(user));
+}
+
+function showResult(level, score, percent){
+  document.getElementById("resultIcon").innerHTML = `<i class="fa-solid ${level.icon}"></i>`;
+  document.getElementById("resultTitle").textContent = level.title;
+  document.getElementById("resultDesc").textContent = level.desc;
+  document.getElementById("resultScore").textContent = `${score}/${questions.length}`;
+  document.getElementById("resultPercent").textContent = `${percent}%`;
+  document.getElementById("resultModal").classList.add("active");
+}
+
+function restartTest(){
+  currentQuestion = 0;
+  answers = Array(questions.length).fill(null);
+  remainingSeconds = 25 * 60;
+  testFinished = false;
+  document.getElementById("resultModal").classList.remove("active");
+  renderQuestion();
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  updateTimer();
+
+  timerInterval = setInterval(() => {
+    if(testFinished) return;
+    remainingSeconds--;
+    updateTimer();
+
+    if(remainingSeconds <= 0){
+      finishTest();
+    }
+  }, 1000);
+}
+
+function updateTimer(){
+  const min = Math.floor(remainingSeconds / 60);
+  const sec = remainingSeconds % 60;
+  document.getElementById("timer").textContent = `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+}
+
+// TOOLS
+function toggleTool(id){
+  document.querySelectorAll(".tool-panel").forEach(panel => {
+    if(panel.id !== id) panel.classList.remove("active");
+  });
+  document.getElementById(id).classList.toggle("active");
+}
+
+function closeTools(){
+  document.querySelectorAll(".tool-panel").forEach(panel => panel.classList.remove("active"));
+}
+
+// Calculator
+function calcAdd(value){
+  document.getElementById("calcDisplay").value += value;
+}
+
+function calcClear(){
+  document.getElementById("calcDisplay").value = "";
+}
+
+function calcBack(){
+  const display = document.getElementById("calcDisplay");
+  display.value = display.value.slice(0, -1);
+}
+
+function calcResult(){
+  const display = document.getElementById("calcDisplay");
+  try{
+    const safe = display.value.replace(/[^0-9+\-*/().]/g, "");
+    display.value = Function(`"use strict"; return (${safe})`)();
+  }catch(e){
+    display.value = "Қате";
+  }
+}
+
+// Notes
+function initNotes(){
+  document.getElementById("studentNotes").value = localStorage.getItem("physxPlacementNotes") || "";
+}
+
+function saveNotes(){
+  localStorage.setItem("physxPlacementNotes", document.getElementById("studentNotes").value);
+  alert("Жазба сақталды.");
+}
+
+function clearNotes(){
+  document.getElementById("studentNotes").value = "";
+  localStorage.removeItem("physxPlacementNotes");
+}
+
+// Canvas
+let drawMode = "pen";
+let isDrawing = false;
+let ctx = null;
+
+function initCanvas(){
+  const canvas = document.getElementById("drawCanvas");
+  ctx = canvas.getContext("2d");
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#145cff";
+
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseup", stopDraw);
+  canvas.addEventListener("mouseleave", stopDraw);
+
+  canvas.addEventListener("touchstart", startDrawTouch, {passive:false});
+  canvas.addEventListener("touchmove", drawTouch, {passive:false});
+  canvas.addEventListener("touchend", stopDraw);
+}
+
+function setDrawMode(mode){
+  drawMode = mode;
+  if(ctx){
+    ctx.lineWidth = mode === "eraser" ? 16 : 3;
+    ctx.strokeStyle = mode === "eraser" ? "#ffffff" : "#145cff";
+  }
+}
+
+function getCanvasPos(canvas, event){
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x:(event.clientX - rect.left) * scaleX,
+    y:(event.clientY - rect.top) * scaleY
+  };
+}
+
+function startDraw(event){
+  isDrawing = true;
+  const pos = getCanvasPos(event.target, event);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+}
+
+function draw(event){
+  if(!isDrawing) return;
+  const pos = getCanvasPos(event.target, event);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
+
+function stopDraw(){
+  isDrawing = false;
+}
+
+function startDrawTouch(event){
+  event.preventDefault();
+  const touch = event.touches[0];
+  startDraw({target:event.target, clientX:touch.clientX, clientY:touch.clientY});
+}
+
+function drawTouch(event){
+  event.preventDefault();
+  const touch = event.touches[0];
+  draw({target:event.target, clientX:touch.clientX, clientY:touch.clientY});
+}
+
+function clearCanvas(){
+  const canvas = document.getElementById("drawCanvas");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Report
+function openReportModal(){
+  document.getElementById("reportModal").classList.add("active");
+}
+
+function closeReportModal(){
+  document.getElementById("reportModal").classList.remove("active");
+}
+
+function sendReport(){
+  const type = document.getElementById("reportType").value;
+  const text = document.getElementById("reportText").value.trim();
+
+  const reports = JSON.parse(localStorage.getItem("physxQuestionReports") || "[]");
+  reports.push({
+    question:currentQuestion + 1,
+    type,
+    text,
+    date:new Date().toLocaleString("kk-KZ")
+  });
+
+  localStorage.setItem("physxQuestionReports", JSON.stringify(reports));
+  document.getElementById("reportText").value = "";
+  closeReportModal();
+  alert("Хабарлама сақталды. Рахмет!");
+}
+
+document.addEventListener("DOMContentLoaded", initTest);
+
+</script>
+
+</body>
+</html>

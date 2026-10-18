@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhysX | Нұсқаулық</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#2f8cff;
+      --dark:#061b55;
+      --text:#102544;
+      --muted:#64748b;
+      --line:#d7e5f7;
+      --soft:#eef7ff;
+      --white:#ffffff;
+      --green:#12b76a;
+      --orange:#f59e0b;
+      --font:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(#cfe0f4 1px, transparent 1px),
+        linear-gradient(180deg,#fbfdff 0%,#eef6ff 54%,#f7fbff 100%);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{text-decoration:none}
+    button,input,select,textarea,a,span,div,p,h1,h2,h3,h4,h5,h6{font-family:var(--font)}
+
+    .header{
+      height:58px;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border-bottom:1px solid #cfe0f4;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 4px 22px rgba(15,23,42,.045);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-.045em;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:24px;
+    }
+
+    .nav-link{
+      color:#0b2f77;
+      font-weight:850;
+      font-size:14px;
+      padding:20px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{color:#145cff}
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:6px;
+      height:3px;
+      border-radius:999px;
+      background:#145cff;
+    }
+
+    .profile-link{
+      background:transparent!important;
+      color:#0b2f77!important;
+      padding:20px 0!important;
+      border-radius:0!important;
+      box-shadow:none!important;
+    }
+
+    .guide-page{
+      width:min(100% - 34px,1180px);
+      margin:0 auto;
+      padding:22px 0 56px;
+    }
+
+    .hero{
+      min-height:390px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 340px;
+      gap:34px;
+      align-items:center;
+      padding:54px 48px;
+      border-radius:30px;
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(191,219,254,.78);
+      box-shadow:0 22px 54px rgba(13,71,161,.12);
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.72) 48%,rgba(255,255,255,.28) 100%),
+        url("image/profile/profile-map-hero-bg.png") center center / cover no-repeat;
+      isolation:isolate;
+      margin-bottom:18px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      background:
+        radial-gradient(circle at 12% 15%,rgba(20,92,255,.13),transparent 24%),
+        radial-gradient(circle at 82% 18%,rgba(255,255,255,.28),transparent 26%);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(20,92,255,.12);
+      border:1px solid rgba(20,92,255,.18);
+      color:#145cff;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      margin:0 0 18px;
+      max-width:720px;
+      color:#061b55;
+      font-size:48px;
+      line-height:1.05;
+      letter-spacing:-.075em;
+      font-weight:900;
+      text-shadow:0 2px 8px rgba(255,255,255,.72);
+    }
+
+    .hero p{
+      margin:0;
+      max-width:720px;
+      color:#26364f;
+      font-size:16px;
+      line-height:1.72;
+      font-weight:800;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .hero-card{
+      border-radius:30px;
+      padding:24px;
+      min-height:248px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 18px 38px rgba(13,71,161,.13);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+
+    .hero-card img{
+      width:100%;
+      max-width:260px;
+      margin:0 auto 18px;
+      border-radius:18px;
+      box-shadow:0 18px 36px rgba(6,27,85,.14);
+      display:block;
+    }
+
+    .hero-card strong{
+      display:block;
+      color:#061b55;
+      text-align:center;
+      font-size:19px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .hero-card span{
+      color:#64748b;
+      text-align:center;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.45;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin:18px 0;
+    }
+
+    .quick-card{
+      min-height:145px;
+      border-radius:24px;
+      padding:20px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.68)),
+        url("image/profile/profile-soft-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.86);
+      box-shadow:0 14px 34px rgba(13,71,161,.08);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    .quick-card i{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-size:19px;
+      margin-bottom:14px;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+    }
+
+    .quick-card h3{
+      margin:0 0 8px;
+      color:#061b55;
+      font-size:17px;
+      font-weight:900;
+      letter-spacing:-.025em;
+    }
+
+    .quick-card p{
+      margin:0;
+      color:#475569;
+      font-size:13.5px;
+      line-height:1.55;
+      font-weight:750;
+    }
+
+    .section-card{
+      border-radius:30px;
+      padding:30px;
+      margin-top:18px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.68)),
+        url("image/profile/profile-panel-bg.png") center center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.86);
+      box-shadow:0 18px 44px rgba(13,71,161,.09);
+      backdrop-filter:blur(14px) saturate(1.12);
+      -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:0 0 20px;
+      color:#061b55;
+      font-size:30px;
+      line-height:1.1;
+      letter-spacing:-.045em;
+      font-weight:900;
+      text-shadow:0 1px 3px rgba(255,255,255,.72);
+    }
+
+    .section-title i{color:#145cff}
+
+    .intro-note{
+      margin:0 0 22px;
+      padding:18px 20px;
+      border-radius:22px;
+      background:rgba(20,92,255,.09);
+      border:1px solid rgba(20,92,255,.18);
+      color:#334155;
+      font-size:15px;
+      line-height:1.72;
+      font-weight:780;
+    }
+
+    .step-list{
+      display:grid;
+      gap:12px;
+      counter-reset:steps;
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:58px minmax(0,1fr);
+      gap:16px;
+      padding:18px;
+      border-radius:22px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(220,235,255,.92);
+      box-shadow:0 12px 28px rgba(20,70,140,.06);
+    }
+
+    .step-number{
+      width:52px;
+      height:52px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-weight:900;
+      font-size:18px;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+    }
+
+    .step h3{
+      margin:0 0 7px;
+      color:#061b55;
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .step p{
+      margin:0;
+      color:#43526a;
+      font-size:14.5px;
+      line-height:1.65;
+      font-weight:720;
+    }
+
+    .level-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .level-box{
+      border-radius:24px;
+      padding:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(220,235,255,.92);
+      box-shadow:0 12px 28px rgba(20,70,140,.06);
+    }
+
+    .level-box .level-top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:13px;
+    }
+
+    .level-icon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      color:#fff;
+      font-size:19px;
+      box-shadow:0 14px 28px rgba(20,92,255,.16);
+    }
+
+    .level-box h3{
+      margin:0;
+      color:#061b55;
+      font-size:19px;
+      font-weight:900;
+    }
+
+    .level-box span{
+      display:block;
+      color:#145cff;
+      font-size:12px;
+      font-weight:900;
+      margin-top:3px;
+    }
+
+    .level-box p{
+      margin:0;
+      color:#43526a;
+      font-size:14px;
+      line-height:1.65;
+      font-weight:720;
+    }
+
+    .star-system{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:14px;
+    }
+
+    .star-scale,
+    .star-rules{
+      border-radius:24px;
+      padding:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(220,235,255,.92);
+      box-shadow:0 12px 28px rgba(20,70,140,.06);
+    }
+
+    .star-row{
+      display:grid;
+      grid-template-columns:116px minmax(0,1fr);
+      gap:14px;
+      align-items:start;
+      padding:13px 0;
+      border-bottom:1px solid rgba(207,224,244,.9);
+    }
+
+    .star-row:last-child{border-bottom:0}
+
+    .stars{
+      color:#f59e0b;
+      font-size:17px;
+      letter-spacing:1px;
+      white-space:nowrap;
+      font-weight:900;
+    }
+
+    .star-row strong{
+      display:block;
+      color:#061b55;
+      font-size:14.5px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .star-row p{
+      margin:0;
+      color:#475569;
+      font-size:13.5px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
+    .rule-card{
+      padding:16px;
+      border-radius:18px;
+      background:rgba(20,92,255,.07);
+      border:1px solid rgba(20,92,255,.14);
+      margin-bottom:12px;
+    }
+
+    .rule-card:last-child{margin-bottom:0}
+
+    .rule-card h3{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      margin:0 0 8px;
+      color:#09245c;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .rule-card h3 i{color:#145cff}
+
+    .rule-card p{
+      margin:0;
+      color:#43526a;
+      font-size:14px;
+      line-height:1.6;
+      font-weight:720;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius:22px;
+      border:1px solid rgba(220,235,255,.92);
+      background:rgba(255,255,255,.72);
+      box-shadow:0 12px 28px rgba(20,70,140,.06);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+
+    th,td{
+      padding:16px;
+      text-align:left;
+      border-bottom:1px solid rgba(207,224,244,.9);
+      vertical-align:top;
+    }
+
+    th{
+      color:#061b55;
+      font-size:13px;
+      font-weight:900;
+      background:rgba(20,92,255,.08);
+    }
+
+    td{
+      color:#43526a;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:720;
+    }
+
+    tr:last-child td{border-bottom:0}
+
+    .badge-small{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(20,92,255,.10);
+      color:#145cff;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .module-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .module{
+      padding:20px;
+      border-radius:22px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(220,235,255,.92);
+      box-shadow:0 12px 28px rgba(20,70,140,.06);
+    }
+
+    .module h3{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 10px;
+      color:#09245c;
+      font-size:17px;
+      font-weight:900;
+    }
+
+    .module h3 i{color:#145cff}
+
+    .module p{
+      margin:0;
+      color:#43526a;
+      font-size:14px;
+      line-height:1.62;
+      font-weight:720;
+    }
+
+    .accordion{
+      display:grid;
+      gap:10px;
+    }
+
+    .faq{
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid rgba(220,235,255,.92);
+      background:rgba(255,255,255,.76);
+    }
+
+    .faq button{
+      width:100%;
+      padding:17px 18px;
+      border:0;
+      background:transparent;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:center;
+      cursor:pointer;
+      color:#061b55;
+      font-size:15px;
+      font-weight:900;
+      text-align:left;
+    }
+
+    .faq button i{
+      color:#145cff;
+      transition:.2s;
+    }
+
+    .faq.open button i{transform:rotate(180deg)}
+
+    .faq-content{
+      display:none;
+      padding:0 18px 18px;
+      color:#43526a;
+      font-size:14px;
+      line-height:1.65;
+      font-weight:720;
+    }
+
+    .faq.open .faq-content{display:block}
+
+    .cta-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      margin-top:22px;
+    }
+
+    .btn{
+      min-height:46px;
+      padding:0 18px;
+      border-radius:16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      background:#145cff;
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      box-shadow:0 14px 28px rgba(20,92,255,.18);
+    }
+
+    .btn.secondary{
+      background:rgba(255,255,255,.78);
+      color:#145cff;
+      border:1px solid rgba(20,92,255,.16);
+      box-shadow:0 12px 26px rgba(13,71,161,.07);
+    }
+
+    @media(max-width:1050px){
+      .hero{grid-template-columns:1fr;padding:38px 28px}
+      .hero-card{max-width:390px}
+      .quick-grid,.module-grid{grid-template-columns:repeat(2,1fr)}
+      .star-system{grid-template-columns:1fr}
+    }
+
+    @media(max-width:760px){
+      .header{padding:0 14px}
+      .logo{font-size:24px}
+      .nav{gap:14px;overflow-x:auto}
+      .nav-link{font-size:13px}
+      .guide-page{width:min(100% - 22px,1180px)}
+      .hero{border-radius:26px;padding:28px 20px}
+      .hero h1{font-size:36px}
+      .quick-grid,.module-grid,.level-grid{grid-template-columns:1fr}
+      .section-card{padding:22px;border-radius:26px}
+      .section-title{font-size:25px}
+      .step{grid-template-columns:1fr}
+      .star-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="achievement.html" class="nav-link">Жетістіктер</a>
+    <a href="guide.html" class="nav-link active">Нұсқаулық</a>
+    <a href="profile.html" class="nav-link profile-link"><i class="fa-solid fa-user"></i> Профиль</a>
+  </nav>
+</header>
+
+<main class="guide-page">
+
+  <section class="hero">
+    <div>
+      <div class="badge">
+        <i class="fa-solid fa-book-open-reader"></i>
+        Қолдану нұсқаулығы
+      </div>
+
+      <h1>PhysX платформасын қалай қолдану керек?</h1>
+
+      <p>
+        Бұл бет оқушыға PhysX жүйесін дұрыс қолдануды түсіндіреді: профиль толтыру,
+        деңгей анықтау, оқу картасымен жұмыс істеу, жұлдыз жинау, практика орындау,
+        жетістіктерді бақылау және келесі деңгейге өту ережелері.
+      </p>
+    </div>
+
+    <div class="hero-card">
+      <img src="image/logo/physx-emblem.png" alt="PhysX эмблемасы">
+      <strong>Оқы · Орында · Жина · Дамы</strong>
+      <span>Әр сабақтан жұлдыз жинап, өз деңгейіңе сәйкес оқу жолымен алға жылжы.</span>
+    </div>
+  </section>
+
+  <section class="quick-grid">
+    <div class="quick-card">
+      <i class="fa-solid fa-user-pen"></i>
+      <h3>1. Профиль толтыр</h3>
+      <p>Аты-жөніңді, сыныбыңды, оқу мақсатыңды енгіз. Барлық нәтиже профильде сақталады.</p>
+    </div>
+
+    <div class="quick-card">
+      <i class="fa-solid fa-bullseye"></i>
+      <h3>2. Тест тапсыр</h3>
+      <p>Бастапқы тест сенің деңгейіңді анықтап, сәйкес оқу бағытын ашады.</p>
+    </div>
+
+    <div class="quick-card">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <h3>3. Оқу картасына өт</h3>
+      <p>Сабақтарды ретімен орында. Әр тақырып теория, мысал, тест және шешімнен тұрады.</p>
+    </div>
+
+    <div class="quick-card">
+      <i class="fa-solid fa-star"></i>
+      <h3>4. Жұлдыз жина</h3>
+      <p>Әр сабақтан 1–5 жұлдыз жинап, бөлімді аяқтауға және келесі деңгейге өтуге дайындал.</p>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-route"></i>
+      Платформаны қолдану реті
+    </h2>
+
+    <p class="intro-note">
+      PhysX платформасы оқушыны бірден күрделі тақырыпқа жібермейді. Алдымен деңгей анықталады,
+      содан кейін оқушыға өзінің дайындығына сай жеке оқу бағыты ұсынылады.
+    </p>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div>
+          <h3>Тіркелу немесе профильге кіру</h3>
+          <p>Оқушы сайтқа кіргеннен кейін профиль бетінде жеке мәліметтерін тексереді. Мұнда аты-жөні, оқу деңгейі, мақсат, жетістік және прогресс көрсетіледі.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div>
+          <h3>Деңгей анықтау тестінен өту</h3>
+          <p>Бастапқы тест оқушының механика бөлімі бойынша дайындығын анықтайды. Нәтижеге қарай оқушы Beginner, Intermediate немесе Advanced деңгейіне бағытталады.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div>
+          <h3>Оқу картасы бойынша сабақ оқу</h3>
+          <p>Оқу картасында тақырыптар ретімен орналасады. Оқушы алдымен теорияны оқиды, кейін есеп шығару мысалдарын қарайды, тест орындайды және шешімін талдайды.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">4</div>
+        <div>
+          <h3>Практика және бақылау жұмыстары</h3>
+          <p>Әр бөлімнен кейін оқушы практика тапсырмаларын және бақылау жұмысын орындайды. Бұл бөлімнің қаншалықты меңгерілгенін тексеруге көмектеседі.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">5</div>
+        <div>
+          <h3>Жетістіктерді бақылау</h3>
+          <p>Жетістіктер бетінде жиналған XP, жұлдыздар, аяқталған сабақтар, ашылған белгілер және келесі мақсаттар көрсетіледі.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-layer-group"></i>
+      Деңгейлер жүйесі
+    </h2>
+
+    <div class="level-grid">
+      <div class="level-box">
+        <div class="level-top">
+          <div class="level-icon"><i class="fa-solid fa-seedling"></i></div>
+          <div>
+            <h3>Beginner</h3>
+            <span>Бастапқы деңгей</span>
+          </div>
+        </div>
+        <p>Негізгі ұғымдар, формулалар және қарапайым есептер. Бұл деңгей механика бөлімінің базасын қалыптастырады.</p>
+      </div>
+
+      <div class="level-box">
+        <div class="level-top">
+          <div class="level-icon"><i class="fa-solid fa-person-running"></i></div>
+          <div>
+            <h3>Intermediate</h3>
+            <span>Орта деңгей</span>
+          </div>
+        </div>
+        <p>Күрделірек есептер, графиктер, заңдарды қолдану және бірнеше қадамды тапсырмалар арқылы білім тереңдетіледі.</p>
+      </div>
+
+      <div class="level-box">
+        <div class="level-top">
+          <div class="level-icon"><i class="fa-solid fa-rocket"></i></div>
+          <div>
+            <h3>Advanced</h3>
+            <span>Жоғары деңгей</span>
+          </div>
+        </div>
+        <p>Талдау, дәлелдеу, олимпиадалық бағыттағы есептер және күрделі механикалық құбылыстарды жүйелі меңгеру.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-star"></i>
+      Жұлдыз жинау жүйесі
+    </h2>
+
+    <p class="intro-note">
+      Әр сабақ 5 жұлдыздық жүйемен бағаланады. Негізгі мақсат — тек тақырыпты ашып қою емес,
+      оны теория, есеп, тест және практика арқылы толық меңгеру.
+    </p>
+
+    <div class="star-system">
+      <div class="star-scale">
+        <div class="star-row">
+          <div class="stars">★☆☆☆☆</div>
+          <div>
+            <strong>Тақырыппен танысты</strong>
+            <p>Оқушы теорияны ашып, негізгі ұғымдармен танысты.</p>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <div class="stars">★★☆☆☆</div>
+          <div>
+            <strong>Мысалды түсінді</strong>
+            <p>Есеп шығару мысалдарын қарап, негізгі формулаларды қолдана бастады.</p>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <div class="stars">★★★☆☆</div>
+          <div>
+            <strong>Минимум деңгей орындалды</strong>
+            <p>Тесттен кемінде 60% нәтиже көрсетіп, сабақтың негізгі бөлігін меңгерді.</p>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <div class="stars">★★★★☆</div>
+          <div>
+            <strong>Жақсы нәтиже</strong>
+            <p>Практика мен тесттерден кемінде 80% нәтиже көрсетті.</p>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <div class="stars">★★★★★</div>
+          <div>
+            <strong>Толық меңгерді</strong>
+            <p>Қосымша есептерді орындап, тақырып бойынша жоғары нәтиже көрсетті.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="star-rules">
+        <div class="rule-card">
+          <h3><i class="fa-solid fa-circle-check"></i> Сабақты аяқтау</h3>
+          <p>Сабақ аяқталды деп есептелуі үшін кемінде 3 жұлдыз алу керек.</p>
+        </div>
+
+        <div class="rule-card">
+          <h3><i class="fa-solid fa-medal"></i> Бөлімді аяқтау</h3>
+          <p>Бөлімді толық аяқтау үшін сол бөлімдегі сабақтардың кемінде 80%-ынан 3 немесе одан көп жұлдыз алу қажет.</p>
+        </div>
+
+        <div class="rule-card">
+          <h3><i class="fa-solid fa-lock-open"></i> Келесі деңгейге өту</h3>
+          <p>Келесі деңгейге өту үшін орташа нәтиже кемінде 4 жұлдыз болып, бақылау жұмысынан жеткілікті балл жинау керек.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-clipboard-check"></i>
+      Бөлім және деңгей бойынша талаптар
+    </h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Кезең</th>
+            <th>Не істеу керек?</th>
+            <th>Жұлдыз талабы</th>
+            <th>Нәтиже</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td><span class="badge-small"><i class="fa-solid fa-book"></i> Бір сабақ</span></td>
+            <td>Теория оқу, есеп шығару мысалын қарау, тест орындау, шешімін талдау.</td>
+            <td>Кемінде 3 жұлдыз</td>
+            <td>Сабақ аяқталды деп белгіленеді.</td>
+          </tr>
+
+          <tr>
+            <td><span class="badge-small"><i class="fa-solid fa-layer-group"></i> Бір бөлім</span></td>
+            <td>Бөлім ішіндегі сабақтарды орындау және бөлімдік практикадан өту.</td>
+            <td>Сабақтардың кемінде 80%-ы 3+ жұлдыз</td>
+            <td>Бөлім аяқталды, бақылау жұмысына дайындық ашылады.</td>
+          </tr>
+
+          <tr>
+            <td><span class="badge-small"><i class="fa-solid fa-file-pen"></i> Бақылау жұмысы</span></td>
+            <td>Бөлім бойынша қорытынды тапсырмаларды орындау.</td>
+            <td>60–74% — 3★, 75–89% — 4★, 90–100% — 5★</td>
+            <td>Оқушының бөлімді меңгеру деңгейі анықталады.</td>
+          </tr>
+
+          <tr>
+            <td><span class="badge-small"><i class="fa-solid fa-arrow-up"></i> Келесі деңгей</span></td>
+            <td>Деңгейдің негізгі сабақтары мен бақылауларын аяқтау.</td>
+            <td>Орташа 4★ және бақылаудан кемінде 70–75%</td>
+            <td>Келесі оқу деңгейіне өту ұсынылады.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-compass"></i>
+      Негізгі бөлімдер қалай қолданылады?
+    </h2>
+
+    <div class="module-grid">
+      <div class="module">
+        <h3><i class="fa-solid fa-map"></i> Оқу картасы</h3>
+        <p>Барлық сабақтар ретімен орналасады. Алдыңғы сабақ аяқталса, келесі тақырыпқа өту жеңіл болады.</p>
+      </div>
+
+      <div class="module">
+        <h3><i class="fa-solid fa-calendar-days"></i> Жеке жоспар</h3>
+        <p>Оқушының деңгейі мен прогресіне қарай бүгінгі мақсат, апта жоспары және келесі қадам көрсетіледі.</p>
+      </div>
+
+      <div class="module">
+        <h3><i class="fa-solid fa-pen-ruler"></i> Практика</h3>
+        <p>Есептерді шығарып, формулаларды қолдану дағдысын дамытасың. Практика жұлдыз жинауға көмектеседі.</p>
+      </div>
+
+      <div class="module">
+        <h3><i class="fa-solid fa-trophy"></i> Жетістіктер</h3>
+        <p>XP, жұлдыз, аяқталған сабақтар және ашылған белгілер осы бөлімде көрінеді.</p>
+      </div>
+
+      <div class="module">
+        <h3><i class="fa-solid fa-user"></i> Профиль</h3>
+        <p>Жеке мәлімет, оқу деңгейі, мақсат, тіркелген күн және профиль суреті сақталады.</p>
+      </div>
+
+      <div class="module">
+        <h3><i class="fa-solid fa-circle-info"></i> Біз туралы</h3>
+        <p>PhysX платформасының мақсаты, дипломдық жұмысқа байланысы және ғылыми негізі көрсетіледі.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-circle-question"></i>
+      Жиі қойылатын сұрақтар
+    </h2>
+
+    <div class="accordion">
+      <div class="faq open">
+        <button type="button">
+          Деңгейім дұрыс шықпаса не істеймін?
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-content">
+          Деңгей анықтау тестін қайта тапсыруға болады. Егер нәтиже өзгерсе, оқу картасы жаңа деңгейге сай бейімделеді.
+        </div>
+      </div>
+
+      <div class="faq">
+        <button type="button">
+          Сабақтан 2 жұлдыз алсам, келесі сабаққа өте аламын ба?
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-content">
+          2 жұлдыз тақырыппен танысқаныңды білдіреді, бірақ сабақ толық аяқталды деп саналуы үшін кемінде 3 жұлдыз алу ұсынылады.
+        </div>
+      </div>
+
+      <div class="faq">
+        <button type="button">
+          Бөлімді аяқтау үшін барлық сабақтан 5 жұлдыз алу міндетті ме?
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-content">
+          Міндетті емес. Бөлімді аяқтау үшін сабақтардың кемінде 80%-ынан 3 немесе одан жоғары жұлдыз алу жеткілікті. Бірақ 4–5 жұлдыз жақсы нәтиже болып саналады.
+        </div>
+      </div>
+
+      <div class="faq">
+        <button type="button">
+          Жетістіктер не үшін керек?
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-content">
+          Жетістіктер оқушының мотивациясын арттырады. Ол аяқталған сабақтарды, XP ұпайын, жұлдыздарды және келесі мақсатты көрсетеді.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-row">
+    <a href="levels_map.html" class="btn">
+      <i class="fa-solid fa-map-location-dot"></i>
+      Оқу картасына өту
+    </a>
+
+    <a href="profile.html" class="btn secondary">
+      <i class="fa-solid fa-user"></i>
+      Профильге қайту
+    </a>
+  </div>
+</main>
+
+<script>
+  document.querySelectorAll(".faq button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const item = btn.closest(".faq");
+      item.classList.toggle("open");
+    });
+  });
+</script>
+</body>
+</html>

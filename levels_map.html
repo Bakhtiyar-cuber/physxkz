@@ -1,0 +1,5509 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysX - Оқу картасы</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+:root{
+  --blue:#145cff;
+  --blue-dark:#082f8c;
+  --dark:#061b55;
+  --text:#071837;
+  --muted:#64748b;
+  --line:#dbe7f5;
+  --green:#12b76a;
+  --orange:#f59e0b;
+  --soft:#f8fbff;
+  --shadow:0 18px 42px rgba(13,71,161,.10);
+}
+
+*{box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif}
+html{scroll-behavior:smooth}
+
+button, input, select, textarea {
+  font-family: "Segoe UI", Arial, sans-serif !important;
+}
+
+a, span, div, p, h1, h2, h3, h4, h5, h6 {
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(#d2dff1 1px,transparent 1px),
+    linear-gradient(180deg,#fbfdff,#eef5ff);
+  background-size:28px 28px,100% 100%;
+  overflow-x:hidden;
+}
+
+/* HEADER */
+.header{
+  height:68px;
+  background:#fff;
+  border-bottom:1px solid #d6e6fb;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 2px 18px rgba(15,23,42,.04);
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#0d47a1;
+  text-decoration:none;
+  font-size:30px;
+  font-weight:900;
+}
+.nav{display:flex;align-items:center;gap:26px}
+.nav-link{
+  text-decoration:none;
+  color:#06205b;
+  font-weight:900;
+  font-size:15px;
+  padding:25px 0;
+  position:relative;
+  white-space:nowrap;
+}
+.nav-link.active{color:#ff9800}
+.nav-link.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:8px;
+  height:4px;
+  border-radius:999px;
+  background:#ff9800;
+}
+.login-link{
+  background:#145cff;
+  color:#fff!important;
+  padding:14px 22px!important;
+  border-radius:13px;
+}
+.login-link::after{display:none}
+.nav-dropdown{position:relative}
+.dropdown-menu{
+  position:absolute;
+  top:60px;
+  left:0;
+  min-width:230px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:10px;
+  display:none;
+}
+.nav-dropdown:hover .dropdown-menu{display:block}
+.dropdown-menu a{
+  display:block;
+  padding:11px 12px;
+  border-radius:11px;
+  color:#071837;
+  text-decoration:none;
+  font-weight:800;
+}
+.dropdown-menu a:hover{background:#eef6ff;color:#0d47a1}
+
+/* LAYOUT */
+.map-page{
+  width:min(100% - 24px,1500px);
+  margin:0 auto;
+  padding:14px 0 38px;
+  display:grid;
+  grid-template-columns:292px minmax(0,1fr);
+  gap:20px;
+  align-items:start;
+}
+.map-main{min-width:0}
+
+/* SIDEBAR */
+.map-sidebar{
+  position:sticky;
+  top:82px;
+  height:calc(100vh - 96px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  border-radius:22px;
+  background:linear-gradient(180deg,#1765ff 0%,#053aa7 58%,#01236f 100%);
+  color:#fff;
+  box-shadow:0 22px 45px rgba(13,71,161,.25);
+  padding:18px;
+  scrollbar-width:thin;
+}
+.map-sidebar::-webkit-scrollbar{width:4px}
+.map-sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);border-radius:999px}
+.sidebar-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:14px;
+}
+.sidebar-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:26px;
+  line-height:1.15;
+  font-weight:900;
+}
+.sidebar-title i{
+  width:42px;
+  height:42px;
+  border-radius:15px;
+  background:rgba(255,255,255,.17);
+  display:grid;
+  place-items:center;
+}
+.toggle-btn{
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:.22s ease;
+}
+.toggle-btn:hover{
+  background:rgba(255,255,255,.24);
+}
+.toggle-btn i{
+  transition:.22s ease;
+}
+.side-subtitle{
+  font-size:14px;
+  font-weight:900;
+  color:#dbeafe;
+  margin-bottom:16px;
+}
+.quick-finder{
+  display:grid;
+  gap:8px;
+  margin-bottom:16px;
+}
+.quick-finder select,
+.quick-finder input{
+  width:100%;
+  height:42px;
+  border:none;
+  outline:none;
+  border-radius:12px;
+  padding:0 12px;
+  font-weight:900;
+  color:#0f2450;
+  background:rgba(255,255,255,.95);
+}
+.quick-finder button{
+  height:42px;
+  border:none;
+  border-radius:12px;
+  background:#fff;
+  color:#0d47a1;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.side-card{
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:17px;
+  padding:15px;
+  margin-bottom:16px;
+}
+.side-card h3{
+  margin:0 0 14px;
+  font-size:15px;
+  font-weight:900;
+}
+.progress-big{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.circle{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  background:conic-gradient(#38bdf8 0deg,#38bdf8 var(--deg),rgba(255,255,255,.22) 0deg);
+  display:grid;
+  place-items:center;
+  position:relative;
+  flex-shrink:0;
+  font-weight:900;
+}
+.circle::after{
+  content:"";
+  position:absolute;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#0943b6;
+}
+.circle span{
+  position:relative;
+  z-index:2;
+  font-size:17px;
+}
+.side-progress-bar{
+  height:8px;
+  background:rgba(255,255,255,.24);
+  border-radius:999px;
+  overflow:hidden;
+  margin:14px 0 9px;
+}
+.side-progress-bar div{
+  height:100%;
+  background:linear-gradient(90deg,#38bdf8,#22c55e);
+  border-radius:999px;
+}
+.side-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:13px;
+  font-weight:900;
+  color:#fff;
+}
+.daily-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+.daily-title i{color:#fbbf24}
+.daily-text{
+  font-size:13px;
+  line-height:1.4;
+  color:#eaf3ff;
+  font-weight:800;
+  margin-bottom:9px;
+}
+.daily-bar{
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.22);
+  overflow:hidden;
+  margin-bottom:9px;
+}
+.daily-bar div{
+  height:100%;
+  background:linear-gradient(90deg,#38bdf8,#22c55e);
+}
+.side-menu{
+  display:grid;
+  gap:10px;
+  margin-bottom:16px;
+}
+.side-menu-btn{
+  height:56px;
+  border-radius:15px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 14px;
+  font-size:15px;
+  font-weight:900;
+  text-decoration:none;
+  cursor:pointer;
+}
+.side-menu-btn.active,
+.side-menu-btn:hover{
+  background:rgba(255,255,255,.20);
+}
+.side-menu-btn i{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.15);
+  font-size:18px;
+}
+.rocket-card{
+  min-height:120px;
+  background:
+    radial-gradient(circle at 72% 56%,rgba(84,140,255,.88),transparent 32%),
+    linear-gradient(180deg,#0c43d9,#061b72);
+  border-radius:18px;
+  padding:18px;
+  overflow:hidden;
+  position:relative;
+}
+.rocket-card h3{
+  margin:0;
+  font-size:16px;
+  line-height:1.3;
+  max-width:150px;
+}
+.rocket{
+  position:absolute;
+  right:18px;
+  bottom:14px;
+  font-size:72px;
+  transform:rotate(18deg);
+  filter:drop-shadow(0 18px 25px rgba(0,0,0,.25));
+}
+
+/* TOP */
+.map-top-head{
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.map-title h1{
+  margin:0;
+  font-size:28px;
+  color:#061b55;
+}
+.map-title p{
+  margin:6px 0 0;
+  color:#64748b;
+  font-weight:800;
+}
+.map-top-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  flex-shrink:0;
+}
+.map-collapse-btn,
+.map-fullscreen-btn{
+  height:42px;
+  padding:0 16px;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;
+  transition:.2s;
+}
+.map-collapse-btn{
+  background:#edf5ff;
+  color:#145cff;
+  border:1px solid #d6e3f5;
+}
+.map-fullscreen-btn{
+  background:#145cff;
+  color:#fff;
+  box-shadow:0 8px 18px rgba(20,92,255,.14);
+}
+.map-fullscreen-btn:hover,
+.map-collapse-btn:hover{
+  transform:translateY(-1px);
+}
+
+/* MAIN CARD */
+.main-card{
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:14px;
+}
+.tabs{
+  display:flex;
+  gap:26px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:22px;
+}
+.tab-btn{
+  border:none;
+  background:transparent;
+  color:#55708f;
+  font-weight:900;
+  padding:13px 0;
+  cursor:pointer;
+  position:relative;
+}
+.tab-btn.active{color:#145cff}
+.tab-btn.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:4px;
+  border-radius:999px;
+  background:#145cff;
+}
+
+/* LEVEL */
+.level-section{
+  scroll-margin-top:88px;
+  margin-bottom:24px;
+}
+.level-hero{
+  border:1px solid #d8e7f7;
+  border-radius:20px;
+  background:linear-gradient(135deg,#fff,#f8fbff);
+  padding:22px 22px;
+  margin-bottom:18px;
+}
+.level-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+}
+.level-left{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+.level-icon{
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  color:#12b76a;
+  background:#dcfce7;
+  font-size:34px;
+  flex-shrink:0;
+}
+.level-head h2{
+  margin:0 0 7px;
+  color:#061b55;
+  font-size:28px;
+}
+.level-head p{
+  margin:0;
+  color:#334155;
+  font-weight:800;
+}
+.count-badge{
+  background:#edf5ff;
+  color:#0d47a1;
+  border:1px solid #d6e3f5;
+  border-radius:14px;
+  padding:13px 18px;
+  font-weight:900;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  white-space:nowrap;
+}
+.level-stats{
+  margin-top:18px;
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.level-stat{
+  height:36px;
+  padding:0 15px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:13px;
+  font-weight:900;
+  border:1px solid #dce8f7;
+  background:#f8fbff;
+  color:#64748b;
+}
+.level-stat.green{background:#ecfdf5;border-color:#bbf7d0;color:#059669}
+.level-stat.orange{background:#fff7ed;border-color:#fed7aa;color:#ea580c}
+.level-stat.blue{background:#eff6ff;border-color:#bfdbfe;color:#145cff}
+.level-stat.star{background:#fffbeb;border-color:#fde68a;color:#b45309}
+
+/* CHAPTER */
+.chapter-card{
+  margin-bottom:22px;
+}
+.chapter-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 4px 12px;
+}
+.chapter-header h3{
+  margin:0;
+  color:#0d47a1;
+  font-size:19px;
+  font-weight:900;
+}
+.chapter-mini{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.chapter-pill{
+  height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#f1f5f9;
+  border:1px solid #e2e8f0;
+  color:#64748b;
+  display:flex;
+  align-items:center;
+  font-size:12px;
+  font-weight:900;
+}
+.chapter-pill.green{background:#ecfdf5;border-color:#bbf7d0;color:#059669}
+.chapter-pill.orange{background:#fff7ed;border-color:#fed7aa;color:#ea580c}
+.chapter-pill.blue{background:#eff6ff;border-color:#bfdbfe;color:#145cff}
+.chapter-pill.star{background:#fffbeb;border-color:#fde68a;color:#b45309}
+.chapter-progress{
+  height:5px;
+  background:#e8eef7;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.chapter-progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,#0d47a1,#12b76a);
+}
+
+/* ROADMAP */
+.roadmap-wrap{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  gap:18px;
+}
+.roadline{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:22px;
+  padding-top:8px;
+}
+.roadline::before{
+  content:"";
+  position:absolute;
+  top:22px;
+  bottom:22px;
+  width:2px;
+  background:repeating-linear-gradient(180deg,#b8c7dc 0,#b8c7dc 8px,transparent 8px,transparent 14px);
+  z-index:0;
+}
+.step{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#edf2f8;
+  color:#7b8ca7;
+  font-weight:900;
+  z-index:1;
+  border:3px solid #fff;
+  box-shadow:0 0 0 1px #d6e3f5;
+}
+.step.done{
+  background:#12b76a;
+  color:#fff;
+  box-shadow:none;
+}
+.step.current{
+  background:#145cff;
+  color:#fff;
+  box-shadow:none;
+}
+.step.locked{
+  background:#f3f6fb;
+  color:#94a3b8;
+  border:2px solid #d7e2f0;
+  box-shadow:none;
+}
+
+/* LESSONS */
+.lesson-list{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.lesson-card,
+.lesson-card-disabled{
+  min-height:138px;
+  border-radius:17px;
+  border:1px solid #d6e3f5;
+  background:#fff;
+  padding:17px;
+  text-decoration:none;
+  color:#061b55;
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:12px;
+  transition:.2s;
+}
+.lesson-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 26px rgba(13,71,161,.10);
+}
+.lesson-card-disabled{
+  color:#64748b;
+  cursor:not-allowed;
+  background:#fbfdff;
+}
+.lesson-icon{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#edf2f8;
+  color:#7b8ca7;
+  font-size:14px;
+  font-weight:900;
+}
+.lesson-card.current .lesson-icon{background:#145cff;color:#fff;font-size:17px}
+.lesson-card.completed .lesson-icon{background:#12b76a;color:#fff}
+.lesson-card-disabled .lesson-icon{background:#eef2f7;color:#94a3b8;border:1px solid #d8e2ef}
+.lesson-info h4{
+  margin:0;
+  font-size:15px;
+  line-height:1.25;
+  color:#061b55;
+}
+.lesson-stars{
+  margin-top:12px;
+  display:flex;
+  gap:2px;
+  font-size:20px;
+}
+.lesson-stars span{
+  color:#d8e1ee;
+  text-shadow:0 1px 0 rgba(255,255,255,.85);
+}
+.lesson-stars span.filled{
+  color:#f59e0b;
+  text-shadow:0 3px 10px rgba(245,158,11,.28);
+}
+.lesson-status{
+  grid-column:2;
+  min-height:34px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:8px;
+  padding:0 12px;
+  font-weight:900;
+  font-size:13px;
+}
+.status-completed{
+  background:#ecfdf5;
+  border:1px solid #bbf7d0;
+  color:#059669;
+}
+.status-current{
+  color:#145cff;
+  justify-content:flex-start;
+}
+.status-locked{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  color:#64748b;
+}
+.start-btn{
+  height:38px;
+  padding:0 20px;
+  border-radius:11px;
+  border:2px solid #145cff;
+  background:#fff;
+  color:#145cff;
+  font-weight:900;
+  cursor:pointer;
+}
+
+/* CONTROL */
+.control-card,
+.control-card-disabled{
+  grid-column:1/-1;
+  min-height:92px;
+  border-radius:18px;
+  border:1px solid #bbf7d0;
+  background:linear-gradient(135deg,#ecfdf5,#ffffff);
+  color:#061b55;
+  display:grid;
+  grid-template-columns:66px minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  padding:16px 18px;
+  text-decoration:none;
+  font-weight:900;
+  margin-top:4px;
+}
+.control-card i,
+.control-card-disabled i{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#12b76a;
+  color:#fff;
+  font-size:24px;
+}
+.control-card h4,
+.control-card-disabled h4{
+  margin:0 0 5px;
+  color:#061b55;
+  font-size:18px;
+}
+.control-card p,
+.control-card-disabled p{
+  margin:0;
+  color:#334155;
+  font-size:13px;
+  font-weight:800;
+}
+.control-meta{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.control-meta span{
+  height:36px;
+  padding:0 14px;
+  border-radius:10px;
+  background:#f8fbff;
+  border:1px solid #dbe7f5;
+  color:#334155;
+  display:flex;
+  align-items:center;
+  font-size:13px;
+  font-weight:900;
+}
+.control-action{
+  height:46px;
+  padding:0 20px;
+  border-radius:13px;
+  border:none;
+  background:#12b76a;
+  color:#fff;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.control-card-disabled{
+  opacity:.92;
+  border-color:#d8e1ee;
+  background:linear-gradient(135deg,#f8fbff,#f1f5f9);
+}
+.control-card-disabled i{
+  background:#e2e8f0;
+  color:#64748b;
+}
+.control-card-disabled .control-action{
+  background:#eef2f7;
+  color:#64748b;
+}
+
+/* COLLAPSE */
+body.map-top-collapsed .extra-top{display:none!important}
+body.map-fullscreen-mode .header{display:none!important}
+body.map-fullscreen-mode .map-page{
+  width:calc(100% - 16px)!important;
+  max-width:none!important;
+  padding-top:8px!important;
+}
+body.map-fullscreen-mode .map-sidebar{
+  top:8px!important;
+  height:calc(100vh - 16px)!important;
+}
+body.map-fullscreen-mode .map-fullscreen-btn{
+  background:#ef4444!important;
+}
+
+/* SIDEBAR COLLAPSE */
+body.sidebar-collapsed .map-page{
+  grid-template-columns:78px minmax(0,1fr);
+}
+body.sidebar-collapsed .map-sidebar{
+  padding:14px 10px;
+}
+body.sidebar-collapsed .sidebar-head{
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+body.sidebar-collapsed .toggle-btn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+}
+body.sidebar-collapsed .toggle-btn i{
+  transform:rotate(180deg);
+}
+body.sidebar-collapsed .sidebar-title span,
+body.sidebar-collapsed .side-subtitle,
+body.sidebar-collapsed .quick-finder,
+body.sidebar-collapsed .side-card,
+body.sidebar-collapsed .side-menu-btn span,
+body.sidebar-collapsed .rocket-card h3{
+  display:none!important;
+}
+body.sidebar-collapsed .sidebar-title{
+  justify-content:center;
+  width:100%;
+}
+body.sidebar-collapsed .sidebar-title i{
+  margin:0 auto;
+}
+body.sidebar-collapsed .side-menu-btn{
+  justify-content:center;
+  padding:0;
+}
+body.sidebar-collapsed .rocket-card{
+  min-height:90px;
+  padding:10px;
+}
+body.sidebar-collapsed .rocket{
+  font-size:48px;
+  right:13px;
+  bottom:16px;
+}
+
+/* VIEW MODES */
+body.map-view-list .lesson-list{
+  grid-template-columns:1fr;
+}
+body.map-view-list .lesson-card,
+body.map-view-list .lesson-card-disabled{
+  min-height:74px;
+  grid-template-columns:46px minmax(0,1fr) auto;
+  align-items:center;
+}
+body.map-view-list .lesson-status{
+  grid-column:auto;
+  margin-top:0;
+}
+body.map-view-compact .lesson-list{
+  grid-template-columns:1fr;
+}
+body.map-view-compact .lesson-card,
+body.map-view-compact .lesson-card-disabled{
+  min-height:52px;
+  padding:10px 14px;
+  grid-template-columns:34px minmax(0,1fr) auto;
+  align-items:center;
+}
+body.map-view-compact .lesson-icon{
+  width:28px;
+  height:28px;
+  font-size:11px;
+}
+body.map-view-compact .lesson-stars{
+  font-size:13px;
+  margin-top:4px;
+}
+body.map-view-compact .lesson-status{
+  grid-column:auto;
+  margin-top:0;
+}
+body.map-view-snake .lesson-list{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+body.map-view-snake .lesson-card,
+body.map-view-snake .lesson-card-disabled{
+  width:min(92%,640px);
+}
+body.map-view-snake .lesson-card:nth-child(odd),
+body.map-view-snake .lesson-card-disabled:nth-child(odd){
+  transform:translateX(-70px);
+}
+body.map-view-snake .lesson-card:nth-child(even),
+body.map-view-snake .lesson-card-disabled:nth-child(even){
+  transform:translateX(70px);
+}
+
+.lesson-highlight{
+  outline:4px solid rgba(245,158,11,.35);
+  box-shadow:0 0 0 8px rgba(245,158,11,.14)!important;
+}
+
+@media(max-width:1200px){
+  .lesson-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:980px){
+  .map-page{grid-template-columns:1fr}
+  .map-sidebar{position:relative;top:0;height:auto}
+  .lesson-list{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .header{padding:0 14px}
+  .nav{gap:14px;overflow-x:auto}
+  .map-top-head,.level-head,.chapter-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .map-top-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .map-collapse-btn,.map-fullscreen-btn{
+    width:100%;
+    justify-content:center;
+  }
+  .control-card,.control-card-disabled{
+    grid-template-columns:54px minmax(0,1fr);
+  }
+  .control-meta,.control-action{
+    grid-column:2;
+  }
+}
+  
+/* ==================================================
+   REMOVE DUPLICATE ROADLINE CHECKS
+   Сол жақтағы артық галочкалар алынды
+================================================== */
+
+.roadmap-wrap{
+  grid-template-columns:1fr !important;
+  gap:0 !important;
+}
+
+.roadline{
+  display:none !important;
+}
+
+.lesson-list{
+  width:100% !important;
+}
+
+.lesson-card,
+.lesson-card-disabled{
+  margin-left:0 !important;
+}
+
+
+/* ==================================================
+   60% STAR GATE FOR NEXT CHAPTER
+   Келесі бөлімге өту үшін кемінде 60% жұлдыз керек
+================================================== */
+
+.chapter-gate-note{
+  margin:10px 0 14px;
+  padding:11px 14px;
+  border-radius:14px;
+  font-size:13px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.chapter-gate-note.ok{
+  background:#ecfdf5;
+  color:#059669;
+  border:1px solid #bbf7d0;
+}
+
+.chapter-gate-note.no{
+  background:#fff7ed;
+  color:#ea580c;
+  border:1px solid #fed7aa;
+}
+
+.chapter-gate-note.locked{
+  background:#fff1f2;
+  color:#e11d48;
+  border:1px solid #fecdd3;
+}
+
+.chapter-card.chapter-locked{
+  opacity:.78;
+  filter:saturate(.8);
+}
+
+.chapter-card.chapter-locked .lesson-card-disabled,
+.chapter-card.chapter-locked .control-card-disabled{
+  background:#f8fafc !important;
+}
+
+.chapter-pill.star-ok{
+  background:#ecfdf5 !important;
+  border-color:#bbf7d0 !important;
+  color:#059669 !important;
+}
+
+.chapter-pill.star-no{
+  background:#fff7ed !important;
+  border-color:#fed7aa !important;
+  color:#ea580c !important;
+}
+
+.next-gate-label{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#ea580c;
+  font-size:12px;
+  font-weight:900;
+}
+
+
+/* ==================================================
+   CLEAN COMPACT CHAPTER STATS
+   Бөлім статистикасын ықшамдау
+================================================== */
+
+.chapter-mini{
+  gap:7px !important;
+}
+
+.chapter-pill{
+  height:28px !important;
+  padding:0 10px !important;
+  font-size:12px !important;
+}
+
+.chapter-pill.hide-small{
+  display:none !important;
+}
+
+.chapter-gate-note{
+  padding:9px 12px !important;
+  margin:8px 0 12px !important;
+  font-size:12.5px !important;
+}
+
+.chapter-gate-note.ok{
+  background:#ecfdf5 !important;
+  color:#059669 !important;
+  border-color:#bbf7d0 !important;
+}
+
+.chapter-gate-note.no{
+  background:#fff7ed !important;
+  color:#ea580c !important;
+  border-color:#fed7aa !important;
+}
+
+.chapter-gate-note.locked{
+  background:#fff1f2 !important;
+  color:#e11d48 !important;
+  border-color:#fecdd3 !important;
+}
+
+@media(max-width:900px){
+  .chapter-mini{
+    justify-content:flex-start !important;
+  }
+}
+
+
+/* ==================================================
+   FINAL POLISH: SIDEBAR TOOLTIP + COMPACT LEVEL + STATUS BADGE
+================================================== */
+
+/* Жоғарғы деңгей блогын ықшамдау */
+.level-hero{
+  padding:16px 18px !important;
+}
+
+.level-icon{
+  width:62px !important;
+  height:62px !important;
+  font-size:28px !important;
+}
+
+.level-head h2{
+  font-size:24px !important;
+  margin-bottom:5px !important;
+}
+
+.level-head p{
+  font-size:13.5px !important;
+}
+
+.level-stats{
+  margin-top:12px !important;
+}
+
+/* Сабақтағы жасыл ұзын жолақты қысқа badge қылу */
+.lesson-status{
+  grid-column:2 !important;
+  width:max-content !important;
+  min-width:0 !important;
+  min-height:28px !important;
+  height:28px !important;
+  margin-top:8px !important;
+  padding:0 12px !important;
+  justify-content:flex-start !important;
+  border-radius:999px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+}
+
+.status-completed{
+  background:#ecfdf5 !important;
+  border:1px solid #bbf7d0 !important;
+  color:#059669 !important;
+  box-shadow:none !important;
+}
+
+.status-current{
+  background:transparent !important;
+  border:none !important;
+  padding:0 !important;
+}
+
+.status-locked{
+  background:#f8fafc !important;
+  border:1px solid #e2e8f0 !important;
+  color:#64748b !important;
+}
+
+/* Сабақ карточкалары сәл жинақы */
+.lesson-card,
+.lesson-card-disabled{
+  min-height:116px !important;
+}
+
+body.map-view-list .lesson-card,
+body.map-view-list .lesson-card-disabled{
+  min-height:66px !important;
+}
+
+body.map-view-compact .lesson-card,
+body.map-view-compact .lesson-card-disabled{
+  min-height:50px !important;
+}
+
+/* Жиналған sidebar-да иконкалар анық болсын */
+body.sidebar-collapsed .side-menu-btn{
+  position:relative;
+}
+
+body.sidebar-collapsed .side-menu-btn:hover::after{
+  content:attr(title);
+  position:absolute;
+  left:62px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:9999;
+  background:#061b55;
+  color:#fff;
+  padding:8px 10px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+  box-shadow:0 12px 24px rgba(15,23,42,.22);
+}
+
+
+/* ==================================================
+   FINAL HEADER NAVIGATION
+   Практика + Жетістіктер dropdown, Кіру/Профиль dynamic
+================================================== */
+
+#authArea{
+  display:flex;
+  align-items:center;
+}
+
+.profile-link{
+  background:#145cff;
+  color:#fff!important;
+  padding:14px 20px!important;
+  border-radius:13px;
+}
+
+.profile-link::after{
+  display:none!important;
+}
+
+.nav-dropdown .dropdown-menu{
+  z-index:3000;
+}
+
+@media(max-width:900px){
+  .nav{
+    gap:16px!important;
+  }
+
+  .nav-link{
+    font-size:14px!important;
+  }
+
+  .profile-link,
+  .login-link{
+    padding:12px 16px!important;
+  }
+}
+
+
+/* AUTH AREA FIX */
+#authArea{
+  display:flex !important;
+  align-items:center !important;
+  min-width:82px;
+}
+.profile-link{
+  background:#145cff;
+  color:#fff!important;
+  padding:14px 20px!important;
+  border-radius:13px;
+}
+.profile-link::after{display:none!important}
+
+</style>
+
+<style>
+/* ==================================================
+   LEVELS MAP MODERN POLISH
+   Sticky "Келесі сабақ" + clean header + compact cards
+================================================== */
+
+.nav-dropdown .dropdown-menu{
+  display:none !important;
+}
+
+.map-main{
+  position:relative;
+}
+
+.next-lesson-sticky{
+  position:sticky;
+  top:82px;
+  z-index:60;
+  margin-bottom:14px;
+  background:rgba(255,255,255,.97);
+  border:1px solid #dbe7f5;
+  border-radius:18px;
+  box-shadow:0 14px 34px rgba(13,71,161,.10);
+  padding:12px 14px;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  backdrop-filter:blur(10px);
+}
+
+.next-lesson-sticky .next-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#145cff,#1ea7ff);
+  color:#fff;
+  font-size:18px;
+}
+
+.next-lesson-sticky b{
+  display:block;
+  color:#061b55;
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:3px;
+}
+
+.next-lesson-sticky span{
+  display:block;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.25;
+}
+
+.next-lesson-sticky a{
+  height:36px;
+  padding:0 14px;
+  border-radius:12px;
+  background:#145cff;
+  color:#fff;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 10px 20px rgba(20,92,255,.16);
+  white-space:nowrap;
+}
+
+.map-top-head{
+  padding:14px 18px !important;
+}
+
+.map-title h1{
+  font-size:26px !important;
+}
+
+.map-title p{
+  font-size:14px !important;
+}
+
+.map-collapse-btn,
+.map-fullscreen-btn{
+  height:38px !important;
+  border-radius:13px !important;
+}
+
+.chapter-card{
+  border:1px solid #e3eefb;
+  border-radius:20px;
+  padding:14px;
+  background:linear-gradient(135deg,#ffffff,#fbfdff);
+  box-shadow:0 10px 24px rgba(13,71,161,.045);
+}
+
+.chapter-header{
+  margin:0 0 10px !important;
+}
+
+.chapter-header h3{
+  font-size:18px !important;
+}
+
+.chapter-gate-note{
+  min-height:40px;
+  margin:8px 0 14px !important;
+}
+
+.lesson-card,
+.lesson-card-disabled{
+  border-radius:16px !important;
+}
+
+.lesson-card.current{
+  border:2px solid #145cff !important;
+  background:linear-gradient(135deg,#eff6ff,#ffffff) !important;
+}
+
+.lesson-card.completed{
+  border-color:#bbf7d0 !important;
+  background:linear-gradient(135deg,#ffffff,#f0fdf4) !important;
+}
+
+.lesson-card-disabled{
+  opacity:.78;
+}
+
+.lesson-card.current .lesson-info h4::before{
+  content:"🎯 Қазір өту керек";
+  display:inline-flex;
+  height:22px;
+  align-items:center;
+  padding:0 9px;
+  border-radius:999px;
+  background:#145cff;
+  color:#fff;
+  font-size:10px;
+  font-weight:900;
+  margin-right:8px;
+  vertical-align:middle;
+}
+
+.control-card,
+.control-card-disabled{
+  border-radius:18px !important;
+  min-height:86px !important;
+}
+
+.sidebar-title{
+  font-size:23px !important;
+}
+
+.side-menu-btn{
+  height:52px !important;
+}
+
+@media(max-width:980px){
+  .next-lesson-sticky{
+    position:relative;
+    top:auto;
+  }
+}
+
+@media(max-width:700px){
+  .next-lesson-sticky{
+    grid-template-columns:42px minmax(0,1fr);
+  }
+
+  .next-lesson-sticky a{
+    grid-column:2;
+    width:max-content;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   NEXT LESSON COMPACT FIX
+   Келесі сабақ үлкен бөлек блок емес, жоғарғы тақырыптың ішінде жинақы badge болады
+================================================== */
+
+/* Бұрынғы ұзын sticky карточканы толық жасырмаймыз, бірақ оны compact-chip стиліне ауыстырамыз */
+.next-lesson-sticky{
+  position:static !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:none !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  backdrop-filter:none !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  min-width:0 !important;
+}
+
+.next-lesson-sticky .next-icon{
+  width:34px !important;
+  height:34px !important;
+  border-radius:12px !important;
+  background:#eff6ff !important;
+  color:#145cff !important;
+  box-shadow:none !important;
+  font-size:14px !important;
+  flex-shrink:0 !important;
+}
+
+.next-lesson-sticky b{
+  margin:0 0 2px !important;
+  color:#061b55 !important;
+  font-size:12.5px !important;
+  font-weight:900 !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+}
+
+.next-lesson-sticky span{
+  color:#64748b !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+  max-width:310px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.next-lesson-sticky a{
+  height:34px !important;
+  padding:0 13px !important;
+  border-radius:12px !important;
+  background:#145cff !important;
+  color:#fff !important;
+  text-decoration:none !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  box-shadow:0 8px 16px rgba(20,92,255,.14) !important;
+  white-space:nowrap !important;
+  flex-shrink:0 !important;
+}
+
+/* Жоғарғы блоктың ішкі орналасуы */
+.map-top-head{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:14px !important;
+  align-items:center !important;
+  padding:14px 18px !important;
+}
+
+.map-title{
+  min-width:0 !important;
+}
+
+.map-title h1{
+  font-size:25px !important;
+  line-height:1.1 !important;
+}
+
+.map-title p{
+  margin-top:5px !important;
+  font-size:13.5px !important;
+  line-height:1.35 !important;
+}
+
+/* Оң жақ батырмалар мен келесі сабақ бір қатарда жинақы тұрады */
+.map-top-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:9px !important;
+  flex-wrap:nowrap !important;
+}
+
+.map-collapse-btn,
+.map-fullscreen-btn{
+  height:36px !important;
+  padding:0 12px !important;
+  border-radius:12px !important;
+  font-size:12px !important;
+}
+
+/* Main card жоғарыға жабысып тұрмасын */
+.main-card{
+  margin-top:0 !important;
+}
+
+/* Мобильдіде келесі сабақ екінші қатарға түседі */
+@media(max-width:1050px){
+  .map-top-head{
+    grid-template-columns:1fr !important;
+  }
+
+  .map-top-actions{
+    width:100% !important;
+    justify-content:flex-start !important;
+    flex-wrap:wrap !important;
+  }
+
+  .next-lesson-sticky span{
+    max-width:420px !important;
+  }
+}
+
+@media(max-width:700px){
+  .map-top-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  .next-lesson-sticky{
+    grid-column:1/-1 !important;
+    width:100% !important;
+  }
+
+  .next-lesson-sticky span{
+    max-width:190px !important;
+  }
+}
+</style>
+
+
+<style>
+/* FULLSCREEN BUTTON REMOVED */
+.map-fullscreen-btn{
+  display:none !important;
+}
+.map-top-actions{
+  gap:9px !important;
+}
+@media(max-width:700px){
+  .map-top-actions{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   TOP ACTION CLEANUP
+   "Жинау" батырмасы алынды, жоғарғы блок таза қалды
+================================================== */
+
+.map-collapse-btn{
+  display:none !important;
+}
+
+.map-top-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:10px !important;
+}
+
+.next-lesson-sticky{
+  margin-left:auto !important;
+}
+
+@media(max-width:1050px){
+  .map-top-actions{
+    justify-content:flex-start !important;
+  }
+
+  .next-lesson-sticky{
+    margin-left:0 !important;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   LEVEL MAP HEADER + LEVEL START BANNER
+   Оқу картасы тақырыбы және әр деңгейдің басталуын ерекше көрсету
+================================================== */
+
+/* Оқу картасы жоғарғы header */
+.map-top-head{
+  position:relative !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  border:1px solid #cfe0f4 !important;
+  background:
+    radial-gradient(circle at 92% 18%, rgba(20,92,255,.10), transparent 28%),
+    linear-gradient(135deg,#ffffff 0%,#f8fbff 58%,#eef6ff 100%) !important;
+  box-shadow:0 16px 36px rgba(13,71,161,.08) !important;
+  padding:16px 18px !important;
+}
+
+.map-top-head::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:5px;
+  background:linear-gradient(180deg,#145cff,#12b76a);
+}
+
+.map-title{
+  display:grid !important;
+  grid-template-columns:46px minmax(0,1fr) !important;
+  gap:13px !important;
+  align-items:center !important;
+}
+
+.map-title::before{
+  content:"📍";
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#145cff,#1ea7ff);
+  color:#fff;
+  font-size:20px;
+  box-shadow:0 12px 24px rgba(20,92,255,.18);
+}
+
+.map-title h1{
+  margin:0 0 4px !important;
+  font-size:27px !important;
+  color:#061b55 !important;
+  letter-spacing:-.3px !important;
+}
+
+.map-title p{
+  margin:0 !important;
+  color:#52657f !important;
+  font-size:13.5px !important;
+  font-weight:850 !important;
+}
+
+/* Келесі сабақ chip header ішінде */
+.next-lesson-sticky{
+  border:1px solid #dbe7f5 !important;
+  background:#fff !important;
+  border-radius:16px !important;
+  padding:8px 10px !important;
+  box-shadow:0 10px 22px rgba(13,71,161,.06) !important;
+}
+
+.next-lesson-sticky .next-icon{
+  background:#eff6ff !important;
+  color:#145cff !important;
+}
+
+.next-lesson-sticky a{
+  background:#145cff !important;
+}
+
+/* Level banner */
+.level-hero{
+  position:relative !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  border:1px solid #cfe0f4 !important;
+  box-shadow:0 16px 36px rgba(13,71,161,.07) !important;
+  padding:20px 22px 18px !important;
+  background:
+    radial-gradient(circle at 92% 20%, rgba(18,183,106,.12), transparent 30%),
+    linear-gradient(135deg,#ffffff 0%,#fbfdff 55%,#f2f9ff 100%) !important;
+}
+
+.level-hero::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:6px;
+  background:linear-gradient(180deg,#12b76a,#145cff);
+}
+
+.level-hero::after{
+  content:"";
+  position:absolute;
+  right:-45px;
+  top:-45px;
+  width:160px;
+  height:160px;
+  border-radius:50%;
+  background:rgba(20,92,255,.055);
+}
+
+.level-hero.level-intermediate::before{
+  background:linear-gradient(180deg,#f59e0b,#145cff);
+}
+
+.level-hero.level-intermediate{
+  background:
+    radial-gradient(circle at 92% 20%, rgba(245,158,11,.14), transparent 30%),
+    linear-gradient(135deg,#ffffff 0%,#fbfdff 55%,#fffaf0 100%) !important;
+}
+
+.level-hero.level-advanced::before{
+  background:linear-gradient(180deg,#7c3aed,#f59e0b);
+}
+
+.level-hero.level-advanced{
+  background:
+    radial-gradient(circle at 92% 20%, rgba(124,58,237,.13), transparent 30%),
+    linear-gradient(135deg,#ffffff 0%,#fbfdff 55%,#f6f3ff 100%) !important;
+}
+
+.level-label{
+  width:max-content;
+  height:28px;
+  padding:0 11px;
+  border-radius:999px;
+  background:#ecfdf5;
+  color:#059669;
+  border:1px solid #bbf7d0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:11.5px;
+  font-weight:950;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  margin-bottom:12px;
+  position:relative;
+  z-index:2;
+}
+
+.level-intermediate .level-label{
+  background:#fff7ed;
+  color:#ea580c;
+  border-color:#fed7aa;
+}
+
+.level-advanced .level-label{
+  background:#f5f3ff;
+  color:#7c3aed;
+  border-color:#ddd6fe;
+}
+
+.level-head{
+  position:relative;
+  z-index:2;
+}
+
+.level-icon{
+  width:68px !important;
+  height:68px !important;
+  border-radius:22px !important;
+  background:#dcfce7 !important;
+  color:#12b76a !important;
+  box-shadow:0 12px 24px rgba(18,183,106,.12);
+}
+
+.level-intermediate .level-icon{
+  background:#fff7ed !important;
+  color:#f59e0b !important;
+  box-shadow:0 12px 24px rgba(245,158,11,.12);
+}
+
+.level-advanced .level-icon{
+  background:#f5f3ff !important;
+  color:#7c3aed !important;
+  box-shadow:0 12px 24px rgba(124,58,237,.12);
+}
+
+.level-head h2{
+  font-size:26px !important;
+  margin-bottom:6px !important;
+  letter-spacing:-.25px !important;
+}
+
+.level-head p{
+  max-width:760px;
+  color:#475569 !important;
+  font-size:13.5px !important;
+  line-height:1.45 !important;
+}
+
+.count-badge{
+  position:relative;
+  z-index:2;
+  height:48px !important;
+  border-radius:16px !important;
+  background:#eff6ff !important;
+  color:#145cff !important;
+}
+
+.level-progress-line{
+  position:relative;
+  z-index:2;
+  height:8px;
+  border-radius:999px;
+  background:#e8eef7;
+  overflow:hidden;
+  margin-top:14px;
+}
+
+.level-progress-line div{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#145cff,#12b76a);
+}
+
+.level-intermediate .level-progress-line div{
+  background:linear-gradient(90deg,#f59e0b,#145cff);
+}
+
+.level-advanced .level-progress-line div{
+  background:linear-gradient(90deg,#7c3aed,#f59e0b);
+}
+
+.level-goal{
+  position:relative;
+  z-index:2;
+  margin-top:10px;
+  min-height:36px;
+  border-radius:14px;
+  background:rgba(255,255,255,.72);
+  border:1px solid #dbe7f5;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 12px;
+  color:#334155;
+  font-size:12.5px;
+  font-weight:850;
+}
+
+.level-goal i{
+  color:#145cff;
+}
+
+.level-stats{
+  position:relative;
+  z-index:2;
+}
+
+/* Бөлімнің өзі деңгейден төмен басталғаны анық көрінсін */
+.chapter-card{
+  margin-top:16px !important;
+}
+
+.chapter-header h3{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.chapter-header h3::before{
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#145cff;
+  box-shadow:0 0 0 5px rgba(20,92,255,.10);
+  flex-shrink:0;
+}
+
+@media(max-width:900px){
+  .map-title{
+    grid-template-columns:40px minmax(0,1fr) !important;
+  }
+
+  .map-title::before{
+    width:40px;
+    height:40px;
+    border-radius:14px;
+  }
+
+  .level-head{
+    align-items:flex-start !important;
+  }
+
+  .level-left{
+    align-items:flex-start !important;
+  }
+
+  .level-icon{
+    width:56px !important;
+    height:56px !important;
+  }
+
+  .level-head h2{
+    font-size:22px !important;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   MAP HEADER FINAL FIX
+   "Чупа-чупс" белгісі алынды, оқу картасы header жинақы әрі кәсіби стильге келді
+================================================== */
+
+.map-top-head{
+  min-height:92px !important;
+  padding:16px 18px !important;
+  border-radius:20px !important;
+  border:1px solid #cfe0f4 !important;
+  background:
+    linear-gradient(135deg,#ffffff 0%,#f8fbff 68%,#eef6ff 100%) !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:18px !important;
+  overflow:hidden !important;
+}
+
+.map-top-head::before{
+  width:4px !important;
+  background:linear-gradient(180deg,#145cff,#12b76a) !important;
+}
+
+/* Ескі 📍 белгісі алынды */
+.map-title::before{
+  content:"" !important;
+  width:46px !important;
+  height:46px !important;
+  border-radius:15px !important;
+  background:
+    linear-gradient(135deg,#145cff,#1ea7ff) !important;
+  box-shadow:0 12px 24px rgba(20,92,255,.16) !important;
+  background-image:none !important;
+}
+
+/* Ішіне карта/жол иконкасы */
+.map-title{
+  display:grid !important;
+  grid-template-columns:46px minmax(0,1fr) !important;
+  grid-template-rows:auto auto !important;
+  column-gap:14px !important;
+  row-gap:4px !important;
+  align-items:center !important;
+  min-width:0 !important;
+  position:relative !important;
+}
+
+.map-title::after{
+  content:"\f5a0" !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  width:46px !important;
+  height:46px !important;
+  transform:translateY(-50%) !important;
+  display:grid !important;
+  place-items:center !important;
+  color:#fff !important;
+  font-size:18px !important;
+  z-index:2 !important;
+}
+
+.map-title h1{
+  grid-column:2 !important;
+  grid-row:1 !important;
+  margin:0 !important;
+  font-size:26px !important;
+  line-height:1.08 !important;
+  color:#061b55 !important;
+  letter-spacing:-.3px !important;
+}
+
+.map-title p{
+  grid-column:2 !important;
+  grid-row:2 !important;
+  margin:0 !important;
+  max-width:720px !important;
+  color:#52657f !important;
+  font-size:13.5px !important;
+  line-height:1.35 !important;
+  font-weight:850 !important;
+  white-space:normal !important;
+}
+
+/* Келесі сабақ оң жақта жинақы chip */
+.next-lesson-sticky{
+  max-width:470px !important;
+  min-width:390px !important;
+  height:52px !important;
+  padding:8px 10px !important;
+  border-radius:16px !important;
+  background:#ffffff !important;
+  border:1px solid #dbe7f5 !important;
+  box-shadow:0 10px 22px rgba(13,71,161,.07) !important;
+  display:grid !important;
+  grid-template-columns:36px minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:10px !important;
+}
+
+.next-lesson-sticky .next-icon{
+  width:36px !important;
+  height:36px !important;
+  border-radius:12px !important;
+  background:#eff6ff !important;
+  color:#145cff !important;
+  font-size:15px !important;
+}
+
+.next-lesson-sticky b{
+  font-size:12.5px !important;
+  margin:0 0 2px !important;
+  color:#061b55 !important;
+}
+
+.next-lesson-sticky span{
+  max-width:245px !important;
+  font-size:10.8px !important;
+  color:#64748b !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.next-lesson-sticky a{
+  height:34px !important;
+  padding:0 13px !important;
+  border-radius:12px !important;
+  background:#145cff !important;
+  font-size:12px !important;
+}
+
+/* Үлкен бос кеңістік болмасын */
+.main-card{
+  margin-top:0 !important;
+}
+
+@media(max-width:1120px){
+  .map-top-head{
+    grid-template-columns:1fr !important;
+  }
+
+  .next-lesson-sticky{
+    min-width:0 !important;
+    max-width:100% !important;
+    width:100% !important;
+  }
+
+  .next-lesson-sticky span{
+    max-width:100% !important;
+  }
+}
+
+@media(max-width:700px){
+  .map-title{
+    grid-template-columns:40px minmax(0,1fr) !important;
+  }
+
+  .map-title::before,
+  .map-title::after{
+    width:40px !important;
+    height:40px !important;
+  }
+
+  .map-title h1{
+    font-size:23px !important;
+  }
+
+  .next-lesson-sticky{
+    grid-template-columns:36px minmax(0,1fr) !important;
+    height:auto !important;
+  }
+
+  .next-lesson-sticky a{
+    grid-column:2 !important;
+    width:max-content !important;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   MAP HEADER ICON FIX
+   Ақ бос орын алынды: енді нақты карта белгісі көрінеді
+================================================== */
+
+.map-title{
+  display:grid !important;
+  grid-template-columns:46px minmax(0,1fr) !important;
+  grid-template-rows:auto auto !important;
+  column-gap:14px !important;
+  row-gap:4px !important;
+  align-items:center !important;
+  min-width:0 !important;
+  position:relative !important;
+}
+
+/* Ақ болып тұрған бос псевдо-блокты нақты көк иконкаға айналдыру */
+.map-title::before{
+  content:"" !important;
+  width:46px !important;
+  height:46px !important;
+  grid-column:1 !important;
+  grid-row:1 / span 2 !important;
+  border-radius:16px !important;
+  background:linear-gradient(135deg,#145cff,#1ea7ff) !important;
+  box-shadow:0 12px 24px rgba(20,92,255,.18) !important;
+  display:block !important;
+}
+
+/* Иконка */
+.map-title::after{
+  content:"\f279" !important; /* map icon */
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  width:46px !important;
+  height:46px !important;
+  transform:translateY(-50%) !important;
+  display:grid !important;
+  place-items:center !important;
+  color:#ffffff !important;
+  font-size:18px !important;
+  z-index:2 !important;
+  pointer-events:none !important;
+}
+
+.map-title h1{
+  grid-column:2 !important;
+  grid-row:1 !important;
+}
+
+.map-title p{
+  grid-column:2 !important;
+  grid-row:2 !important;
+}
+
+@media(max-width:700px){
+  .map-title{
+    grid-template-columns:40px minmax(0,1fr) !important;
+  }
+
+  .map-title::before,
+  .map-title::after{
+    width:40px !important;
+    height:40px !important;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   PHYSX FONT POLISH
+   Көзге жеңіл, таза, біркелкі шрифт жүйесі
+================================================== */
+
+:root{
+  --font-main:"Inter","Segoe UI",Arial,sans-serif;
+}
+
+*,
+body,
+button,
+input,
+select,
+textarea,
+a,
+span,
+div,
+p,
+h1,h2,h3,h4,h5,h6{
+  font-family:var(--font-main) !important;
+  letter-spacing:-0.01em;
+}
+
+body{
+  font-weight:500 !important;
+  color:#0f1f3d !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+.logo{
+  font-size:28px !important;
+  font-weight:900 !important;
+  letter-spacing:-0.04em !important;
+}
+
+.nav-link{
+  font-size:14px !important;
+  font-weight:800 !important;
+  letter-spacing:-0.015em !important;
+}
+
+.map-title h1{
+  font-size:25px !important;
+  font-weight:850 !important;
+  line-height:1.12 !important;
+  letter-spacing:-0.045em !important;
+}
+
+.map-title p{
+  font-size:13px !important;
+  font-weight:650 !important;
+  line-height:1.45 !important;
+  color:#5b6b84 !important;
+}
+
+.next-lesson-sticky b{
+  font-size:12px !important;
+  font-weight:850 !important;
+  letter-spacing:-0.02em !important;
+}
+
+.next-lesson-sticky span{
+  font-size:10.8px !important;
+  font-weight:650 !important;
+  color:#64748b !important;
+}
+
+.next-lesson-sticky a{
+  font-size:11.5px !important;
+  font-weight:850 !important;
+}
+
+.tab-btn{
+  font-size:13px !important;
+  font-weight:800 !important;
+}
+
+.level-label{
+  font-size:11px !important;
+  font-weight:850 !important;
+  letter-spacing:.03em !important;
+}
+
+.level-head h2{
+  font-size:25px !important;
+  font-weight:850 !important;
+  line-height:1.15 !important;
+  letter-spacing:-0.045em !important;
+}
+
+.level-head p{
+  font-size:13px !important;
+  font-weight:650 !important;
+  line-height:1.45 !important;
+  color:#53637a !important;
+}
+
+.count-badge{
+  font-size:14px !important;
+  font-weight:850 !important;
+}
+
+.level-stat{
+  font-size:12px !important;
+  font-weight:800 !important;
+}
+
+.level-goal{
+  font-size:12px !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+}
+
+.chapter-header h3{
+  font-size:18px !important;
+  font-weight:850 !important;
+  line-height:1.25 !important;
+  letter-spacing:-0.03em !important;
+}
+
+.chapter-pill,
+.next-gate-label{
+  font-size:11.5px !important;
+  font-weight:800 !important;
+}
+
+.chapter-gate-note{
+  font-size:12px !important;
+  font-weight:750 !important;
+  line-height:1.35 !important;
+}
+
+.lesson-info h4{
+  font-size:14px !important;
+  font-weight:800 !important;
+  line-height:1.32 !important;
+  letter-spacing:-0.025em !important;
+  color:#071837 !important;
+}
+
+.lesson-status{
+  font-size:11.5px !important;
+  font-weight:800 !important;
+}
+
+.start-btn{
+  font-size:12px !important;
+  font-weight:850 !important;
+}
+
+.lesson-stars{
+  font-size:17px !important;
+}
+
+.control-card h4,
+.control-card-disabled h4{
+  font-size:16px !important;
+  font-weight:850 !important;
+  letter-spacing:-0.03em !important;
+}
+
+.control-card p,
+.control-card-disabled p{
+  font-size:12px !important;
+  font-weight:650 !important;
+  line-height:1.4 !important;
+  color:#53637a !important;
+}
+
+.control-meta span,
+.control-action{
+  font-size:12px !important;
+  font-weight:850 !important;
+}
+
+.sidebar-title{
+  font-size:22px !important;
+  font-weight:850 !important;
+  letter-spacing:-0.035em !important;
+}
+
+.side-subtitle,
+.side-card h3,
+.daily-title{
+  font-size:13px !important;
+  font-weight:800 !important;
+}
+
+.daily-text,
+.side-row{
+  font-size:12px !important;
+  font-weight:650 !important;
+}
+
+.side-menu-btn{
+  font-size:14px !important;
+  font-weight:800 !important;
+}
+
+.quick-finder select,
+.quick-finder input,
+.quick-finder button{
+  font-size:12px !important;
+  font-weight:750 !important;
+}
+
+strong,b{
+  font-weight:800;
+}
+
+@media(max-width:900px){
+  .map-title h1{
+    font-size:23px !important;
+  }
+
+  .level-head h2{
+    font-size:22px !important;
+  }
+
+  .chapter-header h3{
+    font-size:16px !important;
+  }
+
+  .lesson-info h4{
+    font-size:13.5px !important;
+  }
+}
+</style>
+
+
+<style>
+/* ==================================================
+   FONT AWESOME ICON FIX
+   Шрифт түзеткеннен кейін иконкалар квадрат болып қалмауы үшін
+================================================== */
+
+/* Font Awesome иконкаларына Inter шрифті әсер етпесін */
+i.fa,
+i.fa-solid,
+i.fa-regular,
+i.fa-brands,
+.fa,
+.fa-solid,
+.fa-regular,
+.fa-brands{
+  font-family:"Font Awesome 6 Free" !important;
+  font-style:normal !important;
+  line-height:1 !important;
+}
+
+.fa-solid,
+i.fa-solid{
+  font-weight:900 !important;
+}
+
+.fa-regular,
+i.fa-regular{
+  font-weight:400 !important;
+}
+
+.fa-brands,
+i.fa-brands{
+  font-family:"Font Awesome 6 Brands" !important;
+  font-weight:400 !important;
+}
+
+/* Псевдо-иконкаларға да Font Awesome дұрыс қолданылсын */
+.map-title::after,
+.chapter-header h3::before{
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+}
+
+/* Егер label ішіндегі белгі квадрат болып қалса, оны emoji емес, CSS белгімен ауыстырамыз */
+.level-label i,
+.count-badge i,
+.next-lesson-sticky i,
+.control-card i,
+.control-card-disabled i,
+.side-menu-btn i,
+.sidebar-title i,
+.toggle-btn i{
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+}
+</style>
+
+
+
+<style id="learning-map-premium-final-assets">
+/* ==================================================
+   PHYSX ОҚУ КАРТАСЫ — PREMIUM LEVEL JOURNEY STYLE
+   Фондар мен иконкалар image/levelsmap/ папкасынан алынады
+================================================== */
+
+:root{
+  --premium-blue:#145cff;
+  --premium-cyan:#1ea7ff;
+  --premium-green:#12b76a;
+  --premium-orange:#f97316;
+  --premium-purple:#7c3aed;
+  --premium-navy:#061b55;
+  --premium-line:#d8e7f7;
+  --premium-shadow:0 18px 44px rgba(13,71,161,.10);
+}
+
+body{
+  background:
+    radial-gradient(#cfe0f4 1px, transparent 1px),
+    linear-gradient(180deg,#fbfdff 0%,#eef6ff 54%,#f7fbff 100%) !important;
+  background-size:28px 28px,100% 100% !important;
+}
+
+.header{
+  height:58px !important;
+  padding:0 26px !important;
+  border-bottom:1px solid #cfe0f4 !important;
+  box-shadow:0 4px 22px rgba(15,23,42,.045) !important;
+}
+.logo{
+  font-size:28px !important;
+  color:#0d47a1 !important;
+}
+.nav-link{
+  padding:20px 0 !important;
+  color:#0b2f77 !important;
+}
+.nav-link.active{
+  color:#145cff !important;
+}
+.nav-link.active::after{
+  bottom:6px !important;
+  background:#145cff !important;
+}
+.login-link,
+.profile-link{
+  background:#145cff !important;
+  color:#fff !important;
+  padding:11px 18px !important;
+  border-radius:13px !important;
+}
+
+.map-page{
+  width:min(100% - 28px,1460px) !important;
+  grid-template-columns:78px minmax(0,1fr) !important;
+  gap:18px !important;
+  padding:18px 0 42px !important;
+}
+
+/* Сол жақ навигация — premium compact */
+.map-sidebar{
+  top:76px !important;
+  height:calc(100vh - 94px) !important;
+  border-radius:28px !important;
+  padding:14px 10px !important;
+  background:
+    radial-gradient(circle at 50% 90%,rgba(30,167,255,.45),transparent 20%),
+    linear-gradient(180deg,#1673ff 0%,#0648c8 52%,#01246f 100%) !important;
+  box-shadow:0 24px 48px rgba(13,71,161,.28) !important;
+  overflow:hidden !important;
+}
+.map-sidebar::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 18%,rgba(255,255,255,.20),transparent 16%),
+    radial-gradient(circle at 50% 72%,rgba(255,255,255,.13),transparent 20%);
+  pointer-events:none;
+}
+.sidebar-head{
+  justify-content:center !important;
+  margin-bottom:10px !important;
+}
+.sidebar-title span,
+.side-subtitle,
+.quick-finder,
+.side-card,
+.side-menu-btn span,
+.rocket-card h3{
+  display:none !important;
+}
+.sidebar-title i,
+.side-menu-btn i{
+  width:48px !important;
+  height:48px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.13) !important;
+  border:1px solid rgba(255,255,255,.15) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 8px 16px rgba(0,0,0,.08) !important;
+}
+.toggle-btn{
+  display:none !important;
+}
+.side-menu{
+  gap:10px !important;
+  margin:0 !important;
+}
+.side-menu-btn{
+  height:50px !important;
+  justify-content:center !important;
+  padding:0 !important;
+  border:none !important;
+  background:transparent !important;
+  position:relative !important;
+}
+.side-menu-btn.active i,
+.side-menu-btn:hover i{
+  background:rgba(255,255,255,.24) !important;
+  transform:translateY(-1px);
+}
+.rocket-card{
+  margin-top:14px !important;
+  min-height:74px !important;
+  border-radius:18px !important;
+  padding:0 !important;
+  display:grid !important;
+  place-items:center !important;
+  background:linear-gradient(180deg,#0a55ff,#061b72) !important;
+}
+.rocket{
+  position:static !important;
+  transform:rotate(14deg) !important;
+  font-size:45px !important;
+}
+
+/* Жоғарғы Оқу картасы header */
+.map-top-head{
+  min-height:104px !important;
+  padding:18px 22px !important;
+  border-radius:24px !important;
+  background:
+    radial-gradient(circle at 80% 5%,rgba(30,167,255,.10),transparent 34%),
+    linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,252,255,.98)) !important;
+  border:1px solid var(--premium-line) !important;
+  box-shadow:var(--premium-shadow) !important;
+}
+.map-top-head::before{display:none !important;}
+.map-title::before{
+  background:linear-gradient(135deg,#145cff,#1ea7ff) !important;
+  box-shadow:0 14px 26px rgba(20,92,255,.20) !important;
+}
+.map-title::after{
+  content:"\f518" !important; /* book-open */
+  font-size:19px !important;
+}
+.map-title h1{
+  font-size:29px !important;
+  font-weight:900 !important;
+  color:#061b55 !important;
+}
+.map-title p{
+  font-size:14px !important;
+  color:#5b6b84 !important;
+  font-weight:750 !important;
+}
+.next-lesson-sticky{
+  min-width:460px !important;
+  max-width:520px !important;
+  height:64px !important;
+  padding:10px 12px !important;
+  border-radius:19px !important;
+  background:rgba(255,255,255,.92) !important;
+  backdrop-filter:blur(10px) !important;
+  border:1px solid #dbe7f5 !important;
+  box-shadow:0 12px 26px rgba(13,71,161,.075) !important;
+}
+.next-lesson-sticky .next-icon{
+  width:42px !important;
+  height:42px !important;
+  border-radius:14px !important;
+  background:#eff6ff !important;
+  color:#145cff !important;
+}
+.next-lesson-sticky b{font-size:13px !important;}
+.next-lesson-sticky span{font-size:11px !important;max-width:280px !important;}
+.next-lesson-sticky a{
+  height:38px !important;
+  padding:0 16px !important;
+  border-radius:13px !important;
+  background:#145cff !important;
+}
+
+.main-card{
+  padding:18px !important;
+  border-radius:24px !important;
+  border:1px solid var(--premium-line) !important;
+  background:rgba(255,255,255,.96) !important;
+  box-shadow:var(--premium-shadow) !important;
+}
+.tabs{
+  margin-bottom:18px !important;
+}
+.tab-btn{
+  font-size:13px !important;
+  color:#556b88 !important;
+}
+.tab-btn.active{color:#145cff !important;}
+
+/* LEVEL HERO — үш деңгейге бөлек фон */
+.level-hero{
+  min-height:300px !important;
+  display:grid !important;
+  grid-template-columns:minmax(360px,44%) minmax(0,56%) !important;
+  grid-template-rows:auto auto auto auto !important;
+  align-content:center !important;
+  gap:10px 18px !important;
+  position:relative !important;
+  padding:24px !important;
+  overflow:hidden !important;
+  border-radius:24px !important;
+  border:1px solid #cfe0f4 !important;
+  box-shadow:0 18px 38px rgba(13,71,161,.08) !important;
+  background:#fff !important;
+}
+.level-hero::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  width:auto !important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.98) 0%,rgba(255,255,255,.93) 33%,rgba(255,255,255,.32) 58%,rgba(255,255,255,.08) 100%),
+    url("image/levelsmap/level-beginner-bg.png") center right / cover no-repeat !important;
+  z-index:0 !important;
+}
+.level-hero.level-intermediate::before{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.98) 0%,rgba(255,255,255,.92) 34%,rgba(255,255,255,.28) 60%,rgba(255,255,255,.04) 100%),
+    url("image/levelsmap/level-intermediate-bg.png") center right / cover no-repeat !important;
+}
+.level-hero.level-advanced::before{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.98) 0%,rgba(255,255,255,.91) 34%,rgba(255,255,255,.24) 60%,rgba(255,255,255,.03) 100%),
+    url("image/levelsmap/level-advanced-bg.png") center right / cover no-repeat !important;
+}
+.level-hero::after{display:none !important;}
+.level-label,
+.level-head,
+.level-stats,
+.level-progress-line,
+.level-goal{
+  grid-column:1 !important;
+  position:relative !important;
+  z-index:2 !important;
+}
+.level-label{
+  width:max-content !important;
+  height:31px !important;
+  padding:0 14px !important;
+  margin:0 0 6px !important;
+  border-radius:999px !important;
+  background:#ecfdf5 !important;
+  color:#059669 !important;
+  border:1px solid #bbf7d0 !important;
+  font-size:11px !important;
+}
+.level-intermediate .level-label{
+  background:#ecfdf5 !important;
+  color:#059669 !important;
+  border-color:#bbf7d0 !important;
+}
+.level-advanced .level-label{
+  background:#f5f3ff !important;
+  color:#7c3aed !important;
+  border-color:#ddd6fe !important;
+}
+.level-head{
+  display:block !important;
+}
+.level-left{
+  display:grid !important;
+  grid-template-columns:72px minmax(0,1fr) !important;
+  align-items:center !important;
+  gap:18px !important;
+}
+.level-icon{
+  width:72px !important;
+  height:72px !important;
+  border-radius:22px !important;
+  background:#fff center/cover no-repeat !important;
+  background-image:url("image/levelsmap/level-beginner-icon.png") !important;
+  border:1px solid rgba(216,231,247,.86) !important;
+  box-shadow:0 16px 28px rgba(18,183,106,.12) !important;
+  color:transparent !important;
+}
+.level-icon i{display:none !important;}
+.level-intermediate .level-icon{
+  background-image:url("image/levelsmap/level-intermediate-icon.png") !important;
+  box-shadow:0 16px 28px rgba(20,92,255,.12) !important;
+}
+.level-advanced .level-icon{
+  background-image:url("image/levelsmap/level-advanced-icon.png") !important;
+  box-shadow:0 16px 28px rgba(124,58,237,.14) !important;
+}
+.level-head h2{
+  font-size:28px !important;
+  font-weight:900 !important;
+  color:#061b55 !important;
+  margin-bottom:8px !important;
+}
+.level-head p{
+  font-size:14px !important;
+  line-height:1.45 !important;
+  color:#44546b !important;
+  max-width:570px !important;
+}
+.count-badge{
+  display:none !important;
+}
+.level-progress-line{
+  height:10px !important;
+  width:min(100%,430px) !important;
+  margin-top:8px !important;
+  background:#dfe8f6 !important;
+}
+.level-progress-line div{
+  background:linear-gradient(90deg,#145cff,#12b76a) !important;
+}
+.level-intermediate .level-progress-line div{
+  background:linear-gradient(90deg,#14b8a6,#145cff) !important;
+}
+.level-advanced .level-progress-line div{
+  background:linear-gradient(90deg,#7c3aed,#145cff) !important;
+}
+.level-goal{
+  width:min(100%,520px) !important;
+  min-height:52px !important;
+  margin-top:8px !important;
+  border-radius:17px !important;
+  background:rgba(255,255,255,.84) !important;
+  border:1px solid #dbe7f5 !important;
+  backdrop-filter:blur(8px) !important;
+  box-shadow:0 10px 22px rgba(13,71,161,.055) !important;
+}
+.level-stats{
+  grid-column:1 / -1 !important;
+  justify-content:flex-end !important;
+  align-self:end !important;
+  margin-top:0 !important;
+  gap:12px !important;
+}
+.level-stat{
+  min-width:94px !important;
+  height:54px !important;
+  padding:0 14px !important;
+  border-radius:17px !important;
+  justify-content:center !important;
+  background:rgba(255,255,255,.82) !important;
+  border:1px solid rgba(219,231,245,.88) !important;
+  box-shadow:0 12px 24px rgba(13,71,161,.08) !important;
+  backdrop-filter:blur(8px) !important;
+  font-size:13px !important;
+  color:#061b55 !important;
+}
+.level-stat.green{color:#059669 !important;}
+.level-stat.orange{color:#ea580c !important;}
+.level-stat.blue{color:#145cff !important;}
+.level-stat.star{color:#b45309 !important;}
+
+/* Chapter */
+.chapter-card{
+  border-radius:24px !important;
+  padding:18px !important;
+  border:1px solid #dbe7f5 !important;
+  background:rgba(255,255,255,.94) !important;
+  box-shadow:0 12px 26px rgba(13,71,161,.055) !important;
+}
+.chapter-header h3{
+  font-size:19px !important;
+  color:#0d47a1 !important;
+}
+.chapter-pill,
+.next-gate-label{
+  height:33px !important;
+  padding:0 13px !important;
+  border-radius:999px !important;
+}
+.chapter-gate-note{
+  min-height:44px !important;
+  border-radius:16px !important;
+}
+
+/* Сабақ карталары — clean mission cards */
+.lesson-list{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:14px !important;
+}
+.lesson-card,
+.lesson-card-disabled{
+  min-height:112px !important;
+  border-radius:19px !important;
+  padding:16px !important;
+  background:rgba(255,255,255,.90) !important;
+  border:1px solid #dbe7f5 !important;
+  box-shadow:0 8px 18px rgba(13,71,161,.045) !important;
+}
+.lesson-card.current{
+  grid-column:1/-1 !important;
+  min-height:142px !important;
+  grid-template-columns:50px minmax(0,1fr) !important;
+  background:linear-gradient(135deg,#ffffff,#f7fbff) !important;
+  border:2px solid #145cff !important;
+  box-shadow:0 14px 28px rgba(20,92,255,.10) !important;
+}
+.lesson-icon{
+  width:42px !important;
+  height:42px !important;
+  border-radius:14px !important;
+}
+.lesson-card.current .lesson-icon{
+  width:48px !important;
+  height:48px !important;
+  border-radius:50% !important;
+  background:#145cff !important;
+}
+.lesson-info h4{
+  font-size:15px !important;
+  margin-bottom:8px !important;
+}
+.lesson-stars{
+  font-size:18px !important;
+  margin-top:7px !important;
+}
+.status-current .start-btn,
+.start-btn{
+  height:36px !important;
+  padding:0 18px !important;
+  border-radius:12px !important;
+  border:none !important;
+  background:#145cff !important;
+  color:#fff !important;
+  box-shadow:0 10px 20px rgba(20,92,255,.18) !important;
+}
+.status-current{
+  margin-top:10px !important;
+}
+.status-completed,
+.status-locked{
+  margin-top:10px !important;
+}
+.control-card,
+.control-card-disabled{
+  border-radius:20px !important;
+  min-height:94px !important;
+}
+.control-card{
+  background:linear-gradient(135deg,#ecfdf5,#ffffff) !important;
+}
+.control-card i{
+  background:#12b76a !important;
+}
+.control-card-disabled i{
+  background:#edf2f7 !important;
+}
+
+@media(max-width:1100px){
+  .map-page{grid-template-columns:1fr !important;}
+  .map-sidebar{display:none !important;}
+  .level-hero{grid-template-columns:1fr !important;min-height:auto !important;}
+  .level-stats{justify-content:flex-start !important;}
+  .next-lesson-sticky{min-width:0 !important;}
+}
+@media(max-width:760px){
+  .header{height:auto !important;min-height:58px !important;}
+  .nav{gap:14px !important;overflow-x:auto !important;}
+  .map-page{width:min(100% - 18px,1460px) !important;}
+  .map-top-head{grid-template-columns:1fr !important;}
+  .map-title h1{font-size:24px !important;}
+  .level-left{grid-template-columns:56px minmax(0,1fr) !important;}
+  .level-icon{width:56px !important;height:56px !important;border-radius:18px !important;}
+  .level-head h2{font-size:23px !important;}
+  .lesson-list{grid-template-columns:1fr !important;}
+  .level-stat{min-width:0;height:44px !important;}
+}
+</style>
+
+
+<style id="levels-map-sidebar-open-final">
+/* ==================================================
+   PHYSX LEVELS MAP — MODERN OPEN/CLOSE SIDEBAR
+   Оқу картасы / Жылдам өту / Тізім / Карточка / Змейка / Компакт
+================================================== */
+
+.map-page{
+  grid-template-columns:88px minmax(0,1fr) !important;
+  gap:14px !important;
+  transition:grid-template-columns .28s ease !important;
+}
+
+body:not(.sidebar-collapsed) .map-page{
+  grid-template-columns:230px minmax(0,1fr) !important;
+}
+
+.map-sidebar{
+  position:sticky !important;
+  top:82px !important;
+  height:calc(100vh - 96px) !important;
+  min-height:0 !important;
+  padding:12px 10px !important;
+  border-radius:22px !important;
+  background:
+    radial-gradient(circle at 50% 86%, rgba(56,189,248,.22), transparent 24%),
+    linear-gradient(180deg,#1765ff 0%, #0d4ed8 45%, #062b87 100%) !important;
+  box-shadow:0 18px 36px rgba(13,71,161,.20) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  overflow:hidden !important;
+}
+
+.sidebar-head,
+.side-subtitle{
+  display:none !important;
+}
+
+.sidebar-toggle-v2{
+  width:100% !important;
+  height:48px !important;
+  border:none !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.14) !important;
+  color:#fff !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  cursor:pointer !important;
+  transition:.25s ease !important;
+  backdrop-filter:blur(8px) !important;
+}
+
+.sidebar-toggle-v2:hover{
+  background:rgba(255,255,255,.22) !important;
+  transform:translateY(-1px) !important;
+}
+
+.sidebar-toggle-v2 i{
+  font-size:16px !important;
+  transition:transform .28s ease !important;
+}
+
+.sidebar-toggle-v2 span{
+  display:none !important;
+  font-size:14px !important;
+  font-weight:850 !important;
+  white-space:nowrap !important;
+}
+
+body:not(.sidebar-collapsed) .sidebar-toggle-v2{
+  justify-content:flex-start !important;
+  padding:0 14px !important;
+}
+
+body:not(.sidebar-collapsed) .sidebar-toggle-v2 span{
+  display:inline !important;
+}
+
+.side-menu-v2{
+  display:grid !important;
+  gap:10px !important;
+  margin:0 !important;
+}
+
+.side-menu-btn{
+  width:100% !important;
+  min-height:52px !important;
+  border-radius:16px !important;
+  text-decoration:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:12px !important;
+  color:#ffffff !important;
+  background:rgba(255,255,255,.10) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  transition:.25s ease !important;
+  padding:0 12px !important;
+  cursor:pointer !important;
+}
+
+.side-menu-btn:hover{
+  background:rgba(255,255,255,.18) !important;
+  transform:translateY(-1px) !important;
+}
+
+.side-menu-btn.active{
+  background:rgba(255,255,255,.24) !important;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.16) inset,
+    0 10px 22px rgba(0,0,0,.08) !important;
+}
+
+.side-menu-btn i{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  border-radius:10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:16px !important;
+  background:rgba(255,255,255,.10) !important;
+}
+
+.side-menu-btn span,
+.side-label{
+  display:none !important;
+  font-size:14px !important;
+  font-weight:850 !important;
+  white-space:nowrap !important;
+}
+
+body:not(.sidebar-collapsed) .side-menu-btn{
+  justify-content:flex-start !important;
+}
+
+body:not(.sidebar-collapsed) .side-menu-btn span,
+body:not(.sidebar-collapsed) .side-label{
+  display:inline !important;
+}
+
+.compact-mode-btn{
+  margin-top:0 !important;
+  background:rgba(255,255,255,.16) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+}
+
+.quick-finder-v2{
+  display:none !important;
+  gap:8px !important;
+  margin:0 0 2px !important;
+  padding:10px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.11) !important;
+  border:1px solid rgba(255,255,255,.13) !important;
+}
+
+body:not(.sidebar-collapsed) .quick-finder-v2.quick-open{
+  display:grid !important;
+}
+
+.quick-finder-v2 select,
+.quick-finder-v2 input,
+.quick-finder-v2 button{
+  width:100% !important;
+  height:38px !important;
+  border:none !important;
+  outline:none !important;
+  border-radius:12px !important;
+  padding:0 11px !important;
+  font-size:11.5px !important;
+  font-weight:800 !important;
+}
+
+.quick-finder-v2 button{
+  background:#fff !important;
+  color:#145cff !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+}
+
+.side-progress-v2,
+.side-daily-v2{
+  display:none !important;
+}
+
+body:not(.sidebar-collapsed) .side-progress-v2,
+body:not(.sidebar-collapsed) .side-daily-v2{
+  display:block !important;
+}
+
+.rocket-card-v2{
+  margin-top:auto !important;
+  min-height:82px !important;
+  border-radius:18px !important;
+  background:
+    radial-gradient(circle at 22% 30%, rgba(255,255,255,.28), rgba(255,255,255,.08) 50%, rgba(255,255,255,.04) 100%) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:12px !important;
+  color:#fff !important;
+  padding:10px !important;
+  overflow:hidden !important;
+}
+
+.rocket-card-v2 .rocket{
+  position:static !important;
+  font-size:38px !important;
+  transform:none !important;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.20)) !important;
+}
+
+.rocket-copy{
+  display:none !important;
+}
+
+body:not(.sidebar-collapsed) .rocket-card-v2{
+  justify-content:flex-start !important;
+  padding:12px 14px !important;
+}
+
+body:not(.sidebar-collapsed) .rocket-copy{
+  display:block !important;
+}
+
+.rocket-copy b{
+  display:block !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  margin-bottom:4px !important;
+}
+
+.rocket-copy span{
+  display:block !important;
+  font-size:11.5px !important;
+  line-height:1.25 !important;
+  font-weight:750 !important;
+  opacity:.94 !important;
+}
+
+/* Tooltip жабық кезде */
+body.sidebar-collapsed .side-menu-btn{
+  position:relative !important;
+}
+
+body.sidebar-collapsed .side-menu-btn:hover::after{
+  content:attr(title) !important;
+  position:absolute !important;
+  left:64px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  z-index:9999 !important;
+  background:#061b55 !important;
+  color:#fff !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+  box-shadow:0 12px 24px rgba(15,23,42,.22) !important;
+}
+
+/* Roadmap view = стандарт карточка стилі */
+body.map-view-roadmap .lesson-list{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+body.map-view-roadmap .lesson-card,
+body.map-view-roadmap .lesson-card-disabled{
+  min-height:116px !important;
+}
+
+/* Quick mode = іздеу панелі ашық, карта стандарт */
+body.map-view-quick .lesson-card.current{
+  outline:3px solid rgba(20,92,255,.18) !important;
+}
+
+/* Card mode = карточкалар premium */
+body.map-view-card .lesson-card,
+body.map-view-card .lesson-card-disabled{
+  border-radius:18px !important;
+  box-shadow:0 12px 26px rgba(13,71,161,.08) !important;
+}
+
+/* List mode */
+body.map-view-list .lesson-list{
+  grid-template-columns:1fr !important;
+}
+
+body.map-view-list .lesson-card,
+body.map-view-list .lesson-card-disabled{
+  min-height:68px !important;
+  grid-template-columns:46px minmax(0,1fr) auto !important;
+  align-items:center !important;
+}
+
+body.map-view-list .lesson-status{
+  grid-column:auto !important;
+  margin-top:0 !important;
+}
+
+/* Snake mode */
+body.map-view-snake .lesson-list{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:16px !important;
+}
+
+body.map-view-snake .lesson-card,
+body.map-view-snake .lesson-card-disabled{
+  width:min(92%,680px) !important;
+}
+
+body.map-view-snake .lesson-card:nth-child(odd),
+body.map-view-snake .lesson-card-disabled:nth-child(odd){
+  transform:translateX(-68px) !important;
+}
+
+body.map-view-snake .lesson-card:nth-child(even),
+body.map-view-snake .lesson-card-disabled:nth-child(even){
+  transform:translateX(68px) !important;
+}
+
+/* Compact mode — змейканың астындағы бөлек режим */
+body.map-view-compact .lesson-list{
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+}
+
+body.map-view-compact .lesson-card,
+body.map-view-compact .lesson-card-disabled{
+  min-height:50px !important;
+  padding:9px 12px !important;
+  border-radius:13px !important;
+  grid-template-columns:34px minmax(0,1fr) auto !important;
+  align-items:center !important;
+}
+
+body.map-view-compact .lesson-icon{
+  width:30px !important;
+  height:30px !important;
+  font-size:12px !important;
+}
+
+body.map-view-compact .lesson-info h4{
+  font-size:13.2px !important;
+  margin:0 !important;
+}
+
+body.map-view-compact .lesson-stars{
+  font-size:12px !important;
+  margin-top:3px !important;
+}
+
+body.map-view-compact .lesson-status{
+  grid-column:auto !important;
+  margin-top:0 !important;
+  height:26px !important;
+  font-size:10.8px !important;
+}
+
+body.map-view-compact .chapter-gate-note,
+body.map-view-compact .control-card,
+body.map-view-compact .control-card-disabled{
+  transform:scale(.98) !important;
+  transform-origin:left center !important;
+}
+
+@media(max-width:1200px){
+  body.map-view-roadmap .lesson-list,
+  body.map-view-card .lesson-list{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:980px){
+  .map-page{
+    grid-template-columns:1fr !important;
+  }
+
+  body:not(.sidebar-collapsed) .map-page{
+    grid-template-columns:1fr !important;
+  }
+
+  .map-sidebar{
+    position:relative !important;
+    top:0 !important;
+    height:auto !important;
+    min-height:auto !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    overflow-x:auto !important;
+    border-radius:18px !important;
+    padding:10px !important;
+  }
+
+  .sidebar-toggle-v2,
+  .side-menu-btn{
+    min-width:52px !important;
+    width:52px !important;
+    padding:0 !important;
+    flex-shrink:0 !important;
+  }
+
+  .side-menu-v2{
+    display:flex !important;
+    gap:10px !important;
+  }
+
+  .side-menu-btn span,
+  .sidebar-toggle-v2 span,
+  .rocket-copy,
+  .quick-finder-v2,
+  .side-progress-v2,
+  .side-daily-v2{
+    display:none !important;
+  }
+
+  .rocket-card-v2{
+    min-width:72px !important;
+    min-height:72px !important;
+    margin-top:0 !important;
+    flex-shrink:0 !important;
+  }
+
+  body.map-view-snake .lesson-card,
+  body.map-view-snake .lesson-card-disabled{
+    width:100% !important;
+    transform:none !important;
+  }
+}
+
+@media(max-width:700px){
+  body.map-view-roadmap .lesson-list,
+  body.map-view-card .lesson-list{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
+
+<style id="remove-sidebar-progress-daily-final">
+/* ==================================================
+   Sidebar ішіндегі "Жалпы прогресс" және "Күндік мақсат" алынды
+================================================== */
+
+.side-progress-v2,
+.side-daily-v2,
+.map-sidebar .side-card{
+  display:none !important;
+}
+
+.rocket-card-v2{
+  margin-top:auto !important;
+}
+
+/* Ашық sidebar-да тек режимдер + Advanced картасы ғана қалады */
+body:not(.sidebar-collapsed) .map-sidebar{
+  gap:10px !important;
+}
+</style>
+
+
+<style id="sidebar-progress-hard-remove-final">
+/* HARD REMOVE: Жалпы прогресс және Күндік мақсат sidebar-дан толық алынды */
+.map-sidebar .side-progress-v2,
+.map-sidebar .side-daily-v2,
+.map-sidebar .side-card,
+.side-progress-v2,
+.side-daily-v2{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  overflow:hidden !important;
+}
+
+.rocket-card-v2{
+  margin-top:auto !important;
+}
+</style>
+
+
+<style id="level-icons-hard-visible-fix">
+/* ==================================================
+   HARD FIX: ДЕҢГЕЙ ИКОНКАЛАРЫ
+   Мәселе: PNG background checkerboard болып көрініп, FontAwesome i жасырылған.
+   Шешім: PNG background өшіріліп, ішкі FontAwesome иконка қайта көрсетіледі.
+================================================== */
+
+.level-icon{
+  width:72px !important;
+  height:72px !important;
+  min-width:72px !important;
+  border-radius:22px !important;
+  background-image:none !important;
+  background-size:auto !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  display:grid !important;
+  place-items:center !important;
+  overflow:hidden !important;
+  color:#12b76a !important;
+}
+
+.level-icon i,
+.level-icon .fa-solid,
+.level-icon .fa{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  color:inherit !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+  font-size:31px !important;
+  line-height:1 !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+}
+
+.level-hero:not(.level-intermediate):not(.level-advanced) .level-icon{
+  background:linear-gradient(135deg,#ecfdf5 0%,#ffffff 100%) !important;
+  border:1px solid #bbf7d0 !important;
+  box-shadow:0 16px 28px rgba(18,183,106,.15) !important;
+  color:#12b76a !important;
+}
+
+.level-hero.level-intermediate .level-icon{
+  background:linear-gradient(135deg,#eff6ff 0%,#ffffff 100%) !important;
+  border:1px solid #bfdbfe !important;
+  box-shadow:0 16px 28px rgba(20,92,255,.16) !important;
+  color:#145cff !important;
+}
+
+.level-hero.level-advanced .level-icon{
+  background:linear-gradient(135deg,#f5f3ff 0%,#ffffff 100%) !important;
+  border:1px solid #ddd6fe !important;
+  box-shadow:0 16px 28px rgba(124,58,237,.18) !important;
+  color:#7c3aed !important;
+}
+
+.level-icon img{
+  display:none !important;
+}
+</style>
+
+
+<style id="physx-map-banner-and-saturated-levels-final">
+/* ==================================================
+   ОҚУ КАРТАСЫ БАСЫ — СУРЕТ БАННЕР
+   Суретті мына жерге сақта:
+   image/map/oku-kartasy-banner.png
+================================================== */
+
+.map-banner-image{
+  width:100% !important;
+  margin:0 0 16px !important;
+  border-radius:24px !important;
+  overflow:hidden !important;
+  border:1px solid rgba(191,219,254,.72) !important;
+  box-shadow:0 16px 36px rgba(13,71,161,.10) !important;
+  background:#fff !important;
+}
+
+.map-banner-image img{
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  object-fit:cover !important;
+}
+
+/* Ескі оқу картасы басын толық жасырамыз */
+.map-top-head{
+  display:none !important;
+}
+
+/* Негізгі карточка баннерге тым жабысып тұрмасын */
+.main-card{
+  margin-top:0 !important;
+}
+
+/* ==================================================
+   ДЕҢГЕЙ ФОНДАРЫ — ҚАНЫҚ, АНЫҚ КӨРІНЕТІН НҰСҚА
+   Файлдар:
+   image/levelsmap/level-beginner-bg.png
+   image/levelsmap/level-intermediate-bg.png
+   image/levelsmap/level-advanced-bg.png
+================================================== */
+
+.level-hero{
+  position:relative !important;
+  overflow:hidden !important;
+  min-height:320px !important;
+  border-radius:24px !important;
+  border:1px solid rgba(191,219,254,.78) !important;
+  background:#ffffff !important;
+  box-shadow:0 18px 42px rgba(13,71,161,.09) !important;
+}
+
+/* Beginner фон — бұрынғы ақ қабатты азайтып, суретті қанық қыламыз */
+.level-hero::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.80) 30%,
+      rgba(255,255,255,.22) 52%,
+      rgba(255,255,255,.02) 100%
+    ),
+    url("image/levelsmap/level-beginner-bg.png") center right / cover no-repeat !important;
+  opacity:1 !important;
+  filter:brightness(1.08) saturate(1.28) contrast(1.08) !important;
+}
+
+/* Intermediate фон */
+.level-hero.level-intermediate::before{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.78) 31%,
+      rgba(255,255,255,.20) 54%,
+      rgba(255,255,255,.02) 100%
+    ),
+    url("image/levelsmap/level-intermediate-bg.png") center right / cover no-repeat !important;
+  filter:brightness(1.08) saturate(1.30) contrast(1.08) !important;
+}
+
+/* Advanced фон */
+.level-hero.level-advanced::before{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.76) 31%,
+      rgba(255,255,255,.18) 54%,
+      rgba(255,255,255,.02) 100%
+    ),
+    url("image/levelsmap/level-advanced-bg.png") center right / cover no-repeat !important;
+  filter:brightness(1.08) saturate(1.32) contrast(1.09) !important;
+}
+
+/* Фонға тереңдік беретін жұмсақ көлеңке */
+.level-hero::after{
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:1 !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at 92% 15%, rgba(255,255,255,.22), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,.00), rgba(6,27,85,.02)) !important;
+}
+
+/* Деңгей ішіндегі мәтіндер фонның үстінде тұрсын */
+.level-label,
+.level-head,
+.level-stats,
+.level-progress-line,
+.level-goal{
+  position:relative !important;
+  z-index:3 !important;
+}
+
+/* Карточка/статистикалар фонға үйлесіп тұрсын */
+.level-stat{
+  background:rgba(255,255,255,.68) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  border:1px solid rgba(255,255,255,.72) !important;
+  box-shadow:0 8px 18px rgba(13,71,161,.06) !important;
+}
+
+.level-goal{
+  background:rgba(255,255,255,.70) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  border:1px solid rgba(255,255,255,.74) !important;
+}
+
+/* Мәтін оқылымдылығы */
+.level-head h2{
+  color:#061b55 !important;
+  text-shadow:0 1px 3px rgba(255,255,255,.70) !important;
+}
+
+.level-head p{
+  color:#334155 !important;
+  text-shadow:0 1px 2px rgba(255,255,255,.62) !important;
+}
+
+/* Егер экран кішкентай болса, фон мәтінге кедергі жасамасын */
+@media(max-width:900px){
+  .map-banner-image{
+    border-radius:20px !important;
+    margin-bottom:12px !important;
+  }
+
+  .level-hero::before,
+  .level-hero.level-intermediate::before,
+  .level-hero.level-advanced::before{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.58)),
+      var(--level-bg, url("image/levelsmap/level-beginner-bg.png")) center center / cover no-repeat !important;
+  }
+
+  .level-hero.level-intermediate{
+    --level-bg:url("image/levelsmap/level-intermediate-bg.png");
+  }
+
+  .level-hero.level-advanced{
+    --level-bg:url("image/levelsmap/level-advanced-bg.png");
+  }
+}
+</style>
+
+
+
+<style id="physx-chapter-road-background-final-v2">
+/* ==================================================
+   CHAPTER ROAD BACKGROUND — ЖОЛ ФОНЫ ЖАЛҒАСАТЫН СТИЛЬ
+   Қызылмен белгіленген бөлім блоктарының артына деңгей фоны қойылады.
+   Файлдар:
+   image/levelsmap/level-beginner-bg.png
+   image/levelsmap/level-intermediate-bg.png
+   image/levelsmap/level-advanced-bg.png
+================================================== */
+
+/* Негізгі ақ карточканы сәл мөлдір қылып, ішкі фондармен үйлестіреміз */
+.main-card{
+  position:relative !important;
+  overflow:hidden !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.82) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  border:1px solid rgba(191,219,254,.72) !important;
+  box-shadow:0 16px 36px rgba(13,71,161,.08) !important;
+}
+
+/* Tabs бөлігі таза glass болсын */
+.tabs{
+  position:relative !important;
+  z-index:5 !important;
+  margin-bottom:20px !important;
+  padding:0 2px !important;
+  background:transparent !important;
+}
+
+/* Әр бөлім карточкасының артына табиғат/жол фоны */
+.chapter-card{
+  position:relative !important;
+  overflow:hidden !important;
+  border-radius:24px !important;
+  padding:18px !important;
+  margin-top:18px !important;
+  margin-bottom:24px !important;
+  border:1px solid rgba(191,219,254,.76) !important;
+  box-shadow:0 16px 34px rgba(13,71,161,.08) !important;
+  background:#ffffff !important;
+}
+
+/* Beginner бөлімдері */
+.level-section[data-level="beginner"] .chapter-card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.36)),
+    url("image/levelsmap/level-beginner-bg.png") center 68% / cover no-repeat !important;
+}
+
+/* Intermediate бөлімдері */
+.level-section[data-level="intermediate"] .chapter-card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.36)),
+    url("image/levelsmap/level-intermediate-bg.png") center 68% / cover no-repeat !important;
+}
+
+/* Advanced бөлімдері */
+.level-section[data-level="advanced"] .chapter-card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.36)),
+    url("image/levelsmap/level-advanced-bg.png") center 68% / cover no-repeat !important;
+}
+
+/* Фонды қанық әрі жұмсақ етіп көрсететін қабат */
+.chapter-card::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at 86% 18%,rgba(255,255,255,.14),transparent 25%),
+    linear-gradient(90deg,rgba(255,255,255,.34),rgba(255,255,255,.12)) !important;
+  backdrop-filter:saturate(1.18) contrast(1.05) !important;
+  -webkit-backdrop-filter:saturate(1.18) contrast(1.05) !important;
+}
+
+/* Ішкі элементтер фоннан жоғары тұрсын */
+.chapter-card > *{
+  position:relative !important;
+  z-index:2 !important;
+}
+
+/* Бөлім тақырыбы — glass header */
+.chapter-header{
+  margin:0 0 12px !important;
+  padding:11px 14px !important;
+  border-radius:18px !important;
+  background:rgba(255,255,255,.56) !important;
+  backdrop-filter:blur(14px) saturate(1.18) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.18) !important;
+  border:1px solid rgba(255,255,255,.68) !important;
+  box-shadow:0 10px 22px rgba(13,71,161,.06) !important;
+}
+
+.chapter-header h3{
+  color:#0b2f77 !important;
+  text-shadow:0 1px 2px rgba(255,255,255,.72) !important;
+}
+
+/* Бөлімдегі статистика pill-дері */
+.chapter-pill,
+.next-gate-label{
+  background:rgba(255,255,255,.72) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  border:1px solid rgba(255,255,255,.72) !important;
+  box-shadow:0 6px 14px rgba(13,71,161,.04) !important;
+}
+
+.chapter-pill.green{color:#059669 !important;}
+.chapter-pill.orange{color:#ea580c !important;}
+.chapter-pill.blue{color:#145cff !important;}
+.chapter-pill.star{color:#b45309 !important;}
+
+/* Прогресс сызығы фон үстінде анық */
+.chapter-progress{
+  height:6px !important;
+  background:rgba(226,232,240,.78) !important;
+  border-radius:999px !important;
+  overflow:hidden !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.60) !important;
+}
+
+.chapter-progress-fill{
+  background:linear-gradient(90deg,#145cff,#12b76a) !important;
+  box-shadow:0 0 12px rgba(18,183,106,.18) !important;
+}
+
+.level-section[data-level="intermediate"] .chapter-progress-fill{
+  background:linear-gradient(90deg,#f59e0b,#145cff) !important;
+}
+
+.level-section[data-level="advanced"] .chapter-progress-fill{
+  background:linear-gradient(90deg,#7c3aed,#f59e0b) !important;
+}
+
+/* Ескерту note */
+.chapter-gate-note{
+  background:rgba(255,247,237,.72) !important;
+  backdrop-filter:blur(12px) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+  border:1px solid rgba(254,215,170,.88) !important;
+  box-shadow:0 8px 18px rgba(13,71,161,.045) !important;
+}
+
+.chapter-gate-note.ok{
+  background:rgba(236,253,245,.74) !important;
+  border-color:rgba(187,247,208,.92) !important;
+}
+.chapter-gate-note.locked{
+  background:rgba(255,241,242,.74) !important;
+  border-color:rgba(254,205,211,.92) !important;
+}
+
+/* Сабақ карточкалары — мөлдір glass */
+.lesson-card,
+.lesson-card-disabled,
+.control-card,
+.control-card-disabled{
+  background:rgba(255,255,255,.66) !important;
+  backdrop-filter:blur(14px) saturate(1.16) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.16) !important;
+  border:1px solid rgba(255,255,255,.72) !important;
+  box-shadow:0 10px 22px rgba(13,71,161,.07) !important;
+}
+
+/* Аяқталған сабақ */
+.lesson-card.completed{
+  background:rgba(236,253,245,.78) !important;
+  border-color:rgba(187,247,208,.96) !important;
+}
+
+/* Қазіргі сабақ */
+.lesson-card.current{
+  background:rgba(239,246,255,.78) !important;
+  border:2px solid rgba(20,92,255,.95) !important;
+  box-shadow:0 14px 28px rgba(20,92,255,.12) !important;
+}
+
+/* Құлыпталған сабақ */
+.lesson-card-disabled,
+.control-card-disabled{
+  background:rgba(248,250,252,.58) !important;
+  opacity:.90 !important;
+}
+
+.lesson-info h4,
+.control-card h4,
+.control-card-disabled h4{
+  color:#071837 !important;
+  text-shadow:0 1px 2px rgba(255,255,255,.62) !important;
+}
+
+.lesson-status,
+.status-completed,
+.status-locked{
+  backdrop-filter:blur(8px) !important;
+  -webkit-backdrop-filter:blur(8px) !important;
+}
+
+/* Деңгей баннерлері де бұрынғыдан қанық көрінсін */
+.level-hero::before{
+  filter:brightness(1.08) saturate(1.25) contrast(1.08) !important;
+}
+
+/* Мобильдіде фон оқуға кедергі жасамасын */
+@media(max-width:700px){
+  .chapter-card{
+    padding:14px !important;
+    border-radius:20px !important;
+  }
+
+  .level-section[data-level="beginner"] .chapter-card,
+  .level-section[data-level="intermediate"] .chapter-card,
+  .level-section[data-level="advanced"] .chapter-card{
+    background-position:center center !important;
+  }
+
+  .lesson-card,
+  .lesson-card-disabled,
+  .control-card,
+  .control-card-disabled{
+    background:rgba(255,255,255,.78) !important;
+  }
+}
+</style>
+
+
+<style id="profile-nav-simple-final">
+/* ==================================================
+   PROFILE NAV SIMPLE FINAL
+   Профиль кәдімгі меню сияқты: көк батырма жоқ, стрелка жоқ
+================================================== */
+
+#authArea{
+  display:flex !important;
+  align-items:center !important;
+  min-width:auto !important;
+}
+
+/* Профильді жай nav-link стиліне түсіру */
+#authArea .profile-link,
+.nav .profile-link,
+.profile-link{
+  background:transparent !important;
+  color:#0b2f77 !important;
+  padding:20px 0 !important;
+  border-radius:0 !important;
+  border:none !important;
+  box-shadow:none !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+}
+
+/* Hover */
+#authArea .profile-link:hover,
+.nav .profile-link:hover,
+.profile-link:hover{
+  color:#145cff !important;
+}
+
+/* Профильдегі стрелка/сызық/псевдоэлемент толық жоқ */
+#authArea .profile-link::after,
+#authArea .profile-link::before,
+.nav .profile-link::after,
+.nav .profile-link::before,
+.profile-link::after,
+.profile-link::before{
+  display:none !important;
+  content:none !important;
+}
+
+/* Иконка дұрыс көрінсін */
+#authArea .profile-link i,
+.nav .profile-link i,
+.profile-link i{
+  color:inherit !important;
+  margin-right:4px !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+}
+
+/* Auth ішіндегі dropdown ешқашан ашылмасын */
+#authArea .nav-dropdown,
+#authArea .dropdown-menu{
+  display:none !important;
+}
+
+/* Егер басқа dropdown белгісі қалып қойса, жасыр */
+.nav-dropdown > .profile-link::after,
+.nav-dropdown > .profile-link::before{
+  display:none !important;
+  content:none !important;
+}
+
+/* Кіру батырмасы бұрынғыдай көк болып қала береді */
+#authArea .login-link,
+.nav .login-link,
+.login-link{
+  background:#145cff !important;
+  color:#fff !important;
+  padding:11px 18px !important;
+  border-radius:13px !important;
+  box-shadow:0 12px 24px rgba(20,92,255,.18) !important;
+}
+</style>
+
+
+<style id="teacher-mode-levels-map">
+/* ==================================================
+   TEACHER MODE
+   Мұғалім режимінде барлық деңгей, сабақ және бақылау ашық
+================================================== */
+
+.teacher-mode-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:36px;
+  padding:0 14px;
+  border-radius:999px;
+  background:rgba(18,183,106,.12);
+  border:1px solid rgba(18,183,106,.24);
+  color:#059669;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.teacher-mode-badge i{
+  color:#12b76a;
+}
+
+.teacher-mode-banner{
+  margin-bottom:14px;
+  padding:14px 16px;
+  border-radius:18px;
+  background:
+    linear-gradient(90deg,rgba(236,253,245,.95),rgba(255,255,255,.86));
+  border:1px solid #bbf7d0;
+  color:#065f46;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 12px 28px rgba(18,183,106,.08);
+}
+
+.teacher-mode-banner i{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:#12b76a;
+  color:#fff;
+  flex-shrink:0;
+}
+
+.teacher-mode-banner b{
+  display:block;
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:3px;
+}
+
+.teacher-mode-banner span{
+  display:block;
+  font-size:12px;
+  font-weight:750;
+  line-height:1.35;
+}
+
+.lesson-card.teacher{
+  border-color:#bbf7d0 !important;
+  background:linear-gradient(135deg,#ffffff,#ecfdf5) !important;
+}
+
+.lesson-card.teacher .lesson-icon{
+  background:#12b76a !important;
+  color:#fff !important;
+}
+
+.status-teacher{
+  background:#ecfdf5 !important;
+  border:1px solid #bbf7d0 !important;
+  color:#059669 !important;
+}
+
+.chapter-gate-note.teacher{
+  background:#ecfdf5 !important;
+  color:#059669 !important;
+  border:1px solid #bbf7d0 !important;
+}
+
+.control-card.teacher{
+  border-color:#bbf7d0 !important;
+  background:linear-gradient(135deg,#ecfdf5,#ffffff) !important;
+}
+
+.control-card.teacher i{
+  background:#12b76a !important;
+}
+
+@media(max-width:1050px){
+  .teacher-mode-badge{
+    width:max-content;
+  }
+}
+</style>
+
+
+<style id="map-retry-lesson-button-fix">
+/* ==================================================
+   MAP RETRY BUTTON FIX
+   Өткен сабақта жұлдыз 5/5 болмаса картада "Қайта өту" шығады
+================================================== */
+.lesson-card{
+  cursor:pointer !important;
+}
+
+.lesson-card-footer{
+  grid-column:2 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+  margin-top:8px !important;
+}
+
+.lesson-card-footer .lesson-status{
+  margin-top:0 !important;
+}
+
+.map-lesson-action,
+.lesson-card-footer .start-btn{
+  height:30px !important;
+  padding:0 12px !important;
+  border:none !important;
+  border-radius:999px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  font-size:11.5px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+  cursor:pointer !important;
+  transition:.18s ease !important;
+}
+
+.map-lesson-action:hover,
+.lesson-card-footer .start-btn:hover{
+  transform:translateY(-1px) !important;
+}
+
+.map-lesson-action.retry{
+  background:linear-gradient(135deg,#ff9800,#ff7a2f) !important;
+  color:#fff !important;
+  box-shadow:0 8px 18px rgba(255,122,47,.18) !important;
+}
+
+.map-lesson-action.repeat{
+  background:#eff6ff !important;
+  color:#145cff !important;
+  border:1px solid #bfdbfe !important;
+  box-shadow:none !important;
+}
+
+.map-lesson-action.teacher{
+  background:#ecfdf5 !important;
+  color:#059669 !important;
+  border:1px solid #bbf7d0 !important;
+}
+
+.lesson-card-footer .start-btn{
+  background:#145cff !important;
+  color:#fff !important;
+  box-shadow:0 8px 18px rgba(20,92,255,.18) !important;
+}
+
+body.map-view-list .lesson-card-footer,
+body.map-view-compact .lesson-card-footer{
+  grid-column:auto !important;
+  margin-top:0 !important;
+  justify-content:flex-end !important;
+}
+
+@media(max-width:700px){
+  .lesson-card-footer{
+    width:100% !important;
+  }
+
+  .map-lesson-action,
+  .lesson-card-footer .start-btn{
+    min-width:104px !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i> PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link active">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="profile.html" class="nav-link">Жетістіктер</a>
+
+    <div id="authArea"><a href="login.html" class="nav-link login-link">Кіру</a></div>
+  </nav>
+</header>
+
+<main class="map-page" id="mapPage"></main>
+
+<script>
+const BASE_PATH = "./lessons/";
+
+const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+if (!user.studyLevel) user.studyLevel = "beginner";
+if (!user.progress) user.progress = { points: 0, lessonsCompleted: [] };
+if (!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+
+const completedLessons = user.progress.lessonsCompleted;
+const userLevel = user.studyLevel;
+
+const isTeacherMode =
+  localStorage.getItem("physxUserRole") === "teacher" ||
+  localStorage.getItem("physxRole") === "teacher" ||
+  user.role === "teacher";
+
+let mapView = localStorage.getItem("physxMapView") || "roadmap";
+let activeTab = "all";
+
+const levelOrder = { beginner: 1, intermediate: 2, advanced: 3 };
+const visibleLevels = ["beginner", "intermediate", "advanced"];
+
+const levelNames = {
+  beginner: "Бастапқы деңгей",
+  intermediate: "Орта деңгей",
+  advanced: "Жоғары деңгей"
+};
+
+const levelIcons = {
+  beginner: "fa-chart-simple",
+  intermediate: "fa-rocket",
+  advanced: "fa-gem"
+};
+
+const courseStructure = {
+  beginner: {
+    levelTitle: "1-деңгей: Бастапқы деңгей",
+    levelDescription: "Механика бөлімінің негізгі ұғымдары, қарапайым формулалар және жеңіл есептер.",
+    chapters: [
+      {
+        chapterTitle: "1-бөлім. Механикалық қозғалыс",
+        control: "Бақылау жұмысы №1",
+        lessons: [
+          "Механикалық қозғалыс және оның сипаттамалары",
+          "Механикалық қозғалыстың салыстырмалылығы",
+          "Түзусызықты бірқалыпты және бірқалыпсыз қозғалыс",
+          "Жылдамдық және орташа жылдамдықты есептеу",
+          "Әртүрлі механикалық қозғалыстардың графиктері"
+        ]
+      },
+      {
+        chapterTitle: "2-бөлім. Денелердің өзара әрекеттесуі",
+        control: "Бақылау жұмысы №2",
+        lessons: [
+          "Инерция құбылысы",
+          "Денелердің өзара әрекеттесуі. Масса және денелердің массасын өлшеу",
+          "Заттың тығыздығы және тығыздықтың өлшем бірлігі. Тығыздықты есептеу",
+          "Күш",
+          "Тартылыс құбылысы және ауырлық күші",
+          "Салмақ",
+          "Серпімділік күші. Гук заңы",
+          "Үйкеліс күші. Үйкеліс әрекетін техникада ескеру",
+          "Денеге бір түзу бойымен әрекет ететін күштердің қосылуы"
+        ]
+      },
+      {
+        chapterTitle: "3-бөлім. Қысым және сұйықтар механикасы",
+        control: "Бақылау жұмысы №3",
+        lessons: [
+          "Қатты денелердің қысымы",
+          "Сұйықтар мен газдардағы қысым. Паскаль заңы",
+          "Қатынас ыдыстар",
+          "Гидравликалық машиналар",
+          "Атмосфералық қысым. Атмосфералық қысымды өлшеу",
+          "Кері итеруші күш. Архимед заңы"
+        ]
+      },
+      {
+        chapterTitle: "4-бөлім. Жұмыс, қуат және энергия",
+        control: "Бақылау жұмысы №4",
+        lessons: [
+          "Механикалық жұмыс",
+          "Қуат",
+          "Механикалық энергия. Кинетикалық энергия",
+          "Потенциалдық энергия",
+          "Энергияның сақталуы және айналуы"
+        ]
+      },
+      {
+        chapterTitle: "5-бөлім. Қарапайым механизмдер",
+        control: "Бақылау жұмысы №5",
+        lessons: [
+          "Күш моменті",
+          "Дененің массалық центрі",
+          "Жай механизмдер. «Механиканың алтын ережесі»",
+          "Иіндіктің тепе-теңдік шарты",
+          "Пайдалы әрекет коэффициенті"
+        ]
+      }
+    ]
+  },
+
+  intermediate: {
+    levelTitle: "2-деңгей: Орташа деңгей",
+    levelDescription: "Формулаларды қолдану, аралас есептер және талдау.",
+    chapters: [
+      {
+        chapterTitle: "I тарау. Кинематика негіздері",
+        control: "Бақылау жұмысы №1",
+        lessons: [
+          "Механикалық қозғалыс",
+          "Векторлар және олардың проекциясы",
+          "Түзусызықты теңайнымалы қозғалыс",
+          "Жылдамдық және орын ауыстыру",
+          "Еркін түсу",
+          "Қисықсызықты қозғалыс",
+          "Сызықтық және бұрыштық жылдамдық"
+        ]
+      },
+      {
+        chapterTitle: "II тарау. Динамика негіздері",
+        control: "Бақылау жұмысы №2",
+        lessons: [
+          "Ньютонның I заңы",
+          "Күштер және олардың түрлері",
+          "Ньютонның II заңы",
+          "Ньютонның III заңы",
+          "Бүкіләлемдік тартылыс заңы",
+          "Салмақ және салмақсыздық",
+          "Ауырлық күші әсерінен қозғалыс",
+          "Дененің еркін қозғалысы"
+        ]
+      },
+      {
+        chapterTitle: "III тарау. Сақталу заңдары",
+        control: "Бақылау жұмысы №3",
+        lessons: [
+          "Дене импульсі",
+          "Күш импульсі",
+          "Импульстің сақталу заңы",
+          "Реактивті қозғалыс"
+        ]
+      },
+      {
+        chapterTitle: "IV тарау. Тербелістер мен толқындар",
+        control: "Бақылау жұмысы №4",
+        lessons: [
+          "Механикалық тербелістер",
+          "Толқындар",
+          "Дыбыс толқындары",
+          "Еркін және еріксіз тербелістер",
+          "Резонанс",
+          "Тербеліс периоды",
+          "Тербеліс энергиясы",
+          "Маятник",
+          "Толқын ұзындығы",
+          "Тербеліс жиілігі",
+          "Гармониялық тербеліс"
+        ]
+      }
+    ]
+  },
+
+  advanced: {
+    levelTitle: "3-деңгей: Жоғары деңгей",
+    levelDescription: "Күрделі есептер, логикалық тапсырмалар және терең талдау.",
+    chapters: [
+      {
+        chapterTitle: "1-тарау. Кинематика",
+        control: "Бақылау жұмысы №1",
+        lessons: [
+          "Материялық нүкте және санақ жүйесі",
+          "Жол және орын ауыстыру",
+          "Жылдамдық және үдеу",
+          "Бірқалыпты қозғалыс",
+          "Бірқалыпты айнымалы қозғалыс",
+          "Вертикаль бағыттағы қозғалыс",
+          "Көкжиекке бұрыш жасай лақтырылған дене қозғалысы",
+          "Шеңбер бойымен қозғалыс"
+        ]
+      },
+      {
+        chapterTitle: "2-тарау. Динамика",
+        control: "Бақылау жұмысы №2",
+        lessons: [
+          "Инерция және инерттілік",
+          "Масса, тығыздық және көлем",
+          "Денелердің өзара әсерлесуі",
+          "Бүкіләлемдік тартылыс заңы",
+          "Жасанды серіктер қозғалысы және ғарыштық жылдамдықтар",
+          "Ауырлық күші",
+          "Серпімділік күші және Гук заңы",
+          "Тіректің реакция күші",
+          "Үйкеліс күштері",
+          "Ньютон заңдары",
+          "Салмақ және салмақсыздық"
+        ]
+      },
+      {
+        chapterTitle: "3-тарау. Қатты дене механикасы",
+        control: "Бақылау жұмысы №3",
+        lessons: [
+          "Айналмалы қозғалыс және бұрыштық шамалар",
+          "Күш моменті және айналдырушы әсер",
+          "Инерция моменті",
+          "Қатты дененің айналмалы қозғалыс динамикасы",
+          "Айналмалы қозғалыстағы энергия және импульс моменті"
+        ]
+      },
+      {
+        chapterTitle: "4-тарау. Статика",
+        control: "Бақылау жұмысы №4",
+        lessons: [
+          "Статика негіздері. Денелердің тепе-теңдігі",
+          "Күш моменті және моменттер ережесі",
+          "Тепе-теңдік шарттары",
+          "Ауырлық центрі",
+          "Орнықты, орнықсыз және талғаусыз тепе-теңдік"
+        ]
+      },
+      {
+        chapterTitle: "5-тарау. Сақталу заңдары",
+        control: "Бақылау жұмысы №5",
+        lessons: [
+          "Дене импульсі және күш импульсі",
+          "Импульстің сақталу заңы",
+          "Реактивті қозғалыс",
+          "Механикалық жұмыс",
+          "Қуат",
+          "Кинетикалық энергия",
+          "Потенциалдық энергия",
+          "Механикалық энергияның сақталу заңы және айналу заңы"
+        ]
+      },
+      {
+        chapterTitle: "6-тарау. Сұйықтар мен газдар механикасы",
+        control: "Бақылау жұмысы №6",
+        lessons: [
+          "Сұйықтар мен газдардың қасиеттері",
+          "Архимед күші",
+          "Қысым және гидростатикалық қысым",
+          "Паскаль заңы",
+          "Үздіксіздік теңдеуі",
+          "Бернулли теңдеуі",
+          "Тұтқырлық",
+          "Ламинар және турбулент ағыс",
+          "Денелердің сұйықтар мен газдардағы қозғалысы",
+          "Аэродинамика және гидродинамика негіздері"
+        ]
+      },
+      {
+        chapterTitle: "7-тарау. Механикалық тербелістер",
+        control: "Бақылау жұмысы №7",
+        lessons: [
+          "Механикалық тербелістер",
+          "Амплитуда, период және жиілік",
+          "Серіппелі маятник",
+          "Математикалық маятник",
+          "Еркін және еріксіз тербелістер",
+          "Резонанс құбылысы"
+        ]
+      },
+      {
+        chapterTitle: "8-тарау. Механикалық толқындар",
+        control: "Бақылау жұмысы №8",
+        lessons: [
+          "Механикалық толқындар",
+          "Толқын ұзындығы",
+          "Толқын жылдамдығы",
+          "Көлденең және қума толқындар",
+          "Дыбыс толқындары",
+          "Доплер эффектісі",
+          "Интерференция және дифракция элементтері"
+        ]
+      }
+    ]
+  }
+};
+
+function normalizeCompletedId(id){
+  return String(id || "").replaceAll("_", "-");
+}
+
+function isCompletedItem(id) {
+  const target = normalizeCompletedId(id);
+  return completedLessons.some(item => normalizeCompletedId(item) === target);
+}
+
+function getControlId(levelName, controlNumber) {
+  return `${levelName}-control-${controlNumber}`;
+}
+
+function isControlPassed(levelName, controlNumber) {
+  return isCompletedItem(getControlId(levelName, controlNumber));
+}
+
+function getLessonStars(levelName, lessonNumber) {
+  const keys = [
+    /* Ең жақсы нәтиже бірінші оқылады */
+    `${levelName}-lesson-${lessonNumber}_best_stars`,
+    `${levelName}-lesson-${lessonNumber}-best-stars`,
+    `${levelName}_lesson_${lessonNumber}_best_stars`,
+    `lesson${lessonNumber}_best_stars`,
+    `lesson${lessonNumber}_best_stars_${levelName}`,
+
+    /* Бұрынғы және қазіргі карта key-лері */
+    `${levelName}-lesson-${lessonNumber}-stars`,
+    `${levelName}_lesson_${lessonNumber}_stars`,
+    `${levelName}-lesson-${lessonNumber}_stars`,
+    `lesson${lessonNumber}_stars`,
+    `lesson${lessonNumber}_stars_${levelName}`,
+    `lesson${lessonNumber}-stars`
+  ];
+
+  for (const key of keys) {
+    const value = Number(localStorage.getItem(key) || 0);
+    if (value > 0) return Math.max(0, Math.min(5, value));
+  }
+
+  return 0;
+}
+
+function renderLessonStars(levelName, lessonNumber) {
+  const stars = getLessonStars(levelName, lessonNumber);
+  let output = "";
+
+  for (let i = 1; i <= 5; i++) {
+    output += `<span class="${i <= stars ? "filled" : "empty"}">★</span>`;
+  }
+
+  return `<div class="lesson-stars" title="${stars} / 5 жұлдыз">${output}</div>`;
+}
+
+
+function getLessonPageUrl(lesson){
+  return `${BASE_PATH}${lesson.file}`;
+}
+
+function clearLessonCurrentAttempt(levelName, lessonNumber){
+  const lessonId = `${levelName}-lesson-${lessonNumber}`;
+
+  /* Ең жақсы нәтиже мен картадағы жұлдыздар өшпейді. Тек жаңа әрекет үшін уақытша жауаптар тазаланады. */
+  const keysToRemove = [
+    `${lessonId}_answers`,
+    `${lessonId}_checked`,
+    `${lessonId}_score`,
+    `${lessonId}_test_score`,
+    `${lessonId}_lesson_score`,
+    `${lessonId}_last_score`,
+    `${lessonId}_last_stars`,
+    `${lessonId}_xp`,
+    `${lessonId}_current_xp`,
+    `${lessonId}_sections_done`,
+    `${lessonId}-answers`,
+    `${lessonId}-checked`,
+    `${lessonId}-score`,
+    `${lessonId}-last-score`,
+    `${lessonId}-last-stars`
+  ];
+
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+  localStorage.setItem(`${lessonId}_retry_mode`, "1");
+}
+
+function openLessonFromMap(event, levelName, lessonNumber, url, resetAttempt){
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  if(resetAttempt){
+    clearLessonCurrentAttempt(levelName, lessonNumber);
+  }
+
+  window.location.href = url;
+}
+
+function renderMapLessonAction(status, stars, levelName, lessonNumber, lessonUrl){
+  const safeUrl = String(lessonUrl).replaceAll("'", "&#39;");
+
+  if(status === "completed"){
+    if(stars >= 5){
+      return `<button type="button" class="map-lesson-action repeat" onclick="openLessonFromMap(event, '${levelName}', ${lessonNumber}, '${safeUrl}', true)"><i class="fa-solid fa-rotate-right"></i> Қайталау</button>`;
+    }
+
+    return `<button type="button" class="map-lesson-action retry" onclick="openLessonFromMap(event, '${levelName}', ${lessonNumber}, '${safeUrl}', true)"><i class="fa-solid fa-arrow-rotate-right"></i> Қайта өту</button>`;
+  }
+
+  if(status === "teacher"){
+    return `<button type="button" class="map-lesson-action teacher" onclick="openLessonFromMap(event, '${levelName}', ${lessonNumber}, '${safeUrl}', false)"><i class="fa-solid fa-unlock"></i> Ашу</button>`;
+  }
+
+  if(status === "current"){
+    return `<button type="button" class="start-btn" onclick="openLessonFromMap(event, '${levelName}', ${lessonNumber}, '${safeUrl}', false)">Бастау</button>`;
+  }
+
+  return "Құлыпталған";
+}
+
+function getChapterStars(levelName, startNumber, total){
+  let stars = 0;
+  for(let i = 0; i < total; i++){
+    stars += getLessonStars(levelName, startNumber + i);
+  }
+  return stars;
+}
+
+function getRequiredChapterStars(total){
+  return Math.ceil(total * 5 * 0.60);
+}
+
+function hasChapterEnoughStars(levelName, startNumber, total) {
+  return getChapterStars(levelName, startNumber, total) >= getRequiredChapterStars(total);
+}
+
+function canAccessLevel(level) {
+  if (isTeacherMode) return true;
+
+  const currentLevel = levelOrder[userLevel] || levelOrder.beginner;
+  return levelOrder[level] <= currentLevel;
+}
+
+function getLevelLessons(levelName) {
+  let lessonNumber = 0;
+  const level = courseStructure[levelName];
+
+  return level.chapters.flatMap(chapter => chapter.lessons.map(title => {
+    lessonNumber++;
+    return {
+      id: `${levelName}-lesson-${lessonNumber}`,
+      number: lessonNumber,
+      title: `${lessonNumber}-сабақ. ${title}`,
+      rawTitle: title,
+      chapterTitle: chapter.chapterTitle,
+      control: chapter.control,
+      file: `${levelName}/lesson${lessonNumber}.html`
+    };
+  }));
+}
+
+function getAllCourseLessons() {
+  return visibleLevels.flatMap(level => getLevelLessons(level));
+}
+
+function getAllAvailableLessons() {
+  return visibleLevels.filter(canAccessLevel).flatMap(level => getLevelLessons(level));
+}
+
+function getLevelProgress(levelName) {
+  const lessons = getLevelLessons(levelName);
+  const done = lessons.filter(l => isCompletedItem(l.id)).length;
+  return {
+    total: lessons.length,
+    done,
+    left: lessons.length - done,
+    percent: lessons.length ? Math.round(done / lessons.length * 100) : 0
+  };
+}
+
+function getLessonAccessInfo(levelName, lessonNumber) {
+  const level = courseStructure[levelName];
+  let start = 1;
+
+  for (let i = 0; i < level.chapters.length; i++) {
+    const chapter = level.chapters[i];
+    const end = start + chapter.lessons.length - 1;
+
+    if (lessonNumber >= start && lessonNumber <= end) {
+      const previousChapter = level.chapters[i - 1];
+      /* FIX: previousStart must point to the previous chapter, not the current chapter.
+         Example: lesson 6 is the first lesson of chapter 2, so previousStart must be 1.
+         Before this fix it became 6 and chapter 2 lessons stayed locked even after control #1. */
+      const previousStart = i === 0 ? 1 : start - previousChapter.lessons.length;
+      const previousStarsOk = isTeacherMode || i === 0 || hasChapterEnoughStars(levelName, previousStart, previousChapter.lessons.length);
+      const previousControlPassed = isTeacherMode || i === 0 || (isControlPassed(levelName, i) && previousStarsOk);
+
+      return {
+        chapterIndex: i,
+        controlNumber: i + 1,
+        chapterStart: start,
+        chapterEnd: end,
+        previousControlPassed,
+        chapterUnlocked: canAccessLevel(levelName) && previousControlPassed
+      };
+    }
+
+    start = end + 1;
+  }
+
+  return {
+    chapterIndex: 0,
+    controlNumber: 1,
+    chapterStart: 1,
+    chapterEnd: 1,
+    previousControlPassed: true,
+    chapterUnlocked: canAccessLevel(levelName)
+  };
+}
+
+function isLessonOpen(levelName, allLevelLessons, lessonNumber) {
+  if (isTeacherMode) return true;
+  if (!canAccessLevel(levelName)) return false;
+
+  const lesson = allLevelLessons[lessonNumber - 1];
+  const isCompleted = isCompletedItem(lesson.id);
+  const info = getLessonAccessInfo(levelName, lessonNumber);
+
+  if (!info.chapterUnlocked) return isCompleted;
+
+  const isFirstInChapter = lessonNumber === info.chapterStart;
+  const prevLesson = allLevelLessons[lessonNumber - 2];
+  const prevCompleted = prevLesson ? isCompletedItem(prevLesson.id) : false;
+
+  return isCompleted || isFirstInChapter || prevCompleted;
+}
+
+function getLessonStatus(levelName, allLevelLessons, lessonNumber) {
+  const lesson = allLevelLessons[lessonNumber - 1];
+  if (isCompletedItem(lesson.id)) return "completed";
+  if (isTeacherMode) return "teacher";
+  if (isLessonOpen(levelName, allLevelLessons, lessonNumber)) return "current";
+  return "locked";
+}
+
+function getTotalStarsForLevel(levelName) {
+  const lessons = getLevelLessons(levelName);
+  return lessons.reduce((sum, lesson) => sum + getLessonStars(levelName, lesson.number), 0);
+}
+
+function getTotalStarsAllVisible() {
+  return visibleLevels.reduce((sum, level) => sum + getTotalStarsForLevel(level), 0);
+}
+
+function renderSidebar() {
+  const available = getAllAvailableLessons();
+  const all = getAllCourseLessons();
+  const done = available.filter(l => isCompletedItem(l.id)).length;
+  const percent = all.length ? Math.round(done / all.length * 100) : 0;
+  const dailyTarget = 3;
+  const completedToday = Math.min(dailyTarget, done);
+  const dailyPercent = Math.round((completedToday / dailyTarget) * 100);
+  const streakDays = Number(localStorage.getItem("physxStreakDays")) || (completedToday > 0 ? 1 : 0);
+  const quickOpen = mapView === "quick";
+
+  return `
+    <aside class="map-sidebar" id="mapSidebar">
+      <button class="sidebar-toggle-v2" type="button" onclick="toggleSidebar()" title="Панельді ашу/жабу">
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>Ашу</span>
+      </button>
+
+      <div class="side-menu side-menu-v2">
+        <button class="side-menu-btn ${mapView === 'roadmap' ? 'active' : ''}" type="button" onclick="setMapView('roadmap')" data-view="roadmap" title="Оқу картасы">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Оқу картасы</span>
+        </button>
+
+        <button class="side-menu-btn ${mapView === 'quick' ? 'active' : ''}" type="button" onclick="setMapView('quick')" data-view="quick" title="Жылдам өту">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Жылдам өту</span>
+        </button>
+
+        <div class="quick-finder quick-finder-v2 ${quickOpen ? 'quick-open' : ''}">
+          <select id="quickLevel" onchange="updateQuickChapters()"><option value="">Деңгей таңдаңыз</option></select>
+          <select id="quickChapter" onchange="updateQuickLessons()"><option value="">Тарау таңдаңыз</option></select>
+          <select id="quickLesson"><option value="">Сабақ таңдаңыз</option></select>
+          <input id="lessonSearch" placeholder="Сабақ іздеу..." onkeydown="if(event.key==='Enter') searchLessonByText()">
+          <button type="button" onclick="goToQuickLesson()"><i class="fa-solid fa-arrow-right"></i> Өту</button>
+        </div>
+
+        <button class="side-menu-btn ${mapView === 'list' ? 'active' : ''}" type="button" onclick="setMapView('list')" data-view="list" title="Тізім">
+          <i class="fa-solid fa-list-ul"></i>
+          <span>Тізім</span>
+        </button>
+
+        <button class="side-menu-btn ${mapView === 'card' ? 'active' : ''}" type="button" onclick="setMapView('card')" data-view="card" title="Карточка">
+          <i class="fa-solid fa-table-cells-large"></i>
+          <span>Карточка</span>
+        </button>
+
+        <button class="side-menu-btn ${mapView === 'snake' ? 'active' : ''}" type="button" onclick="setMapView('snake')" data-view="snake" title="Змейка">
+          <i class="fa-solid fa-route"></i>
+          <span>Змейка</span>
+        </button>
+
+        <button class="side-menu-btn compact-mode-btn ${mapView === 'compact' ? 'active' : ''}" type="button" onclick="setMapView('compact')" data-view="compact" title="Компакт">
+          <i class="fa-solid fa-table-list"></i>
+          <span>Компакт</span>
+        </button>
+      </div>
+
+            <div class="rocket-card rocket-card-v2">
+        <div class="rocket">🚀</div>
+        <div class="rocket-copy">
+          <b>Advanced</b>
+          <span>Жаңа биіктерге бірге!</span>
+        </div>
+      </div>
+    </aside>
+  `;
+}
+
+
+function findNextOpenLessonForSticky(){
+  if(isTeacherMode){
+    const levelName = "beginner";
+    const lessons = getLevelLessons(levelName);
+    const first = lessons[0];
+
+    return first ? {
+      levelName,
+      number: first.number,
+      title: "Мұғалім режимі: кез келген сабақты еркін ашуға болады",
+      file: first.file,
+      label: courseStructure[levelName].levelTitle
+    } : null;
+  }
+
+  for(const levelName of visibleLevels){
+    if(!canAccessLevel(levelName)) continue;
+
+    const lessons = getLevelLessons(levelName);
+
+    for(const lesson of lessons){
+      const status = getLessonStatus(levelName, lessons, lesson.number);
+      if(status === "current"){
+        return {
+          levelName,
+          number: lesson.number,
+          title: lesson.rawTitle,
+          file: lesson.file,
+          label: courseStructure[levelName].levelTitle
+        };
+      }
+    }
+  }
+
+  const fallbackLevel = userLevel || "beginner";
+  const lessons = getLevelLessons(fallbackLevel);
+  const first = lessons[0];
+
+  return first ? {
+    levelName: fallbackLevel,
+    number: first.number,
+    title: first.rawTitle,
+    file: first.file,
+    label: courseStructure[fallbackLevel].levelTitle
+  } : null;
+}
+
+
+function renderTeacherModeBanner(){
+  if(!isTeacherMode) return "";
+
+  return `
+    <section class="teacher-mode-banner">
+      <i class="fa-solid fa-unlock"></i>
+      <div>
+        <b>Мұғалім режимі</b>
+        <span>Барлық деңгей, сабақ және бақылау жұмыстары тексеру үшін ашық. Оқушы режимінде құлып және жұлдыз жүйесі сақталады.</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderNextLessonSticky(){
+  const next = findNextOpenLessonForSticky();
+
+  if(!next){
+    return "";
+  }
+
+  return `
+    <section class="next-lesson-sticky">
+      <div class="next-icon"><i class="fa-solid fa-route"></i></div>
+      <div>
+        <b>${next.number}-сабақ</b>
+        <span>${next.title}</span>
+      </div>
+      ${isTeacherMode ? `<span class="teacher-mode-badge"><i class="fa-solid fa-chalkboard-user"></i> Мұғалім режимі</span>` : ""}
+      <a href="${BASE_PATH}${next.file}">
+        Бастау <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </section>
+  `;
+}
+
+function renderTopMain() {
+  return `
+    ${renderTeacherModeBanner()}
+    <section class="map-banner-image">
+      <img src="image/map/oku-kartasy-banner.png" alt="Оқу картасы баннері">
+    </section>
+
+    <section class="main-card">
+      <div class="tabs extra-top">
+        <button class="tab-btn ${activeTab === "all" ? "active" : ""}" onclick="setActiveTab('all')">Барлық сабақтар</button>
+        <button class="tab-btn ${activeTab === "done" ? "active" : ""}" onclick="setActiveTab('done')">Өтілген сабақтар</button>
+        <button class="tab-btn ${activeTab === "left" ? "active" : ""}" onclick="setActiveTab('left')">Қалды сабақтар</button>
+      </div>
+      ${renderLevels()}
+    </section>
+  `;
+}
+
+function renderChapter(levelName, chapter, access, startNumber, allLevelLessons, controlNumber) {
+  const chapterLessons = chapter.lessons.map((_, localIndex) => allLevelLessons[startNumber + localIndex - 1]);
+  const total = chapterLessons.length;
+  const done = chapterLessons.filter(lesson => isCompletedItem(lesson.id)).length;
+  const left = total - done;
+  const percent = total ? Math.round(done / total * 100) : 0;
+
+  const chapterStars = getChapterStars(levelName, startNumber, total);
+  const maxStars = total * 5;
+  const requiredStars = getRequiredChapterStars(total);
+  const enoughStars = chapterStars >= requiredStars;
+  const starPercent = maxStars ? Math.round(chapterStars / maxStars * 100) : 0;
+
+  const previousControlPassed = isTeacherMode || controlNumber === 1 || isControlPassed(levelName, controlNumber - 1);
+  const previousChapterStart = controlNumber === 1 ? 1 : startNumber - courseStructure[levelName].chapters[controlNumber - 2].lessons.length;
+  const previousChapterTotal = controlNumber === 1 ? 0 : courseStructure[levelName].chapters[controlNumber - 2].lessons.length;
+  const previousEnoughStars = isTeacherMode || controlNumber === 1 || getChapterStars(levelName, previousChapterStart, previousChapterTotal) >= getRequiredChapterStars(previousChapterTotal);
+
+  const chapterUnlocked = isTeacherMode || (access && previousControlPassed && previousEnoughStars);
+  const controlPassed = isControlPassed(levelName, controlNumber);
+  const chapterLessonsCompleted = chapterLessons.every(lesson => isCompletedItem(lesson.id));
+  const controlUnlocked = isTeacherMode || (chapterLessonsCompleted && chapterUnlocked && enoughStars);
+
+  const gateNote = isTeacherMode
+    ? `<div class="chapter-gate-note teacher"><i class="fa-solid fa-unlock"></i> Мұғалім режимі: бұл бөлімдегі барлық сабақ және бақылау жұмысы ашық.</div>`
+    : !chapterUnlocked
+      ? `<div class="chapter-gate-note locked"><i class="fa-solid fa-lock"></i> Бұл бөлім жабық. Алдымен алдыңғы бөлімнен 60% жұлдыз жинап, бақылаудан өту керек.</div>`
+      : enoughStars
+        ? `<div class="chapter-gate-note ok"><i class="fa-solid fa-star"></i> ${chapterStars}/${maxStars} ⭐ жиналды. Келесі бөлім ашық.</div>`
+        : `<div class="chapter-gate-note no"><i class="fa-solid fa-star-half-stroke"></i> Бұл бөлім ашық. Қазір: ${chapterStars}/${maxStars} ⭐. Келесі бөлім үшін кемінде ${requiredStars} ⭐ керек.</div>`;
+
+  let rows = "";
+
+  chapter.lessons.forEach((title, localIndex) => {
+    const lessonNumber = startNumber + localIndex;
+    const lesson = allLevelLessons[lessonNumber - 1];
+    let status = getLessonStatus(levelName, allLevelLessons, lessonNumber);
+
+    if (!chapterUnlocked && status !== "completed") status = "locked";
+
+    const isOpen = access && chapterUnlocked && status !== "locked";
+
+    if (activeTab === "done" && status !== "completed") return;
+    if (activeTab === "left" && status === "completed") return;
+
+    const icon = status === "completed" ? "fa-check" : (status === "teacher" ? "fa-unlock" : (status === "current" ? "fa-play" : "fa-lock"));
+    const lessonStars = getLessonStars(levelName, lessonNumber);
+    const lessonUrl = getLessonPageUrl(lesson);
+
+    const statusText = status === "completed"
+      ? `Аяқталды · ${lessonStars}/5 ⭐`
+      : (status === "teacher" ? `Мұғалім режимі` : (status === "current" ? `Қазір ашық` : "Құлыпталған"));
+
+    const actionHtml = isOpen
+      ? renderMapLessonAction(status, lessonStars, levelName, lessonNumber, lessonUrl)
+      : "";
+
+    const statusClass = status === "completed"
+      ? "status-completed"
+      : (status === "teacher" ? "status-teacher" : (status === "current" ? "status-current" : "status-locked"));
+
+    const numberIcon = status === "completed"
+      ? `<i class="fa-solid ${icon}"></i>`
+      : (status === "teacher" ? `<i class="fa-solid ${icon}"></i>` : (status === "current" ? lessonNumber : `<i class="fa-solid ${icon}"></i>`));
+
+    const inner = `
+      <div class="lesson-icon">${numberIcon}</div>
+      <div class="lesson-info">
+        <h4>${lesson.title}</h4>
+        ${renderLessonStars(levelName, lessonNumber)}
+        <div class="lesson-card-footer">
+          <span class="lesson-status ${statusClass}">${statusText}</span>
+          ${actionHtml}
+        </div>
+      </div>
+    `;
+
+    rows += isOpen
+      ? `<div id="lesson-${lesson.id}" class="lesson-card ${status}" role="link" tabindex="0" onclick="openLessonFromMap(event, '${levelName}', ${lessonNumber}, '${lessonUrl}', false)" onkeydown="if(event.key === 'Enter'){openLessonFromMap(event, '${levelName}', ${lessonNumber}, '${lessonUrl}', false)}">${inner}</div>`
+      : `<div id="lesson-${lesson.id}" class="lesson-card-disabled">${inner}</div>`;
+  });
+
+  const roadSteps = chapterLessons.slice(0, Math.max(5, Math.min(8, chapterLessons.length))).map((lesson, i) => {
+    const lessonNumber = startNumber + i;
+    let status = getLessonStatus(levelName, allLevelLessons, lessonNumber);
+
+    if (!chapterUnlocked && status !== "completed") status = "locked";
+
+    const cls = status === "completed" ? "done" : (status === "current" ? "current" : "locked");
+    const content = status === "completed"
+      ? `<i class="fa-solid fa-check"></i>`
+      : (status === "current" ? lesson.number : `<i class="fa-solid fa-lock"></i>`);
+
+    return `<div class="step ${cls}">${content}</div>`;
+  }).join("");
+
+  const controlCard = isTeacherMode
+    ? `
+      <a href="${BASE_PATH}${levelName}/control_work_${controlNumber}.html" class="control-card teacher">
+        <i class="fa-solid fa-unlock"></i>
+        <div>
+          <h4>${chapter.control}</h4>
+          <p>Мұғалім режимі: бақылау жұмысы тексеру үшін ашық.</p>
+        </div>
+        <div class="control-meta">
+          <span>Ашық 🔓</span>
+        </div>
+      </a>
+    `
+    : controlPassed
+    ? `
+      <a href="${BASE_PATH}${levelName}/control_work_${controlNumber}.html" class="control-card">
+        <i class="fa-solid fa-clipboard-check"></i>
+        <div>
+          <h4>${chapter.control}</h4>
+          <p>${chapter.chapterTitle} бойынша қорытынды бақылау жұмысы.</p>
+        </div>
+        <div class="control-meta">
+          <span>Бақылау өтті ✅</span>
+        </div>
+      </a>
+    `
+    : controlUnlocked
+    ? `
+      <a href="${BASE_PATH}${levelName}/control_work_${controlNumber}.html" class="control-card">
+        <i class="fa-solid fa-clipboard-check"></i>
+        <div>
+          <h4>${chapter.control}</h4>
+          <p>${total} сабақ аяқталды. Жұлдыз жеткілікті. Бақылауға өте аласың.</p>
+        </div>
+        <button class="control-action">Бақылауға өту <i class="fa-solid fa-arrow-right"></i></button>
+      </a>
+    `
+    : `
+      <div class="control-card-disabled">
+        <i class="fa-solid fa-lock"></i>
+        <div>
+          <h4>${chapter.control}</h4>
+          <p>${!chapterUnlocked ? "Келесі бөлімді ашу үшін алдыңғы бөлімнен 60% жұлдыз және бақылау жұмысы қажет." : !chapterLessonsCompleted ? "Алдымен осы бөлімнің барлық сабақтарын аяқтаңыз." : `Кемінде ${requiredStars} жұлдыз керек.`}</p>
+        </div>
+        <div class="control-meta">
+          <span>Құлыпталған</span>
+        </div>
+      </div>
+    `;
+
+  return `
+    <div class="chapter-card ${chapterUnlocked ? "" : "chapter-locked"}">
+      <div class="chapter-header">
+        <h3>${chapter.chapterTitle}</h3>
+        <div class="chapter-mini">
+          <span class="chapter-pill blue">${done}/${total} сабақ</span>
+          <span class="chapter-pill ${enoughStars ? "star-ok" : "star-no"}">⭐ ${chapterStars}/${maxStars}</span>
+          <span class="chapter-pill ${enoughStars ? "green" : "orange"}">${enoughStars ? "60% шек өтті" : `${requiredStars} ⭐ керек`}</span>
+          ${isTeacherMode ? `<span class="chapter-pill green">Ашық 🔓</span>` : (controlPassed ? `<span class="chapter-pill green">Бақылау өтті ✅</span>` : `<span class="next-gate-label"><i class="fa-solid fa-lock"></i> бақылау қажет</span>`)}
+        </div>
+      </div>
+
+      <div class="chapter-progress">
+        <div class="chapter-progress-fill" style="width:${percent}%"></div>
+      </div>
+
+      ${gateNote}
+
+      <div class="roadmap-wrap">
+        <div class="roadline">${roadSteps}</div>
+        <div class="lesson-list">
+          ${rows}
+          ${controlCard}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderLevel(levelName) {
+  const level = courseStructure[levelName];
+  const access = canAccessLevel(levelName);
+  const allLevelLessons = getLevelLessons(levelName);
+  const progress = getLevelProgress(levelName);
+  const stars = getTotalStarsForLevel(levelName);
+  let lessonCounter = 1;
+
+  let html = `
+    <section class="level-section" id="level-${levelName}" data-level="${levelName}">
+      <div class="level-hero level-${levelName}">
+        <div class="level-label"><i class="fa-solid fa-flag-checkered"></i> ${levelName === "beginner" ? "LEVEL 1 START" : levelName === "intermediate" ? "LEVEL 2 START" : "LEVEL 3 START"}</div>
+        <div class="level-head">
+          <div class="level-left">
+            <div class="level-icon">
+              <i class="fa-solid ${access ? levelIcons[levelName] : "fa-lock"}"></i>
+            </div>
+            <div>
+              <h2>${level.levelTitle}</h2>
+              <p>${level.levelDescription}</p>
+            </div>
+          </div>
+
+          <div class="count-badge">
+            <i class="fa-solid fa-book-open"></i>
+            ${allLevelLessons.length} сабақ
+          </div>
+        </div>
+
+        <div class="level-stats extra-top">
+          <span class="level-stat">${allLevelLessons.length} сабақ</span>
+          <span class="level-stat green">${progress.done} меңгерілді</span>
+          <span class="level-stat orange">${progress.left} қалды</span>
+          <span class="level-stat blue">${progress.percent}%</span>
+          <span class="level-stat star">⭐ ${stars}/${allLevelLessons.length * 5}</span>
+        </div>
+
+        <div class="level-progress-line extra-top">
+          <div style="width:${progress.percent}%"></div>
+        </div>
+
+        <div class="level-goal extra-top">
+          <i class="fa-solid fa-bullseye"></i>
+          <span>${levelName === "beginner" ? "Деңгей мақсаты: механиканың негізгі ұғымдарын түсініп, жеңіл есептерді сенімді шығару." : levelName === "intermediate" ? "Деңгей мақсаты: формулаларды дұрыс қолданып, аралас есептерді талдау." : "Деңгей мақсаты: күрделі есептерді шығарып, физикалық талдау жасау."}</span>
+        </div>
+      </div>
+
+      ${access ? "" : `<div class="control-card-disabled"><i class="fa-solid fa-lock"></i><div><h4>Бұл деңгей жабық</h4><p>Бұл деңгей placement test нәтижесіне байланысты ашылады.</p></div></div>`}
+  `;
+
+  level.chapters.forEach((chapter, index) => {
+    html += renderChapter(levelName, chapter, access, lessonCounter, allLevelLessons, index + 1);
+    lessonCounter += chapter.lessons.length;
+  });
+
+  html += `</section>`;
+  return html;
+}
+
+function renderLevels() {
+  return visibleLevels.map(renderLevel).join("");
+}
+
+function populateQuickFinder() {
+  const levelSelect = document.getElementById("quickLevel");
+  if (!levelSelect) return;
+
+  levelSelect.innerHTML = `<option value="">Деңгей таңдаңыз</option>`;
+  visibleLevels.forEach(levelKey => {
+    levelSelect.innerHTML += `<option value="${levelKey}">${courseStructure[levelKey].levelTitle}</option>`;
+  });
+}
+
+function updateQuickChapters() {
+  const levelKey = document.getElementById("quickLevel").value;
+  const chapterSelect = document.getElementById("quickChapter");
+  const lessonSelect = document.getElementById("quickLesson");
+
+  chapterSelect.innerHTML = `<option value="">Тарау таңдаңыз</option>`;
+  lessonSelect.innerHTML = `<option value="">Сабақ таңдаңыз</option>`;
+
+  if (!levelKey) return;
+
+  courseStructure[levelKey].chapters.forEach((chapter, index) => {
+    chapterSelect.innerHTML += `<option value="${index}">${chapter.chapterTitle}</option>`;
+  });
+}
+
+function updateQuickLessons() {
+  const levelKey = document.getElementById("quickLevel").value;
+  const chapterIndex = document.getElementById("quickChapter").value;
+  const lessonSelect = document.getElementById("quickLesson");
+
+  lessonSelect.innerHTML = `<option value="">Сабақ таңдаңыз</option>`;
+
+  if (!levelKey || chapterIndex === "") return;
+
+  const allLevelLessons = getLevelLessons(levelKey);
+  let startNumber = 1;
+
+  for (let i = 0; i < Number(chapterIndex); i++) {
+    startNumber += courseStructure[levelKey].chapters[i].lessons.length;
+  }
+
+  const chapter = courseStructure[levelKey].chapters[chapterIndex];
+  chapter.lessons.forEach((_, localIndex) => {
+    const lesson = allLevelLessons[startNumber + localIndex - 1];
+    lessonSelect.innerHTML += `<option value="${lesson.id}">${lesson.title}</option>`;
+  });
+}
+
+function goToQuickLesson() {
+  const lessonId = document.getElementById("quickLesson").value;
+  if (!lessonId) {
+    alert("Алдымен сабақ таңдаңыз.");
+    return;
+  }
+
+  const target = document.getElementById(`lesson-${lessonId}`);
+  if (!target) {
+    alert("Сабақ табылмады.");
+    return;
+  }
+
+  target.scrollIntoView({ behavior: "smooth", block: "center" });
+  target.classList.add("lesson-highlight");
+  setTimeout(() => target.classList.remove("lesson-highlight"), 1800);
+}
+
+function searchLessonByText() {
+  const q = (document.getElementById("lessonSearch")?.value || "").trim().toLowerCase();
+  if (!q) return;
+
+  const all = getAllCourseLessons();
+  const found = all.find(l => l.title.toLowerCase().includes(q) || l.rawTitle.toLowerCase().includes(q));
+
+  if (!found) {
+    alert("Сабақ табылмады.");
+    return;
+  }
+
+  const target = document.getElementById(`lesson-${found.id}`);
+  if (target) {
+    target.scrollIntoView({behavior:"smooth", block:"center"});
+    target.classList.add("lesson-highlight");
+    setTimeout(() => target.classList.remove("lesson-highlight"), 1500);
+  }
+}
+
+function setMapView(view) {
+  mapView = view;
+  localStorage.setItem("physxMapView", view);
+  renderMap();
+  renderAuthArea();
+
+  if(view === "quick"){
+    document.body.classList.add("sidebar-collapsed-override-off");
+    document.body.classList.remove("sidebar-collapsed");
+    localStorage.setItem("physxSidebarCollapsed", "0");
+    setTimeout(() => {
+      const search = document.getElementById("lessonSearch");
+      if(search) search.focus();
+    }, 120);
+  }
+}
+
+function setActiveTab(tab) {
+  activeTab = tab;
+  renderMap();
+  renderAuthArea();
+}
+
+function updateViewClass() {
+  document.body.classList.remove(
+    "map-view-roadmap",
+    "map-view-quick",
+    "map-view-list",
+    "map-view-card",
+    "map-view-snake",
+    "map-view-compact"
+  );
+
+  document.body.classList.add(`map-view-${mapView}`);
+
+  if(mapView === "quick"){
+    document.body.classList.remove("sidebar-collapsed");
+  }
+}
+
+function toggleSidebar(){
+  document.body.classList.toggle("sidebar-collapsed");
+  const isCollapsed = document.body.classList.contains("sidebar-collapsed");
+  localStorage.setItem("physxSidebarCollapsed", isCollapsed ? "1" : "0");
+  updateSidebarToggleButtons();
+}
+
+function restoreSidebar(){
+  const saved = localStorage.getItem("physxSidebarCollapsed");
+
+  if(saved === null){
+    document.body.classList.add("sidebar-collapsed");
+    localStorage.setItem("physxSidebarCollapsed", "1");
+  }else if(saved === "1"){
+    document.body.classList.add("sidebar-collapsed");
+  }else{
+    document.body.classList.remove("sidebar-collapsed");
+  }
+
+  if(mapView === "quick"){
+    document.body.classList.remove("sidebar-collapsed");
+  }
+
+  updateSidebarToggleButtons();
+}
+
+function updateSidebarToggleButtons(){
+  const isCollapsed = document.body.classList.contains("sidebar-collapsed");
+  document.querySelectorAll(".sidebar-toggle-v2 span").forEach(span => {
+    span.textContent = isCollapsed ? "Ашу" : "Жабу";
+  });
+  document.querySelectorAll(".sidebar-toggle-v2 i").forEach(icon => {
+    icon.className = isCollapsed ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left";
+  });
+}
+
+
+function toggleMapTopBlock(){
+  document.body.classList.toggle("map-top-collapsed");
+  localStorage.setItem("physxMapTopCollapsed", document.body.classList.contains("map-top-collapsed") ? "1" : "0");
+}
+
+function restoreMapTopBlock(){
+  if(localStorage.getItem("physxMapTopCollapsed") === "1"){
+    document.body.classList.add("map-top-collapsed");
+  }
+}
+
+function scrollToLevel(level) {
+  const target = document.getElementById(`level-${level}`);
+  if (!target) {
+    alert("Бұл деңгей бөлімі табылмады!");
+    return;
+  }
+
+  target.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function migrateCompletedLessonsToStars(){
+  const userNow = JSON.parse(localStorage.getItem("physxUser")) || {};
+  const completed = userNow.progress?.lessonsCompleted || [];
+
+  completed.forEach(id => {
+    const normalized = String(id).replaceAll("_", "-");
+    const match = normalized.match(/^(beginner|intermediate|advanced)-lesson-(\d+)$/);
+
+    if(!match) return;
+
+    const levelName = match[1];
+    const lessonNumber = Number(match[2]);
+    const starKey = `${levelName}-lesson-${lessonNumber}-stars`;
+    const oldStarKey = `lesson${lessonNumber}_stars`;
+
+    const existing = Number(localStorage.getItem(starKey) || localStorage.getItem(oldStarKey) || 0);
+
+    if(existing <= 0){
+      localStorage.setItem(starKey, "3");
+      localStorage.setItem(oldStarKey, "3");
+      localStorage.setItem(`${levelName}-lesson-${lessonNumber}-score`, "6");
+      localStorage.setItem(`lesson${lessonNumber}_score`, "6");
+    }
+  });
+}
+
+
+function renderAuthArea(){
+  const authArea = document.getElementById("authArea");
+  if(!authArea) return;
+
+  const savedUser = JSON.parse(localStorage.getItem("physxUser")) || {};
+  const loggedIn = Boolean(savedUser.isLoggedIn || savedUser.name || savedUser.email);
+
+  if(loggedIn){
+    authArea.innerHTML = `
+      <a href="profile.html" class="nav-link profile-link">
+        <i class="fa-solid fa-user"></i> ${isTeacherMode ? "Мұғалім режимі" : "Профиль"}
+      </a>
+    `;
+  }else{
+    authArea.innerHTML = `<a href="login.html" class="nav-link login-link">Кіру</a>`;
+  }
+}
+
+function logoutUser(event){
+  if(event) event.preventDefault();
+
+  const savedUser = JSON.parse(localStorage.getItem("physxUser")) || {};
+  delete savedUser.isLoggedIn;
+  delete savedUser.name;
+  delete savedUser.email;
+
+  localStorage.setItem("physxUser", JSON.stringify(savedUser));
+  window.location.href = "index.html";
+}
+
+function renderMap() {
+  migrateCompletedLessonsToStars();
+
+  const container = document.getElementById("mapPage");
+  container.innerHTML = renderSidebar() + `<section class="map-main">${renderTopMain()}</section>`;
+
+  restoreMapTopBlock();
+  restoreSidebar();
+  updateViewClass();
+  populateQuickFinder();
+
+  localStorage.setItem("physxUser", JSON.stringify(user));
+}
+
+renderMap();
+renderAuthArea();
+
+</script>
+</body>
+</html>

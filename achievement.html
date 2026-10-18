@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhysX - Жетістіктер</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/responsive.css">
+  <style>
+    :root{
+      --blue:#145cff;
+      --blue2:#1ea7ff;
+      --dark:#071b52;
+      --text:#102544;
+      --muted:#64748b;
+      --line:#d7e5f7;
+      --soft:#f7fbff;
+      --bg:#eef5ff;
+      --green:#16b364;
+      --orange:#ff9800;
+      --purple:#7c3aed;
+      --red:#ef4444;
+      --shadow:0 16px 40px rgba(14,54,126,.08);
+      --shadow-sm:0 10px 22px rgba(14,54,126,.06);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family:"Inter","Segoe UI",Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(#d2dff1 1px,transparent 1px),
+        linear-gradient(180deg,#fafdff,#edf5ff 60%,#eff6ff);
+      background-size:28px 28px,100% 100%;
+      overflow-x:hidden;
+    }
+
+    button,input,select,textarea,a,span,div,p,h1,h2,h3,h4,small,b,strong{
+      font-family:"Inter","Segoe UI",Arial,sans-serif;
+    }
+
+    .header{
+      height:56px;
+      background:#fff;
+      border-bottom:1px solid #d6e6fb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 18px rgba(15,23,42,.04);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#0d47a1;
+      text-decoration:none;
+      font-size:26px;
+      font-weight:900;
+    }
+
+    .logo i{font-size:22px}
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:26px;
+    }
+
+    .nav-link{
+      text-decoration:none;
+      color:#0b2f77;
+      font-weight:900;
+      font-size:15px;
+      padding:18px 0;
+      position:relative;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{color:var(--orange)}
+
+    .nav-link.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:5px;
+      height:4px;
+      border-radius:999px;
+      background:var(--orange);
+    }
+
+    .nav-dropdown{position:relative}
+
+    .dropdown-menu{
+      position:absolute;
+      top:48px;
+      left:0;
+      min-width:230px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:10px;
+      display:none;
+      z-index:3000;
+    }
+
+    .nav-dropdown:hover .dropdown-menu{display:block}
+
+    .dropdown-menu a{
+      display:block;
+      padding:11px 12px;
+      border-radius:11px;
+      color:#071837;
+      text-decoration:none;
+      font-weight:800;
+      font-size:14px;
+    }
+
+    .dropdown-menu a:hover{
+      background:#eef6ff;
+      color:#0d47a1;
+    }
+
+    .login-link,
+    .profile-link{
+      background:#145cff;
+      color:#fff!important;
+      padding:12px 20px!important;
+      border-radius:12px;
+    }
+
+    .login-link::after,
+    .profile-link::after{display:none!important}
+
+    .ach-page{
+      width:min(100% - 26px,1280px);
+      margin:0 auto;
+      padding:14px 0 38px;
+    }
+
+    .card{
+      background:rgba(255,255,255,.97);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero{
+      position:relative;
+      min-height:138px;
+      padding:20px 22px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 345px;
+      gap:18px;
+      align-items:center;
+      margin-bottom:14px;
+      overflow:hidden;
+      isolation:isolate;
+      background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(248,252,255,.98));
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:url("image/achivment/жеңіс_пен_білімге_арналған_жеңіл_дизайн.png") center/cover no-repeat;
+      opacity:.22;
+      z-index:-2;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(90deg,rgba(255,255,255,.96) 0%,rgba(255,255,255,.90) 42%,rgba(243,249,255,.78) 100%);
+      z-index:-1;
+    }
+
+    .hero-left{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      min-width:0;
+    }
+
+    .hero-icon{
+      width:72px;
+      height:72px;
+      border-radius:24px;
+      background:#fff;
+      border:1px solid #e3ecf8;
+      box-shadow:var(--shadow-sm);
+      flex-shrink:0;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+
+    .hero-icon img{
+      width:86%;
+      height:86%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .hero-title h1{
+      margin:0 0 10px;
+      color:var(--dark);
+      font-size:34px;
+      line-height:1.02;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .hero-title p{
+      margin:0;
+      color:#5c708d;
+      font-size:14px;
+      font-weight:750;
+      line-height:1.55;
+      max-width:720px;
+    }
+
+    .rank-card{
+      min-height:106px;
+      border-radius:22px;
+      padding:18px;
+      color:#fff;
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg,#145cff,#1ea7ff);
+      box-shadow:0 18px 32px rgba(20,92,255,.18);
+      isolation:isolate;
+    }
+
+    .rank-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:url("image/achivment/жарық_сиялы_ui_панелі.png") center/cover no-repeat;
+      opacity:.42;
+      z-index:-2;
+      mix-blend-mode:screen;
+    }
+
+    .rank-card::after{
+      content:"";
+      position:absolute;
+      right:-8px;
+      bottom:-10px;
+      width:142px;
+      height:142px;
+      background:url("image/achivment/алтын_жүлде_кубогы.png") center/contain no-repeat;
+      opacity:.35;
+      z-index:-1;
+      filter:drop-shadow(0 8px 18px rgba(255,255,255,.18));
+    }
+
+    .rank-card b{
+      display:block;
+      font-size:12px;
+      margin-bottom:8px;
+      opacity:.98;
+    }
+
+    .rank-card strong{
+      display:block;
+      font-size:28px;
+      font-weight:900;
+      line-height:1.02;
+      margin-bottom:10px;
+      max-width:220px;
+    }
+
+    .rank-progress{
+      height:7px;
+      width:190px;
+      border-radius:999px;
+      background:rgba(255,255,255,.22);
+      overflow:hidden;
+      margin-bottom:7px;
+    }
+
+    .rank-progress div{
+      height:100%;
+      width:0;
+      background:#fff;
+      border-radius:999px;
+      transition:width .35s ease;
+    }
+
+    .rank-card span{
+      font-size:11px;
+      font-weight:800;
+      opacity:.96;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .stat{
+      min-height:96px;
+      padding:14px 16px;
+      display:grid;
+      grid-template-columns:56px minmax(0,1fr);
+      gap:12px;
+      align-items:center;
+      border-radius:22px;
+      background:linear-gradient(180deg,#fff,#fbfdff);
+    }
+
+    .stat-icon{
+      width:56px;
+      height:56px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      background:#f8fbff;
+      border:1px solid #e8eff8;
+      box-shadow:0 10px 20px rgba(14,54,126,.06);
+    }
+
+    .stat-icon img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .stat h3{
+      margin:0 0 3px;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .stat strong{
+      display:block;
+      color:var(--dark);
+      font-size:24px;
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .stat small{
+      display:block;
+      margin-top:5px;
+      color:#64748b;
+      font-size:10.8px;
+      font-weight:800;
+    }
+
+    .main-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.12fr) minmax(340px,.88fr);
+      gap:14px;
+      align-items:start;
+    }
+
+    .section-card{
+      padding:18px;
+      margin-bottom:14px;
+      overflow:hidden;
+      background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(251,253,255,.98));
+    }
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      color:var(--dark);
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .pill{
+      min-height:32px;
+      padding:0 12px;
+      border-radius:999px;
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:#145cff;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      font-size:11.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .badge-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .badge-card{
+      min-height:170px;
+      border:1px solid #dbe7f5;
+      border-radius:20px;
+      background:linear-gradient(135deg,#fff,#f8fbff);
+      padding:15px;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      transition:.25s ease;
+    }
+
+    .badge-card:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--shadow-sm);
+    }
+
+    .badge-card.locked{
+      opacity:.82;
+      background:linear-gradient(135deg,#f8fafc,#fff);
+    }
+
+    .badge-card.earned{
+      border-color:#bbf7d0;
+      background:linear-gradient(135deg,#ecfdf5,#fff);
+    }
+
+    .badge-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+    }
+
+    .badge-icon{
+      width:50px;
+      height:50px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:20px;
+      box-shadow:0 12px 22px rgba(15,23,42,.08);
+    }
+
+    .i-blue{background:#145cff}
+    .i-green{background:#12b76a}
+    .i-orange{background:#f59e0b}
+    .i-purple{background:#7c3aed}
+    .i-red{background:#ef4444}
+
+    .badge-state{
+      height:28px;
+      padding:0 10px;
+      border-radius:999px;
+      background:#ecfdf5;
+      border:1px solid #bbf7d0;
+      color:#059669;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:10.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .badge-card.locked .badge-state{
+      background:#f1f5f9;
+      border-color:#e2e8f0;
+      color:#64748b;
+    }
+
+    .badge-card h3{
+      margin:12px 0 6px;
+      color:var(--dark);
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .badge-card p{
+      margin:0;
+      color:#64748b;
+      font-size:11.8px;
+      line-height:1.45;
+      font-weight:750;
+    }
+
+    .badge-progress{
+      margin-top:12px;
+      height:8px;
+      border-radius:999px;
+      background:#e8eef7;
+      overflow:hidden;
+    }
+
+    .badge-progress div{
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,#145cff,#12b76a);
+    }
+
+    .level-card{
+      border:1px solid #bbf7d0;
+      background:linear-gradient(135deg,#ecfdf5,#fff);
+      border-radius:22px;
+      padding:16px;
+      margin-bottom:14px;
+      box-shadow:var(--shadow-sm);
+    }
+
+    .level-card h3{
+      margin:0 0 8px;
+      color:#065f46;
+      font-size:17px;
+      font-weight:900;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .level-card p{
+      margin:0 0 10px;
+      color:#166534;
+      font-size:12px;
+      line-height:1.45;
+      font-weight:800;
+    }
+
+    .meter{
+      height:8px;
+      background:#dbe7f5;
+      border-radius:999px;
+      overflow:hidden;
+      margin-bottom:10px;
+    }
+
+    .meter div{
+      height:100%;
+      width:0;
+      background:linear-gradient(90deg,#145cff,#12b76a);
+      border-radius:999px;
+      transition:width .35s ease;
+    }
+
+    .mini-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .mini{
+      height:28px;
+      padding:0 9px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #dbe7f5;
+      color:#334155;
+      font-size:10.5px;
+      font-weight:900;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .mini.ok{background:#ecfdf5;border-color:#bbf7d0;color:#059669}
+    .mini.warn{background:#fff7ed;border-color:#fed7aa;color:#ea580c}
+
+    .rank-list,
+    .timeline{
+      display:grid;
+      gap:10px;
+    }
+
+    .rank-item{
+      min-height:56px;
+      border:1px solid #dbe7f5;
+      border-radius:16px;
+      background:#f8fbff;
+      padding:10px 11px;
+      display:grid;
+      grid-template-columns:36px minmax(0,1fr) auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .rank-place,
+    .timeline-icon{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .rank-place{background:#eff6ff;color:#145cff}
+
+    .rank-item.me{
+      border-color:#bfdbfe;
+      background:linear-gradient(135deg,#eff6ff,#fff);
+    }
+
+    .rank-name b,
+    .timeline-item b{
+      display:block;
+      margin-bottom:3px;
+      color:var(--dark);
+      font-size:12.8px;
+      font-weight:900;
+    }
+
+    .rank-name span,
+    .timeline-item span{
+      color:#64748b;
+      font-size:10.9px;
+      font-weight:750;
+    }
+
+    .rank-xp{
+      height:30px;
+      padding:0 10px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #dbe7f5;
+      color:#334155;
+      display:flex;
+      align-items:center;
+      font-size:10.8px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .timeline-item{
+      min-height:52px;
+      display:grid;
+      grid-template-columns:36px minmax(0,1fr);
+      gap:10px;
+      align-items:center;
+      border:1px solid #dbe7f5;
+      border-radius:16px;
+      background:#f8fbff;
+      padding:10px;
+    }
+
+    .cert-card{
+      border:1px solid #fed7aa;
+      background:linear-gradient(135deg,#fff7ed,#fff);
+      border-radius:20px;
+      padding:15px;
+      display:grid;
+      grid-template-columns:48px minmax(0,1fr) auto;
+      gap:12px;
+      align-items:center;
+    }
+
+    .cert-icon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:#f59e0b;
+      color:#fff;
+      font-size:20px;
+      box-shadow:0 12px 22px rgba(245,158,11,.16);
+    }
+
+    .cert-card h3{
+      margin:0 0 4px;
+      color:#7c2d12;
+      font-size:14px;
+      font-weight:900;
+    }
+
+    .cert-card p{
+      margin:0;
+      color:#9a3412;
+      font-size:11.5px;
+      line-height:1.4;
+      font-weight:750;
+    }
+
+    .cert-btn{
+      height:36px;
+      padding:0 13px;
+      border-radius:12px;
+      background:#f59e0b;
+      color:#fff;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      gap:7px;
+      font-size:11.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    @media(max-width:1080px){
+      .hero,
+      .main-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .rank-card{max-width:420px}
+    }
+
+    @media(max-width:760px){
+      .header{padding:0 14px}
+      .nav{gap:14px;overflow-x:auto}
+      .hero-left{align-items:flex-start}
+      .hero-title h1{font-size:28px}
+      .stats-grid,
+      .badge-grid{grid-template-columns:1fr}
+      .stat{grid-template-columns:50px minmax(0,1fr)}
+      .stat-icon{width:50px;height:50px}
+      .cert-card{grid-template-columns:48px minmax(0,1fr)}
+      .cert-btn{grid-column:2;width:max-content}
+    }
+  </style>
+
+  <style>
+    /* ==================================================
+       ACHIVMENT FOLDER UPDATE
+       image/achivment ішіндегі жетістікке арналған фондар
+    ================================================== */
+
+    .hero{
+      min-height:220px !important;
+      padding:30px 32px !important;
+      grid-template-columns:minmax(0,1fr) 380px !important;
+      border-radius:30px !important;
+      overflow:hidden !important;
+      box-shadow:0 24px 56px rgba(13,71,161,.10) !important;
+      border:1px solid rgba(207,224,244,.75) !important;
+    }
+
+    .hero::before{
+      background:url("image/achivment/achivment-hero-bg.png") center center / cover no-repeat !important;
+      opacity:1 !important;
+      filter:brightness(1.05) saturate(1.12) contrast(1.04) !important;
+    }
+
+    .hero::after{
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,.92) 0%,
+          rgba(255,255,255,.78) 38%,
+          rgba(255,255,255,.34) 72%,
+          rgba(255,255,255,.14) 100%
+        ) !important;
+    }
+
+    .hero-title h1{
+      text-shadow:0 2px 8px rgba(255,255,255,.65) !important;
+    }
+
+    .hero-title p{
+      color:#334155 !important;
+      font-weight:800 !important;
+      text-shadow:0 1px 3px rgba(255,255,255,.60) !important;
+    }
+
+    .hero-icon{
+      background:rgba(255,255,255,.62) !important;
+      border:1px solid rgba(255,255,255,.78) !important;
+      backdrop-filter:blur(12px) !important;
+      -webkit-backdrop-filter:blur(12px) !important;
+      box-shadow:0 14px 28px rgba(13,71,161,.08) !important;
+    }
+
+    .rank-card{
+      background:
+        linear-gradient(135deg,rgba(20,92,255,.92),rgba(30,167,255,.78)),
+        url("image/achivment/achivment-podium-bg.png") center center / cover no-repeat !important;
+      border:1px solid rgba(255,255,255,.36) !important;
+      box-shadow:0 18px 36px rgba(20,92,255,.18) !important;
+    }
+
+    .rank-card::before{
+      background:url("image/achivment/achivment-section-bg.png") center/cover no-repeat !important;
+      opacity:.18 !important;
+      mix-blend-mode:screen !important;
+    }
+
+    .rank-card::after{
+      background:url("image/achivment/алтын_жүлде_кубогы.png") center/contain no-repeat !important;
+      opacity:.28 !important;
+    }
+
+    .stat{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,.48)),
+        url("image/achivment/achivment-section-bg.png") center center / cover no-repeat !important;
+      border:1px solid rgba(255,255,255,.82) !important;
+      backdrop-filter:blur(12px) !important;
+      -webkit-backdrop-filter:blur(12px) !important;
+    }
+
+    .section-card{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.54)),
+        url("image/achivment/achivment-section-bg.png") center center / cover no-repeat !important;
+      border:1px solid rgba(255,255,255,.80) !important;
+      backdrop-filter:blur(12px) !important;
+      -webkit-backdrop-filter:blur(12px) !important;
+      box-shadow:0 16px 34px rgba(13,71,161,.08) !important;
+    }
+
+    .badge-card{
+      background:rgba(255,255,255,.66) !important;
+      border:1px solid rgba(255,255,255,.82) !important;
+      backdrop-filter:blur(10px) !important;
+      -webkit-backdrop-filter:blur(10px) !important;
+    }
+
+    .badge-card.earned{
+      background:rgba(255,250,240,.72) !important;
+      border-color:rgba(254,215,170,.92) !important;
+    }
+
+    .level-card{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.48)),
+        url("image/achivment/achivment-road-bg.png") center center / cover no-repeat !important;
+      border:1px solid rgba(255,255,255,.82) !important;
+      backdrop-filter:blur(12px) !important;
+      -webkit-backdrop-filter:blur(12px) !important;
+    }
+
+    .cert-card{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,255,255,.52)),
+        url("image/achivment/achivment-podium-bg.png") center center / cover no-repeat !important;
+      border:1px solid rgba(255,255,255,.82) !important;
+      backdrop-filter:blur(12px) !important;
+      -webkit-backdrop-filter:blur(12px) !important;
+    }
+
+    .rank-item,
+    .timeline-item{
+      background:rgba(255,255,255,.66) !important;
+      border:1px solid rgba(255,255,255,.82) !important;
+      backdrop-filter:blur(10px) !important;
+      -webkit-backdrop-filter:blur(10px) !important;
+    }
+
+    @media(max-width:980px){
+      .hero{
+        grid-template-columns:1fr !important;
+      }
+    }
+  </style>
+
+
+<style id="achievement-final-clean-inline">
+/* ==================================================
+   ACHIEVEMENT PAGE FINAL CLEAN FIX
+   Жетістіктер беті — таза, анық, марапат стилі
+================================================== */
+
+/* Hero біртұтас баннер сияқты болсын */
+.hero{
+  min-height:230px !important;
+  padding:34px 38px !important;
+  border-radius:34px !important;
+  grid-template-columns:minmax(0,1fr) 360px !important;
+  background:transparent !important;
+  border:1px solid rgba(191,219,254,.70) !important;
+  box-shadow:0 24px 60px rgba(13,71,161,.12) !important;
+}
+
+.hero::before{
+  background:url("image/achivment/achivment-hero-bg.png") center center / cover no-repeat !important;
+  opacity:1 !important;
+  filter:brightness(1.08) saturate(1.18) contrast(1.06) !important;
+}
+
+.hero::after{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.92) 0%,
+      rgba(255,255,255,.78) 38%,
+      rgba(255,255,255,.32) 72%,
+      rgba(255,255,255,.10) 100%
+    ) !important;
+}
+
+/* Сол жақ иконканы таза кубок белгісі қыламыз */
+.hero-icon{
+  width:82px !important;
+  height:82px !important;
+  border-radius:26px !important;
+  background:linear-gradient(135deg,#f59e0b,#facc15) !important;
+  border:1px solid rgba(255,255,255,.75) !important;
+  box-shadow:0 18px 36px rgba(245,158,11,.22) !important;
+}
+
+.hero-icon img{
+  display:none !important;
+}
+
+.hero-icon::before{
+  content:"\f091";
+  font-family:"Font Awesome 6 Free";
+  font-weight:900;
+  color:#ffffff;
+  font-size:34px;
+}
+
+/* Hero мәтінін күшейту */
+.hero-title h1{
+  font-size:48px !important;
+  line-height:1 !important;
+  color:#061b55 !important;
+  letter-spacing:-.06em !important;
+  text-shadow:0 2px 8px rgba(255,255,255,.75) !important;
+}
+
+.hero-title p{
+  max-width:720px !important;
+  color:#26364f !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1.55 !important;
+  text-shadow:0 1px 3px rgba(255,255,255,.70) !important;
+}
+
+/* Қазіргі дәреже карточкасын жинақы әрі премиум қылу */
+.rank-card{
+  min-height:135px !important;
+  border-radius:26px !important;
+  padding:22px !important;
+  background:
+    linear-gradient(135deg,rgba(20,92,255,.92),rgba(30,167,255,.70)),
+    url("image/achivment/achivment-podium-bg.png") center center / cover no-repeat !important;
+  border:1px solid rgba(255,255,255,.48) !important;
+  box-shadow:0 20px 42px rgba(20,92,255,.20) !important;
+}
+
+.rank-card strong{
+  font-size:28px !important;
+  letter-spacing:-.04em !important;
+}
+
+.rank-card::after{
+  opacity:.22 !important;
+}
+
+/* Статистика карточкалары — фон қайталанбасын */
+.stat{
+  min-height:108px !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.78) !important;
+  border:1px solid rgba(255,255,255,.82) !important;
+  backdrop-filter:blur(14px) saturate(1.12) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.12) !important;
+  box-shadow:0 16px 34px rgba(13,71,161,.08) !important;
+}
+
+/* Статистика иконкалары таза */
+.stat-icon{
+  background:linear-gradient(135deg,#145cff,#1ea7ff) !important;
+}
+
+.stats-grid .stat:nth-child(2) .stat-icon{
+  background:linear-gradient(135deg,#f59e0b,#facc15) !important;
+}
+
+.stats-grid .stat:nth-child(3) .stat-icon{
+  background:linear-gradient(135deg,#f97316,#fb7185) !important;
+}
+
+.stats-grid .stat:nth-child(4) .stat-icon{
+  background:linear-gradient(135deg,#7c3aed,#145cff) !important;
+}
+
+/* Марапаттар блогының фонын тыныштандыру */
+.section-card{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.84),
+      rgba(255,255,255,.64)
+    ),
+    url("image/achivment/achivment-section-bg.png") center center / cover no-repeat !important;
+  border:1px solid rgba(255,255,255,.82) !important;
+}
+
+/* Badge карточкалары оқылатын болсын */
+.badge-card{
+  background:rgba(255,255,255,.74) !important;
+  border:1px solid rgba(255,255,255,.86) !important;
+  box-shadow:0 12px 26px rgba(13,71,161,.07) !important;
+}
+
+.badge-card.earned{
+  background:
+    linear-gradient(180deg,rgba(255,251,235,.86),rgba(255,255,255,.74)) !important;
+  border-color:rgba(245,158,11,.42) !important;
+}
+
+/* Мәтіндер анық */
+.section-head h2,
+.badge-card h3,
+.rank-name b,
+.timeline-item b{
+  color:#061b55 !important;
+  text-shadow:0 1px 3px rgba(255,255,255,.72) !important;
+}
+
+.badge-card p,
+.rank-name span,
+.timeline-item span{
+  color:#475569 !important;
+  font-weight:800 !important;
+}
+
+/* Деңгей прогресі блогы жетістік жолы сияқты */
+.level-card{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.76),
+      rgba(255,255,255,.54)
+    ),
+    url("image/achivment/achivment-road-bg.png") center center / cover no-repeat !important;
+  border:1px solid rgba(255,255,255,.82) !important;
+}
+
+/* Рейтинг және журнал карточкалары таза */
+.rank-item,
+.timeline-item{
+  background:rgba(255,255,255,.72) !important;
+  border:1px solid rgba(255,255,255,.86) !important;
+}
+
+/* Жалпы аралық сәл кеңірек */
+.stats-grid{
+  margin-top:2px !important;
+  margin-bottom:16px !important;
+}
+
+.main-grid{
+  gap:18px !important;
+}
+
+@media(max-width:980px){
+  .hero{
+    grid-template-columns:1fr !important;
+    padding:26px 22px !important;
+  }
+
+  .hero-title h1{
+    font-size:38px !important;
+  }
+}
+</style>
+
+
+<style id="profile-dropdown-clean-final">
+/* ==================================================
+   PROFILE DROPDOWN CLEAN
+   Профиль батырмасы енді dropdown ашпайды, жеке бетке өтеді
+================================================== */
+
+#authArea .nav-dropdown,
+#authArea .dropdown-menu{
+  display:none !important;
+}
+
+#authArea .profile-link{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  background:#145cff !important;
+  color:#ffffff !important;
+  padding:11px 18px !important;
+  border-radius:13px !important;
+  box-shadow:0 12px 24px rgba(20,92,255,.18) !important;
+}
+
+#authArea .profile-link::after{
+  display:none !important;
+}
+
+/* ==================================================
+   PROFILE PANEL INSIDE PAGE
+   Бұрын dropdown-да тұрған бөлімдер профильдің ішіне кірді
+================================================== */
+
+.profile-open-card{
+  margin-bottom:14px !important;
+  padding:16px 18px !important;
+  border-radius:24px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:16px !important;
+  align-items:center !important;
+
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.58)),
+    url("image/achivment/achivment-section-bg.png") center center / cover no-repeat !important;
+
+  border:1px solid rgba(255,255,255,.82) !important;
+  box-shadow:0 16px 34px rgba(13,71,161,.08) !important;
+  backdrop-filter:blur(14px) saturate(1.12) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.12) !important;
+}
+
+.profile-mini-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
+.profile-avatar{
+  width:58px;
+  height:58px;
+  border-radius:19px;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+
+  background:linear-gradient(135deg,#145cff,#1ea7ff);
+  color:#fff;
+  font-size:24px;
+
+  box-shadow:0 14px 28px rgba(20,92,255,.18);
+  border:1px solid rgba(255,255,255,.62);
+}
+
+.profile-mini-left h2{
+  margin:0 0 4px;
+  color:#061b55;
+  font-size:21px;
+  line-height:1.1;
+  font-weight:900;
+  letter-spacing:-.04em;
+  text-shadow:0 1px 3px rgba(255,255,255,.70);
+}
+
+.profile-mini-left p{
+  margin:0;
+  color:#475569;
+  font-size:12.5px;
+  line-height:1.45;
+  font-weight:800;
+}
+
+.profile-mini-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+.profile-action-btn{
+  min-height:38px;
+  padding:0 13px;
+  border-radius:13px;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(255,255,255,.88);
+  color:#145cff;
+  text-decoration:none;
+
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 10px 20px rgba(13,71,161,.06);
+}
+
+.profile-action-btn:hover{
+  transform:translateY(-1px);
+}
+
+.profile-action-btn.danger{
+  color:#ef4444;
+}
+
+@media(max-width:820px){
+  .profile-open-card{
+    grid-template-columns:1fr !important;
+  }
+
+  .profile-mini-actions{
+    justify-content:flex-start;
+  }
+}
+</style>
+
+
+  <style id="remove-achievement-dropdown-final">
+    /* Жетістіктер dropdown толық өшірілді */
+    .nav-dropdown,
+    .dropdown-menu{
+      display:none !important;
+    }
+
+    .nav-link.active{
+      color:var(--orange) !important;
+    }
+
+    .nav-link.active::after{
+      display:block !important;
+    }
+
+    .profile-link{
+      background:transparent !important;
+      color:#0b2f77 !important;
+      padding:18px 0 !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+    }
+
+    .profile-link::after{
+      display:none !important;
+    }
+  </style>
+
+
+<style id="achievement-hero-practice-style-final">
+/* ==================================================
+   ACHIEVEMENT HERO — PRACTICE STYLE
+   Артқы фон анық көрінсін, мәтін сол жақ glass-блок ішінде болсын
+================================================== */
+
+.hero{
+  min-height:255px !important;
+  padding:24px 28px !important;
+  border-radius:30px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 370px !important;
+  gap:22px !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  position:relative !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7,27,82,.18) 0%,
+      rgba(20,92,255,.10) 45%,
+      rgba(255,255,255,.04) 100%
+    ),
+    url("image/achivment/achivment-hero-bg.png") center center / cover no-repeat !important;
+
+  border:1px solid rgba(191,219,254,.70) !important;
+  box-shadow:0 24px 60px rgba(13,71,161,.12) !important;
+}
+
+/* Бұрынғы ақ қабат фонды жауып тұрды — өшіреміз */
+.hero::before,
+.hero::after{
+  display:none !important;
+}
+
+/* Сол жақ мәтінді practice бөліміндей ішкі панельге енгізу */
+.hero-left{
+  min-height:178px !important;
+  max-width:650px !important;
+  padding:26px 28px !important;
+  border-radius:26px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:20px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5,28,93,.92),
+      rgba(13,71,161,.74)
+    ) !important;
+
+  border:1px solid rgba(255,255,255,.24) !important;
+  box-shadow:0 20px 44px rgba(7,27,82,.22) !important;
+  backdrop-filter:blur(10px) saturate(1.05) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.05) !important;
+}
+
+.hero-icon{
+  width:78px !important;
+  height:78px !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.16) !important;
+  border:1px solid rgba(255,255,255,.30) !important;
+  box-shadow:0 14px 28px rgba(0,0,0,.10) !important;
+}
+
+.hero-icon img{
+  display:none !important;
+}
+
+.hero-icon::before{
+  content:"\f091" !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+  color:#fbbf24 !important;
+  font-size:36px !important;
+}
+
+.hero-title h1{
+  color:#ffffff !important;
+  font-size:42px !important;
+  line-height:1.02 !important;
+  letter-spacing:-.055em !important;
+  margin:0 0 10px !important;
+  text-shadow:0 3px 14px rgba(0,0,0,.22) !important;
+}
+
+.hero-title p{
+  color:rgba(255,255,255,.92) !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+  font-weight:850 !important;
+  max-width:560px !important;
+  margin:0 !important;
+  text-shadow:0 2px 10px rgba(0,0,0,.20) !important;
+}
+
+/* Оң жақ дәреже карточкасы фонның үстінде мөлдір glass болсын */
+.rank-card{
+  min-height:150px !important;
+  border-radius:28px !important;
+  padding:24px !important;
+  color:#fff !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(20,92,255,.74),
+      rgba(30,167,255,.42)
+    ) !important;
+
+  border:1px solid rgba(255,255,255,.34) !important;
+  box-shadow:0 22px 46px rgba(20,92,255,.18) !important;
+  backdrop-filter:blur(10px) saturate(1.12) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.12) !important;
+}
+
+.rank-card::before{
+  display:none !important;
+}
+
+.rank-card::after{
+  background:url("image/achivment/алтын_жүлде_кубогы.png") center/contain no-repeat !important;
+  opacity:.24 !important;
+  right:-18px !important;
+  bottom:-24px !important;
+  width:160px !important;
+  height:160px !important;
+}
+
+.rank-card b{
+  font-size:12px !important;
+  font-weight:900 !important;
+  opacity:.95 !important;
+}
+
+.rank-card strong{
+  font-size:30px !important;
+  line-height:1.03 !important;
+  letter-spacing:-.045em !important;
+  text-shadow:0 3px 12px rgba(0,0,0,.15) !important;
+}
+
+.rank-progress{
+  background:rgba(255,255,255,.24) !important;
+}
+
+.rank-progress div{
+  background:#ffffff !important;
+}
+
+.rank-card span{
+  color:rgba(255,255,255,.92) !important;
+}
+
+/* Nav profile clean */
+.profile-link,
+#authArea .profile-link,
+.login-link{
+  background:transparent !important;
+  color:#0b2f77 !important;
+  padding:18px 0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+}
+
+.profile-link i,
+#authArea .profile-link i{
+  color:#0b2f77 !important;
+  font-size:14px !important;
+}
+
+.profile-link:hover,
+.profile-link:hover i,
+#authArea .profile-link:hover,
+#authArea .profile-link:hover i{
+  color:#145cff !important;
+}
+
+.profile-link::after,
+#authArea .profile-link::after,
+.login-link::after{
+  display:none !important;
+}
+
+@media(max-width:980px){
+  .hero{
+    grid-template-columns:1fr !important;
+    padding:20px !important;
+  }
+
+  .hero-left{
+    max-width:100% !important;
+  }
+
+  .rank-card{
+    max-width:100% !important;
+  }
+}
+
+@media(max-width:640px){
+  .hero-left{
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    padding:22px !important;
+  }
+
+  .hero-title h1{
+    font-size:34px !important;
+  }
+}
+</style>
+
+
+<style id="achievement-rank-inside-hero-final">
+/* ==================================================
+   RANK INSIDE ACHIEVEMENT HERO
+   Қазіргі дәреже бөлек тұрмайды, Жетістіктер блогының ішіне кіреді
+================================================== */
+
+.hero{
+  min-height:255px !important;
+  padding:24px 28px !important;
+  border-radius:30px !important;
+  display:block !important;
+  overflow:hidden !important;
+  position:relative !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7,27,82,.12) 0%,
+      rgba(20,92,255,.08) 45%,
+      rgba(255,255,255,.02) 100%
+    ),
+    url("image/achivment/achivment-hero-bg.png") center center / cover no-repeat !important;
+
+  border:1px solid rgba(191,219,254,.70) !important;
+  box-shadow:0 24px 60px rgba(13,71,161,.12) !important;
+}
+
+/* Фонды жауып тұрған қабаттарды өшіру */
+.hero::before,
+.hero::after{
+  display:none !important;
+}
+
+/* Оң жақтағы бөлек дәреже карточкасын алып тастаймыз */
+.hero > .rank-card{
+  display:none !important;
+}
+
+/* Жетістіктер блогы енді ішкі ақпаратпен толық болады */
+.hero-left{
+  min-height:188px !important;
+  max-width:760px !important;
+  padding:26px 28px !important;
+  border-radius:28px !important;
+  display:grid !important;
+  grid-template-columns:78px minmax(0,1fr) 285px !important;
+  gap:20px !important;
+  align-items:center !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5,28,93,.92),
+      rgba(13,71,161,.74)
+    ) !important;
+
+  border:1px solid rgba(255,255,255,.24) !important;
+  box-shadow:0 22px 48px rgba(7,27,82,.24) !important;
+  backdrop-filter:blur(10px) saturate(1.05) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.05) !important;
+}
+
+.hero-icon{
+  width:78px !important;
+  height:78px !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.16) !important;
+  border:1px solid rgba(255,255,255,.30) !important;
+  box-shadow:0 14px 28px rgba(0,0,0,.10) !important;
+}
+
+.hero-icon img{
+  display:none !important;
+}
+
+.hero-icon::before{
+  content:"\f091" !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+  color:#fbbf24 !important;
+  font-size:36px !important;
+}
+
+.hero-title h1{
+  color:#ffffff !important;
+  font-size:42px !important;
+  line-height:1.02 !important;
+  letter-spacing:-.055em !important;
+  margin:0 0 10px !important;
+  text-shadow:0 3px 14px rgba(0,0,0,.22) !important;
+}
+
+.hero-title p{
+  color:rgba(255,255,255,.92) !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+  font-weight:850 !important;
+  max-width:520px !important;
+  margin:0 !important;
+  text-shadow:0 2px 10px rgba(0,0,0,.20) !important;
+}
+
+/* Ішіндегі дәреже карточкасы */
+.hero-rank-mini{
+  min-height:126px;
+  padding:16px;
+  border-radius:22px;
+  display:grid;
+  grid-template-columns:48px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.20),rgba(255,255,255,.09)) !important;
+
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 16px 34px rgba(0,0,0,.10);
+  backdrop-filter:blur(12px) saturate(1.12);
+  -webkit-backdrop-filter:blur(12px) saturate(1.12);
+}
+
+.hero-rank-icon{
+  width:48px;
+  height:48px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.28);
+  color:#fbbf24;
+  font-size:20px;
+}
+
+.hero-rank-info span{
+  display:block;
+  color:rgba(255,255,255,.78);
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+
+.hero-rank-info strong{
+  display:block;
+  color:#ffffff;
+  font-size:20px;
+  line-height:1.08;
+  font-weight:900;
+  letter-spacing:-.035em;
+  margin-bottom:9px;
+  text-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+
+.hero-rank-progress{
+  height:7px;
+  width:100%;
+  border-radius:999px;
+  background:rgba(255,255,255,.22);
+  overflow:hidden;
+  margin-bottom:7px;
+}
+
+.hero-rank-progress div{
+  height:100%;
+  width:0;
+  background:#ffffff;
+  border-radius:999px;
+  transition:width .35s ease;
+}
+
+.hero-rank-info small{
+  color:rgba(255,255,255,.86);
+  font-size:10.5px;
+  font-weight:850;
+}
+
+/* Hero фоны анықтау көрінуі үшін блок сол жақта ғана тұрсын */
+@media(max-width:1100px){
+  .hero-left{
+    max-width:100% !important;
+    grid-template-columns:78px minmax(0,1fr) !important;
+  }
+
+  .hero-rank-mini{
+    grid-column:1 / -1;
+  }
+}
+
+@media(max-width:640px){
+  .hero{
+    padding:20px !important;
+  }
+
+  .hero-left{
+    grid-template-columns:1fr !important;
+    padding:22px !important;
+  }
+
+  .hero-title h1{
+    font-size:34px !important;
+  }
+}
+</style>
+
+
+<style id="achievement-full-hero-image-final">
+/* ==================================================
+   HERO IMAGE FULL VIEW
+   Оң жақтағы фон сурет толық көрінсін
+================================================== */
+
+.hero{
+  min-height:255px !important;
+  border-radius:30px !important;
+  overflow:hidden !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.22) 0%,
+      rgba(255,255,255,.10) 42%,
+      rgba(255,255,255,.00) 100%
+    ),
+    url("image/achivment/achivment-hero-bg.png") right center / auto 100% no-repeat !important;
+
+  background-color:#eaf6ff !important;
+}
+
+/* Фонды crop қылып тұрған бұрынғы қабаттар өшеді */
+.hero::before,
+.hero::after{
+  display:none !important;
+}
+
+/* Сол жақ блоктың ені шектеледі, оң жақ суретті жаппайды */
+.hero-left{
+  max-width:760px !important;
+}
+
+/* Ішкі дәреже карточкасы өте оңға шықпасын */
+.hero-rank-mini{
+  max-width:285px !important;
+}
+
+/* Экран тарылса сурет қайтадан cover емес, жоғарыдан толықтау көрінсін */
+@media(max-width:1100px){
+  .hero{
+    background:
+      linear-gradient(
+        90deg,
+        rgba(255,255,255,.18),
+        rgba(255,255,255,.06)
+      ),
+      url("image/achivment/achivment-hero-bg.png") right center / auto 100% no-repeat !important;
+  }
+}
+
+@media(max-width:760px){
+  .hero{
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255,255,255,.12),
+        rgba(255,255,255,.04)
+      ),
+      url("image/achivment/achivment-hero-bg.png") center center / auto 100% no-repeat !important;
+  }
+}
+</style>
+
+
+<style id="certificate-image-clear-final">
+/* ==================================================
+   CERTIFICATE CARD IMAGE CLEAR
+   Сертификат ішіндегі фон суреті анық көрінсін
+================================================== */
+
+.cert-card{
+  min-height:78px !important;
+  border-radius:22px !important;
+  padding:16px 18px !important;
+  overflow:hidden !important;
+  position:relative !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.64) 0%,
+      rgba(255,255,255,.38) 44%,
+      rgba(255,255,255,.14) 100%
+    ),
+    url("image/achivment/achivment-podium-bg.png") center center / cover no-repeat !important;
+
+  border:1px solid rgba(254,215,170,.82) !important;
+  box-shadow:0 16px 34px rgba(245,158,11,.10) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+/* Бұрын фонды тұмшалап тұрған ақ/blur әсерін азайтамыз */
+.cert-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 78% 45%,rgba(245,158,11,.18),transparent 28%),
+    linear-gradient(90deg,rgba(255,255,255,.08),rgba(255,255,255,0));
+  pointer-events:none;
+  z-index:0;
+}
+
+.cert-card > *{
+  position:relative;
+  z-index:1;
+}
+
+.cert-icon{
+  background:linear-gradient(135deg,#f59e0b,#facc15) !important;
+  box-shadow:0 14px 28px rgba(245,158,11,.20) !important;
+}
+
+.cert-card h3{
+  color:#7c2d12 !important;
+  font-weight:900 !important;
+  text-shadow:0 1px 3px rgba(255,255,255,.72) !important;
+}
+
+.cert-card p{
+  color:#9a3412 !important;
+  font-weight:850 !important;
+  text-shadow:0 1px 3px rgba(255,255,255,.68) !important;
+}
+
+.cert-btn{
+  background:#f59e0b !important;
+  color:#ffffff !important;
+  box-shadow:0 12px 24px rgba(245,158,11,.18) !important;
+}
+
+/* Сертификат тұрған section-card-тағы ақ қабатты да аздап жеңілдету */
+.section-card:has(.cert-card){
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.70),
+      rgba(255,255,255,.48)
+    ),
+    url("image/achivment/achivment-section-bg.png") center center / cover no-repeat !important;
+}
+</style>
+
+
+<style id="next-goal-card-final">
+/* ==================================================
+   NEXT GOAL CARD
+   Марапаттар мен сертификат арасына келесі мақсат блогы
+================================================== */
+
+.next-goal-card{
+  margin-top:0 !important;
+}
+
+.goal-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.goal-item{
+  min-height:92px;
+  padding:14px;
+  border-radius:18px;
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(255,255,255,.86);
+  box-shadow:0 12px 26px rgba(13,71,161,.06);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+.goal-icon{
+  width:46px;
+  height:46px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+
+  background:linear-gradient(135deg,#145cff,#1ea7ff);
+  color:#fff;
+  font-size:18px;
+  box-shadow:0 12px 24px rgba(20,92,255,.16);
+}
+
+.goal-item:nth-child(1) .goal-icon{
+  background:linear-gradient(135deg,#f59e0b,#facc15);
+}
+
+.goal-item:nth-child(2) .goal-icon{
+  background:linear-gradient(135deg,#12b76a,#1ea7ff);
+}
+
+.goal-item:nth-child(3) .goal-icon{
+  background:linear-gradient(135deg,#7c3aed,#145cff);
+}
+
+.goal-item b{
+  display:block;
+  color:#061b55;
+  font-size:13.5px;
+  font-weight:900;
+  margin-bottom:4px;
+}
+
+.goal-item span{
+  display:block;
+  color:#475569;
+  font-size:11.5px;
+  line-height:1.45;
+  font-weight:800;
+}
+
+@media(max-width:900px){
+  .goal-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
+
+<style id="achievement-stat-icons-clean-final">
+/* ==================================================
+   ACHIEVEMENT STATS ICONS CLEAN FINAL
+   Марапат / Жұлдыз / Күндік серия / Рейтинг карточкаларында
+   сурет емес, таза иконка көрсетіледі
+================================================== */
+
+.stats-grid .stat-icon{
+  width:56px !important;
+  height:56px !important;
+  border-radius:18px !important;
+  display:grid !important;
+  place-items:center !important;
+  overflow:hidden !important;
+  border:1px solid rgba(255,255,255,.78) !important;
+  box-shadow:0 12px 24px rgba(13,71,161,.10) !important;
+}
+
+.stats-grid .stat-icon img{
+  display:none !important;
+}
+
+.stats-grid .stat-icon i{
+  display:block !important;
+  color:#ffffff !important;
+  font-size:22px !important;
+  line-height:1 !important;
+}
+
+.stats-grid .stat-badge-icon{
+  background:linear-gradient(135deg,#145cff,#1ea7ff) !important;
+}
+
+.stats-grid .stat-star-icon{
+  background:linear-gradient(135deg,#f59e0b,#facc15) !important;
+}
+
+.stats-grid .stat-streak-icon{
+  background:linear-gradient(135deg,#12b76a,#1ea7ff) !important;
+}
+
+.stats-grid .stat-rank-icon{
+  background:linear-gradient(135deg,#7c3aed,#145cff) !important;
+}
+
+@media(max-width:760px){
+  .stats-grid .stat-icon{
+    width:50px !important;
+    height:50px !important;
+    border-radius:16px !important;
+  }
+
+  .stats-grid .stat-icon i{
+    font-size:20px !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fa-solid fa-graduation-cap"></i>
+    PhysX
+  </a>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="levels_map.html" class="nav-link">Оқу картасы</a>
+    <a href="personal_plan.html" class="nav-link">Жеке жоспар</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+    <a href="achivment.html" class="nav-link active">Жетістіктер</a>
+
+    <div id="authArea"><a href="login.html" class="nav-link login-link">Кіру</a></div>
+  </nav>
+</header>
+
+<main class="ach-page">
+  <section class="card hero">
+    <div class="hero-left">
+      <div class="hero-icon">
+        <img src="image/achivment/алтын_жүлде_кубогы.png" alt="Жетістік белгішесі">
+      </div>
+      <div class="hero-title">
+        <h1>Жетістіктер</h1>
+        <p>Оқу прогресіңді, жұлдыздарыңды, марапаттарыңды және рейтингтегі орныңды бір жерден бақыла.</p>
+      </div>
+
+      <div class="hero-rank-mini">
+        <div class="hero-rank-icon">
+          <i class="fa-solid fa-ranking-star"></i>
+        </div>
+        <div class="hero-rank-info">
+          <span>Қазіргі дәреже</span>
+          <strong id="rankTitleHero">Бастапқы зерттеуші</strong>
+          <div class="hero-rank-progress"><div id="rankBarHero"></div></div>
+          <small id="rankSubHero">Келесі дәрежеге 50 XP қалды</small>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="rank-card">
+      <b>Қазіргі дәреже</b>
+      <strong id="rankTitle">Бастапқы зерттеуші</strong>
+      <div class="rank-progress"><div id="rankBar"></div></div>
+      <span id="rankSub">Келесі дәрежеге 50 XP қалды</span>
+    </div>
+  </section>
+<section class="stats-grid">
+    <div class="card stat">
+      <div class="stat-icon stat-badge-icon"><i class="fa-solid fa-medal"></i></div>
+      <div>
+        <h3>Марапат</h3>
+        <strong id="badgeCount">0</strong>
+        <small>Ашылған badge</small>
+      </div>
+    </div>
+
+    <div class="card stat">
+      <div class="stat-icon stat-star-icon"><i class="fa-solid fa-star"></i></div>
+      <div>
+        <h3>Жұлдыз</h3>
+        <strong id="starCount">0</strong>
+        <small>Жинаған жұлдыз</small>
+      </div>
+    </div>
+
+    <div class="card stat">
+      <div class="stat-icon stat-streak-icon"><i class="fa-solid fa-fire"></i></div>
+      <div>
+        <h3>Күндік серия</h3>
+        <strong id="streakCount">0</strong>
+        <small>Күн қатарынан</small>
+      </div>
+    </div>
+
+    <div class="card stat">
+      <div class="stat-icon stat-rank-icon"><i class="fa-solid fa-ranking-star"></i></div>
+      <div>
+        <h3>Рейтинг</h3>
+        <strong id="rankPlace">#7</strong>
+        <small>Сынып ішіндегі орын</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="main-grid">
+    <div>
+      <div class="card section-card">
+        <div class="section-head">
+          <h2>Марапаттар</h2>
+          <span class="pill"><i class="fa-solid fa-award"></i> Badge жүйесі</span>
+        </div>
+
+        <div class="badge-grid" id="badgesGrid"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="section-head">
+          <h2>Сертификат</h2>
+          <span class="pill"><i class="fa-solid fa-graduation-cap"></i> Деңгей аяқтау</span>
+        </div>
+
+        <div class="cert-card">
+          <div class="cert-icon"><i class="fa-solid fa-certificate"></i></div>
+          <div>
+            <h3 id="certTitle">Beginner сертификатына жақынсың</h3>
+            <p id="certText">Бастапқы деңгейді толық аяқтағанда сертификат ашылады.</p>
+          </div>
+          <a href="certificates.html" class="cert-btn">Қарау <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="level-card" id="level-progress">
+        <h3><i class="fa-solid fa-chart-line"></i> Деңгей прогресі</h3>
+        <p id="levelAdvice">Сабақтарды аяқтап, жұлдыз жинасаң, келесі дәреже ашылады.</p>
+        <div class="meter"><div id="levelMeter"></div></div>
+        <div class="mini-row">
+          <span class="mini ok" id="lessonMini"><i class="fa-solid fa-book"></i> 0 сабақ</span>
+          <span class="mini warn" id="xpMini"><i class="fa-solid fa-bolt"></i> 0 XP</span>
+          <span class="mini" id="starsMini"><i class="fa-solid fa-star"></i> 0 ⭐</span>
+        </div>
+      </div>
+
+      <div class="card section-card">
+        <div class="section-head">
+          <h2>Рейтинг</h2>
+          <span class="pill"><i class="fa-solid fa-users"></i> Топ оқушылар</span>
+        </div>
+
+        <div class="rank-list" id="rankList"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="section-head">
+          <h2>Соңғы белсенділік</h2>
+          <span class="pill"><i class="fa-solid fa-clock-rotate-left"></i> Журнал</span>
+        </div>
+
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function getUser(){
+  const user = JSON.parse(localStorage.getItem("physxUser")) || {};
+  if(!user.studyLevel) user.studyLevel = "beginner";
+  if(!user.progress) user.progress = {points:0, lessonsCompleted:[]};
+  if(!Array.isArray(user.progress.lessonsCompleted)) user.progress.lessonsCompleted = [];
+  return user;
+}
+
+function getLessonStars(levelName, lessonNumber){
+  const keys = [
+    `${levelName}-lesson-${lessonNumber}-stars`,
+    `${levelName}_lesson_${lessonNumber}_stars`,
+    `lesson${lessonNumber}_stars`
+  ];
+
+  for(const key of keys){
+    const value = Number(localStorage.getItem(key) || 0);
+    if(value > 0) return Math.max(0, Math.min(5, value));
+  }
+
+  return 0;
+}
+
+function countStars(levelName){
+  let total = 0;
+  for(let i = 1; i <= 30; i++) total += getLessonStars(levelName, i);
+  return total;
+}
+
+function getRankTitle(points){
+  if(points >= 200) return "Физика шебері";
+  if(points >= 120) return "Белсенді зерттеуші";
+  if(points >= 50) return "Жас физик";
+  return "Бастапқы зерттеуші";
+}
+
+function getRankStage(points){
+  if(points < 50){
+    return {current:"Бастапқы зерттеуші", next:"Жас физик", remain:50 - points, pct:(points/50)*100};
+  }
+  if(points < 120){
+    return {current:"Жас физик", next:"Белсенді зерттеуші", remain:120 - points, pct:((points-50)/70)*100};
+  }
+  if(points < 200){
+    return {current:"Белсенді зерттеуші", next:"Физика шебері", remain:200 - points, pct:((points-120)/80)*100};
+  }
+  return {current:"Физика шебері", next:"Максимум", remain:0, pct:100};
+}
+
+function renderAchievements(){
+  const user = getUser();
+  const level = user.studyLevel || "beginner";
+  const completed = user.progress.lessonsCompleted || [];
+  const points = user.progress.points || 0;
+  const stars = countStars(level);
+  const streak = Number(localStorage.getItem("physxStreakDays")) || (completed.length > 0 ? 1 : 0);
+  const practiceSolved = Number(localStorage.getItem("physxPracticeSolved") || 0);
+  const labsDone = Number(localStorage.getItem("physxLabsDone") || 0);
+  const rankStage = getRankStage(points);
+
+  const badges = [
+    {
+      title:"Алғашқы қадам",
+      desc:"1 сабақ аяқтаған оқушыға беріледі.",
+      icon:"fa-shoe-prints",
+      color:"i-blue",
+      earned:completed.length >= 1,
+      progress:Math.min(100, completed.length / 1 * 100)
+    },
+    {
+      title:"Белсенді оқушы",
+      desc:"5 сабақ аяқтағанда ашылады.",
+      icon:"fa-fire",
+      color:"i-green",
+      earned:completed.length >= 5,
+      progress:Math.min(100, completed.length / 5 * 100)
+    },
+    {
+      title:"Жұлдыз жинаушы",
+      desc:"25 жұлдыз жинағанда беріледі.",
+      icon:"fa-star",
+      color:"i-orange",
+      earned:stars >= 25,
+      progress:Math.min(100, stars / 25 * 100)
+    },
+    {
+      title:"Есеп шебері",
+      desc:"10 есептік практика орындағанда ашылады.",
+      icon:"fa-calculator",
+      color:"i-purple",
+      earned:practiceSolved >= 10,
+      progress:Math.min(100, practiceSolved / 10 * 100)
+    },
+    {
+      title:"Лаборант",
+      desc:"3 виртуалды лаборатория аяқтағанда беріледі.",
+      icon:"fa-flask",
+      color:"i-green",
+      earned:labsDone >= 3,
+      progress:Math.min(100, labsDone / 3 * 100)
+    },
+    {
+      title:"Тұрақты оқу",
+      desc:"7 күн қатарынан кіргенде ашылады.",
+      icon:"fa-calendar-check",
+      color:"i-red",
+      earned:streak >= 7,
+      progress:Math.min(100, streak / 7 * 100)
+    }
+
+  ];
+  
+
+  const earnedCount = badges.filter(b => b.earned).length;
+
+  document.getElementById("badgeCount").textContent = earnedCount;
+  document.getElementById("starCount").textContent = stars;
+  document.getElementById("streakCount").textContent = streak;
+  document.getElementById("rankTitle").textContent = rankStage.current;
+  document.getElementById("rankSub").textContent = rankStage.remain > 0
+    ? `Келесі дәрежеге ${rankStage.remain} XP қалды`
+    : "Сен ең жоғары дәрежеге жеттің";
+  document.getElementById("rankBar").style.width = Math.max(6, Math.min(100, rankStage.pct)) + "%";
+
+  if(document.getElementById("rankTitleHero")){
+    document.getElementById("rankTitleHero").textContent = rankStage.current;
+    document.getElementById("rankSubHero").textContent = rankStage.remain > 0
+      ? `Келесі дәрежеге ${rankStage.remain} XP қалды`
+      : "Сен ең жоғары дәрежеге жеттің";
+    document.getElementById("rankBarHero").style.width = Math.max(6, Math.min(100, rankStage.pct)) + "%";
+  }
+
+  document.getElementById("lessonMini").innerHTML = `<i class="fa-solid fa-book"></i> ${completed.length} сабақ`;
+  document.getElementById("xpMini").innerHTML = `<i class="fa-solid fa-bolt"></i> ${points} XP`;
+  document.getElementById("starsMini").innerHTML = `<i class="fa-solid fa-star"></i> ${stars} ⭐`;
+  document.getElementById("levelMeter").style.width = Math.min(100, completed.length / 30 * 100) + "%";
+  document.getElementById("rankPlace").textContent = points > 180 ? "#3" : points > 100 ? "#5" : "#7";
+
+  if(completed.length >= 30){
+    document.getElementById("certTitle").textContent = "Beginner сертификаты ашылды";
+    document.getElementById("certText").textContent = "Құттықтаймыз! Бастапқы деңгей толық аяқталды.";
+  }
+
+  document.getElementById("badgesGrid").innerHTML = badges.map(badge => `
+    <div class="badge-card ${badge.earned ? "earned" : "locked"}">
+      <div>
+        <div class="badge-top">
+          <div class="badge-icon ${badge.color}"><i class="fa-solid ${badge.icon}"></i></div>
+          <div class="badge-state">
+            <i class="fa-solid ${badge.earned ? "fa-check" : "fa-lock"}"></i>
+            ${badge.earned ? "Ашылды" : "Жабық"}
+          </div>
+        </div>
+        <h3>${badge.title}</h3>
+        <p>${badge.desc}</p>
+      </div>
+      <div class="badge-progress"><div style="width:${badge.progress}%"></div></div>
+    </div>
+  `).join("");
+
+  const rankUsers = [
+    {place:1,name:"Айдана",xp:280,sub:"Физика шебері"},
+    {place:2,name:"Нұрсұлтан",xp:240,sub:"Белсенді зерттеуші"},
+    {place:3,name:"Аружан",xp:210,sub:"Белсенді зерттеуші"},
+    {place: points > 180 ? 4 : points > 100 ? 5 : 7,name:"Сен",xp:points,sub:getRankTitle(points),me:true}
+  ];
+
+  document.getElementById("rankList").innerHTML = rankUsers.map(item => `
+    <div class="rank-item ${item.me ? "me" : ""}">
+      <div class="rank-place">#${item.place}</div>
+      <div class="rank-name">
+        <b>${item.name}</b>
+        <span>${item.sub}</span>
+      </div>
+      <div class="rank-xp">${item.xp} XP</div>
+    </div>
+  `).join("");
+
+  const timeline = [
+    {icon:"fa-star",color:"i-orange",title:`+${Math.min(stars,3)} жұлдыз жиналды`,sub:"Соңғы сабақ нәтижесі"},
+    {icon:"fa-book-open",color:"i-blue",title:`${completed.length || 1}-сабақ деңгейі бақыланды`,sub:"Жеке жоспар бойынша келесі қадам"},
+    {icon:"fa-trophy",color:"i-green",title:"Бақылауға дайындық",sub:"Рейтинг пен марапаттар автоматты жаңарып тұрады"}
+  ];
+
+  document.getElementById("timeline").innerHTML = timeline.map(item => `
+    <div class="timeline-item">
+      <div class="timeline-icon ${item.color}"><i class="fa-solid ${item.icon}"></i></div>
+      <div>
+        <b>${item.title}</b>
+        <span>${item.sub}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAuthArea(){
+  const authArea = document.getElementById("authArea");
+  if(!authArea) return;
+
+  authArea.innerHTML = `
+    <a href="profile.html" class="nav-link profile-link">
+      <i class="fa-solid fa-user"></i>
+      Профиль
+    </a>
+  `;
+}
+
+
+function logoutUser(event){
+  if(event) event.preventDefault();
+  const savedUser = JSON.parse(localStorage.getItem("physxUser")) || {};
+  delete savedUser.isLoggedIn;
+  delete savedUser.name;
+  delete savedUser.email;
+  localStorage.setItem("physxUser", JSON.stringify(savedUser));
+  window.location.href = "index.html";
+}
+
+renderAchievements();
+renderAuthArea();
+</script>
+</body>
+</html>
