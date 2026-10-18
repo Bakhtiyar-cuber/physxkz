@@ -1,0 +1,119 @@
+:root {
+  --main: #0d47a1;
+  --blue: #2196f3;
+  --green: #22c55e;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --bg: #f6f9ff;
+  --text: #263238;
+  --muted: #78909c;
+  --white: #ffffff;
+  --locked: #dce3e8;
+}
+
+body {
+  background:
+    radial-gradient(#d1d9e6 1px, transparent 1px),
+    linear-gradient(180deg, #f8fbff, #eef5ff);
+  background-size: 28px 28px, 100% 100%;
+}
+
+/* HEADER CARD */
+.map-header {
+  max-width: 960px;
+  margin: 0 auto 40px;
+  background: var(--white);
+  padding: 30px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  border-top: 7px solid var(--main);
+}
+
+.heading {
+  margin: 0 0 12px;
+  color: var(--main);
+  font-size: 2.6rem;
+  font-weight: 900;
+}
+
+/* LEVEL BLOCK */
+.level-section {
+  max-width: 980px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 28px;
+  padding: 28px 18px 34px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
+}
+
+/* LOCKED LEVEL */
+.level-section.level-locked {
+  opacity: 0.55;
+  filter: grayscale(0.9);
+}
+
+/* LOCK MESSAGE */
+.locked-message {
+  text-align: center;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px 18px;
+  border-radius: 999px;
+  width: fit-content;
+  margin: 12px auto 0;
+  font-weight: 900;
+}
+
+/* STEP */
+.step {
+  position: relative;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* СЫЗЫҚ (өшіру) */
+.step::after {
+  display: none !important;
+}
+
+/* ICON */
+.icon-circle {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+/* STATES */
+.step.completed .icon-circle {
+  background: var(--green);
+  color: white;
+}
+
+.step.current .icon-circle {
+  background: var(--main);
+  color: white;
+}
+
+.step.locked .icon-circle {
+  background: var(--locked);
+  color: #90a4ae;
+}
+
+/* TITLE */
+.step-title {
+  margin-top: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* STATUS */
+.completed-status { color: var(--green); }
+.active-status { color: var(--main); }
+.locked-status { color: var(--muted); }

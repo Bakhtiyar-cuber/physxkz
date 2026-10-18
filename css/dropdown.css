@@ -1,0 +1,36 @@
+.nav-dropdown {
+  position: relative;
+}
+
+/* Оқу мен меню арасындағы бос орынды ұстап тұратын аймақ */
+.nav-dropdown::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 230px;
+  height: 18px;
+  background: transparent;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 230px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.14);
+  padding: 10px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  transform: translateY(6px);
+  transition: 0.2s ease;
+  z-index: 99999;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);}
