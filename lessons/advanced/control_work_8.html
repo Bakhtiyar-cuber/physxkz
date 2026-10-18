@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhysX - Advanced бақылау 8</title>
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/dropdown.css">
+<link rel="stylesheet" href="../../css/responsive.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --main:#0d47a1;--blue:#145cff;--green:#12b76a;--orange:#ff7a2f;
+  --text:#10223f;--muted:#667085;--line:#dbe7f5;--shadow:0 18px 40px rgba(13,71,161,.10)
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI","Noto Sans",Inter,Arial,sans-serif;color:var(--text);background:radial-gradient(#d2dff1 1px,transparent 1px),linear-gradient(180deg,#fbfdff,#eef5ff);background-size:28px 28px,100% 100%;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.header{height:58px;background:rgba(255,255,255,.96);border-bottom:1px solid #cfe0f4;display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:1000;box-shadow:0 4px 22px rgba(15,23,42,.045);backdrop-filter:blur(14px)}
+.logo{display:flex;align-items:center;gap:10px;color:var(--main);text-decoration:none;font-size:28px;font-weight:800;letter-spacing:-.04em}
+.lesson-header-center{position:absolute;left:50%;transform:translateX(-50%);min-height:38px;padding:0 16px;border-radius:999px;background:#eef6ff;border:1px solid #d6e6fb;display:flex;align-items:center;gap:9px;color:#0b2f77;white-space:nowrap}
+.lesson-header-center span{font-size:12px;font-weight:650;color:#64748b}
+.lesson-header-center b{font-size:13px;font-weight:800;color:#061b55}
+.lesson-header-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
+.lesson-top-btn{min-height:38px;padding:0 13px;border-radius:13px;background:rgba(255,255,255,.86);border:1px solid rgba(20,92,255,.18);color:#145cff;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:750;text-decoration:none;box-shadow:0 10px 22px rgba(13,71,161,.06);transition:.2s ease;white-space:nowrap}
+.lesson-top-btn:hover{background:#145cff;color:#fff;transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,92,255,.18)}
+.teacher-mode-badge{display:none;min-height:38px;padding:0 13px;border-radius:999px;background:#ecfdf5;border:1px solid #bbf7d0;color:#059669;align-items:center;gap:8px;font-size:12px;font-weight:750;white-space:nowrap}
+body.teacher-mode .teacher-mode-badge{display:inline-flex}
+.lesson-page{width:min(100% - 18px,1500px);margin:0 auto;padding:8px 0 24px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start;transition:.25s}
+.lesson-sidebar{position:sticky;top:72px;height:calc(100vh - 84px);background:linear-gradient(180deg,#0f5cff,#022a83 72%,#011e64);color:#fff;border-radius:18px;padding:12px 10px;overflow:auto;box-shadow:0 22px 45px rgba(13,71,161,.25)}
+.sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sidebar-title{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:800}
+.sidebar-title i,.side-menu-btn i{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.sidebar-toggle{width:34px;height:34px;border:none;border-radius:12px;background:rgba(255,255,255,.16);color:#fff;cursor:pointer}
+.sidebar-small{font-size:13px;color:#dbeafe;font-weight:650;margin:10px 0;line-height:1.4}
+.side-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px;margin-bottom:9px}
+.side-card h3{margin:0 0 8px;font-size:13px;font-weight:750}
+.circle-row{display:flex;align-items:center;gap:10px}
+.circle{width:50px;height:50px;border-radius:50%;background:conic-gradient(#38bdf8 0deg,rgba(255,255,255,.22) 0deg);display:grid;place-items:center;position:relative;font-weight:800}
+.circle::after{content:"";position:absolute;width:36px;height:36px;border-radius:50%;background:#0943b6}
+.circle span{position:relative;z-index:2;font-size:12px}
+.side-progress-bar{height:7px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden;margin:10px 0}
+.side-progress-bar div{height:100%;width:0;background:#38bdf8}
+.side-menu{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.side-menu-btn{min-height:46px;border:none;border-radius:13px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;gap:10px;padding:0 11px;font-size:13px;font-weight:750;text-decoration:none;cursor:pointer;position:relative;overflow:visible}
+.side-menu-btn.active,.side-menu-btn:hover{background:rgba(255,255,255,.22)}
+.side-menu-btn.finish-side{background:linear-gradient(135deg,#12b76a,#22c55e);justify-content:center}
+.side-menu-btn.section-done::after{content:"✓";position:absolute;top:50%;right:9px;transform:translateY(-50%);width:22px;height:22px;border-radius:999px;background:#22c55e;color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;border:2px solid rgba(255,255,255,.88)}
+body.lesson-sidebar-collapsed .lesson-page{grid-template-columns:72px minmax(0,1fr)}
+body.lesson-sidebar-collapsed .lesson-sidebar{width:72px;min-width:72px;max-width:72px;padding:9px 7px}
+body.lesson-sidebar-collapsed .sidebar-title span,body.lesson-sidebar-collapsed .sidebar-small,body.lesson-sidebar-collapsed .side-card,body.lesson-sidebar-collapsed .side-menu-btn span{display:none!important}
+body.lesson-sidebar-collapsed .side-menu-btn{width:50px;height:50px;min-height:50px;padding:0;justify-content:center}
+.lesson-main{min-width:0}
+.main-card,.content-card{background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px}
+.lesson-title h1{margin:0 0 7px;font-size:26px;color:#061b55;font-weight:780;letter-spacing:-.01em;line-height:1.25}
+.lesson-title p{margin:0;color:#475569;font-weight:550;line-height:1.55}
+.top-row{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.lesson-mini-pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.lesson-mini-pills span{height:29px;padding:0 10px;border-radius:999px;background:#eef6ff;border:1px solid #d6e6fb;color:#0d47a1;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700}
+.content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.content-header h2{font-size:22px;color:#061b55;margin:0;font-weight:750}
+.content-badge{border-radius:999px;background:#eaf3ff;color:#145cff;padding:8px 12px;font-size:12px;font-weight:750}
+.infographic-frame{padding:8px;background:#fff;border:1px solid #d6e6fb;border-radius:18px;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.lesson-infographic-img{width:100%;max-height:calc(100vh - 185px);object-fit:contain;border-radius:14px}
+.next-card{margin-top:10px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fff,#f0f7ff);border:1px solid #d6e6fb;display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center}
+.next-icon{width:42px;height:42px;border-radius:13px;background:#145cff;color:#fff;display:grid;place-items:center}
+.next-text h3{margin:0 0 3px;color:#0d47a1;font-size:17px;font-weight:750}
+.next-text p{margin:0;font-size:13px;color:#475569;font-weight:550}
+.next-actions{display:flex;gap:9px;flex-wrap:wrap}
+.next-actions button,.action-btn{height:40px;padding:0 16px;border:none;border-radius:12px;font-weight:750;cursor:pointer}
+.complete-btn{background:linear-gradient(135deg,#f59e0b,#ff7a2f);color:#fff}
+.next-btn{background:#145cff;color:#fff}
+.finish-btn{background:linear-gradient(135deg,#12b76a,#22c55e);color:#fff}
+.check{background:#145cff;color:#fff}
+.answer-sheet{margin-top:14px;background:linear-gradient(135deg,#fff,#f0f7ff);border:1px solid #d6e6fb;border-radius:18px;padding:16px}
+.answer-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px}
+.answer-head h3{margin:0 0 4px;color:#0d47a1;font-weight:750}
+.answer-head p{margin:0;color:#475569;font-size:13px;font-weight:550;line-height:1.5}
+.answer-score{min-width:78px;height:38px;border-radius:12px;background:#145cff;color:#fff;display:grid;place-items:center;font-weight:750}
+.detailed-answer-grid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;align-items:start!important}
+.answer-row.question-card{display:block!important;padding:14px 16px!important;border-radius:16px!important;background:#fff!important;border:1px solid #e2edf8!important;box-shadow:0 8px 18px rgba(13,71,161,.035)!important}
+.question-top{display:flex!important;align-items:flex-start!important;gap:10px!important;margin-bottom:10px!important}
+.qnum{min-width:30px;width:30px;height:30px;border-radius:10px;background:#eef6ff;color:#145cff;display:grid;place-items:center;font-weight:760}
+.question-title{font-size:15px!important;line-height:1.55!important;font-weight:650!important;color:#123154!important}
+.option-buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.option-buttons button{width:100%!important;height:auto!important;min-height:42px!important;padding:10px 12px!important;text-align:left!important;line-height:1.45!important;white-space:normal!important;font-size:14px!important;font-weight:600!important;background:#f8fbff!important;border:1px solid #d6e6fb!important;color:#243b5a!important;border-radius:11px!important;cursor:pointer}
+.option-buttons button b{color:#0d47a1!important;font-weight:720!important}
+.option-buttons button.selected{background:#145cff!important;border-color:#145cff!important;color:#fff!important}
+.option-buttons button.selected b,.option-buttons button.correct b,.option-buttons button.wrong b{color:inherit!important}
+.option-buttons button.correct{background:#22c55e!important;border-color:#22c55e!important;color:#fff!important}
+.option-buttons button.wrong{background:#ef4444!important;border-color:#ef4444!important;color:#fff!important}
+.answer-row.checked button{cursor:not-allowed;opacity:.92}
+.actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:14px}
+.feedback{margin-top:12px;padding:12px 14px;border-radius:14px;font-weight:650;display:none;line-height:1.55}
+.feedback.success{display:block;background:#ecfdf5;border:1px solid #bbf7d0;color:#059669}
+.feedback.warn{display:block;background:#fff7ed;border:1px solid #fed7aa;color:#ea580c}
+.result-box{margin-top:12px;padding:14px 16px;border-radius:16px;border:1px solid #d6e6fb;background:linear-gradient(135deg,#fff,#f0f7ff);display:none;align-items:center;justify-content:space-between;gap:12px}
+.result-box.show{display:flex!important}
+.result-stars{font-size:24px;color:#f59e0b;letter-spacing:2px}
+.result-xp{min-width:92px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#12b76a,#22c55e);color:#fff;font-size:18px;font-weight:800}
+.locked{opacity:.55;cursor:not-allowed!important;background:#94a3b8!important}
+.unlocked{opacity:1!important;cursor:pointer!important}
+.helper-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);z-index:5000;display:none;align-items:center;justify-content:center;padding:18px}
+.helper-modal-backdrop.show{display:flex}
+.helper-modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;border:1px solid #d6e6fb;box-shadow:0 30px 70px rgba(15,23,42,.25);padding:18px}
+.helper-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px}
+.helper-head h2{margin:0 0 5px;color:#061b55}
+.helper-head p{margin:0;color:#64748b;font-weight:650;font-size:13px}
+.helper-close{width:42px;height:42px;border:none;border-radius:14px;background:#eef6ff;color:#145cff;font-size:18px;cursor:pointer}
+.helper-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+.helper-tab{height:42px;border:none;border-radius:13px;background:#eef6ff;color:#0d47a1;font-weight:750;cursor:pointer}
+.helper-tab.active{background:#145cff;color:#fff}
+.helper-panel{display:none;border:1px solid #d6e6fb;border-radius:18px;background:#f8fbff;padding:14px}
+.helper-panel.active{display:block}
+.calc-display{width:100%;height:54px;border:1px solid #d6e6fb;border-radius:14px;background:#fff;color:#061b55;font-size:24px;font-weight:800;padding:0 14px;text-align:right;margin-bottom:10px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.calc-grid button{height:44px;border:none;border-radius:12px;background:#fff;color:#0d47a1;font-size:17px;font-weight:750;cursor:pointer;border:1px solid #d6e6fb}
+.calc-grid .equal{background:#145cff;color:#fff}
+.helper-note{width:100%;min-height:220px;border:1px solid #d6e6fb;border-radius:14px;background:#fff;padding:14px;resize:vertical;font-size:15px;font-weight:550}
+.tool-action{height:38px;padding:0 14px;border:none;border-radius:12px;background:#145cff;color:#fff;font-weight:750;cursor:pointer;margin-top:10px}
+.tool-action.secondary{background:#eef6ff;color:#0d47a1}
+.draw-board{width:100%;height:320px;background:#fff;border:1px solid #d6e6fb;border-radius:14px;touch-action:none;display:block}
+.timer-screen{height:130px;border-radius:20px;background:linear-gradient(135deg,#145cff,#1fb4ff);color:#fff;display:grid;place-items:center;font-size:54px;font-weight:800;margin-bottom:12px}
+.timer-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.timer-presets button{height:40px;border:none;border-radius:12px;background:#eef6ff;color:#0d47a1;font-weight:750;cursor:pointer}
+.floating-timer{position:fixed;top:78px;right:18px;z-index:4200;height:42px;padding:0 14px;border-radius:14px;background:#145cff;color:#fff;display:none;align-items:center;gap:8px;font-weight:750}
+.floating-timer.show{display:flex}
+@media(max-width:980px){.lesson-header-center{display:none}.lesson-page{grid-template-columns:1fr}.lesson-sidebar{position:relative;top:0;height:auto}.option-buttons{grid-template-columns:1fr!important}}
+@media(max-width:650px){.helper-tabs{grid-template-columns:1fr}.top-row,.next-card{grid-template-columns:1fr}}
+</style>
+
+<style id="control7-detailed-answer-style">
+  .answer-grid.detailed-answer-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:14px !important;
+  }
+  .answer-row.question-card{
+    display:block !important;
+    padding:14px 16px !important;
+    border-radius:16px !important;
+  }
+  .question-top{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .question-title{
+    font-size:15px;
+    line-height:1.55;
+    font-weight:850;
+    color:#061b55;
+  }
+  .option-buttons{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+  .option-buttons button{
+    width:100%;
+    height:auto !important;
+    min-height:42px;
+    padding:10px 12px;
+    text-align:left;
+    line-height:1.35;
+    white-space:normal;
+    font-size:14px;
+    font-weight:800;
+  }
+  .option-buttons button b{
+    color:inherit;
+    margin-right:4px;
+  }
+  @media(max-width:760px){
+    .option-buttons{grid-template-columns:1fr;}
+  }
+</style>
+
+<style id="control8-detailed-answer-style">
+  .answer-grid.detailed-answer-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:14px !important;
+  }
+  .answer-row.question-card{
+    display:block !important;
+    padding:14px 16px !important;
+    border-radius:16px !important;
+  }
+  .question-top{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .question-title{
+    font-size:15px;
+    line-height:1.55;
+    font-weight:850;
+    color:#061b55;
+  }
+  .option-buttons{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+  .option-buttons button{
+    width:100%;
+    height:auto !important;
+    min-height:42px;
+    padding:10px 12px;
+    text-align:left;
+    line-height:1.35;
+    white-space:normal;
+    font-size:14px;
+    font-weight:800;
+  }
+  .option-buttons button b{
+    color:inherit;
+    margin-right:4px;
+  }
+  @media(max-width:760px){
+    .option-buttons{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../../index.html" class="logo"><i class="fa-solid fa-graduation-cap"></i>PhysX</a>
+  <div class="lesson-header-center"><span>Жоғары деңгей · Механикалық толқындар</span><b>Бақылау №8</b></div>
+  <div class="lesson-header-actions">
+    <span class="teacher-mode-badge" id="teacherModeBadge"><i class="fa-solid fa-unlock"></i>Мұғалім режимі</span>
+    <a href="../../levels_map.html" class="lesson-top-btn"><i class="fa-solid fa-arrow-left"></i>Оқу картасына қайту</a>
+    <a href="../../profile.html" class="lesson-top-btn profile-top-btn"><i class="fa-solid fa-user"></i>Профиль</a>
+  </div>
+</header>
+
+<main class="lesson-page">
+<aside class="lesson-sidebar">
+  <div class="sidebar-head"><div class="sidebar-title"><i class="fa-solid fa-trophy"></i><span>Бақылау</span></div><button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-chevron-left"></i></button></div>
+  <div class="sidebar-small">Жоғары деңгей<br>Бақылау жұмысы №8</div>
+  <div class="side-card">
+    <h3>Бақылау прогресі</h3>
+    <div class="circle-row"><div class="circle"><span id="sidePercent">0%</span></div><div><div id="bigPercent" style="font-size:24px;font-weight:800;">0%</div><div id="smallProgress" style="font-size:11.5px;color:#dbeafe;font-weight:650;">0 / 6 бөлім</div></div></div>
+    <div class="side-progress-bar"><div id="sideFill"></div></div>
+    <div style="font-size:12px;font-weight:750;">Макс: 5⭐ · +20 XP</div>
+  </div>
+  <div class="side-menu">
+    <button class="side-menu-btn active" data-tab="work1" onclick="showTab('work1',this)"><i class="fa-solid fa-file-pen"></i><span>1-бөлім</span></button>
+    <button class="side-menu-btn" data-tab="answers1" onclick="showTab('answers1',this)"><i class="fa-solid fa-circle-check"></i><span>1-бөлім жауаптары</span></button>
+    <button class="side-menu-btn" data-tab="work2" onclick="showTab('work2',this)"><i class="fa-solid fa-file-pen"></i><span>2-бөлім</span></button>
+    <button class="side-menu-btn" data-tab="answers2" onclick="showTab('answers2',this)"><i class="fa-solid fa-circle-check"></i><span>2-бөлім жауаптары</span></button>
+    <button class="side-menu-btn" data-tab="work3" onclick="showTab('work3',this)"><i class="fa-solid fa-file-pen"></i><span>3-бөлім</span></button>
+    <button class="side-menu-btn" data-tab="answers3" onclick="showTab('answers3',this)"><i class="fa-solid fa-circle-check"></i><span>3-бөлім жауаптары</span></button>
+    <button class="side-menu-btn" onclick="openHelperTools()"><i class="fa-solid fa-screwdriver-wrench"></i><span>Көмекші құралдар</span></button>
+    <button class="side-menu-btn finish-side locked" onclick="finishLesson()"><i class="fa-solid fa-flag-checkered"></i><span>Аяқтау</span></button>
+    <a class="side-menu-btn" href="../../levels_map.html"><i class="fa-solid fa-map"></i><span>Оқу картасы</span></a>
+  </div>
+</aside>
+
+<section class="lesson-main">
+<section class="main-card">
+  <div class="top-row">
+    <div class="lesson-title">
+      <h1>Бақылау жұмысы №8</h1>
+      <p>8-тарау: Механикалық толқындар. Толқын ұзындығы, жылдамдығы, көлденең және қума толқындар, дыбыс толқындары, Доплер эффектісі, интерференция, дифракция және тұрғын толқындар.</p>
+      <div class="lesson-mini-pills"><span><i class="fa-solid fa-layer-group"></i> 8 / 8</span><span><i class="fa-solid fa-star"></i> 5 жұлдыз</span><span><i class="fa-solid fa-bolt"></i> +20 XP</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="content-card tab-content" id="work1" style="display:;">
+  <div class="content-header"><h2>1-бөлім тест тапсырмалары</h2><div class="content-badge"><i class='fa-solid fa-file-pen'></i> 1–15</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/control_work_8/8.1.jpg" class="lesson-infographic-img" alt="1-бөлім тест тапсырмалары"></div>
+  <div class="answer-sheet">
+    <div class="answer-head"><div><h3>Жауап парағы</h3><p>15 сұраққа A/B/C/D жауаптарын белгіле. Әр сұрақтың мәтіні мен варианттары толық берілген.</p></div><div class="answer-score" id="score-work1">0 / 15</div></div>
+    <div class="answer-grid detailed-answer-grid" id="grid-work1"></div>
+    <div class="actions"><button class="action-btn check" onclick="checkAnswers('work1')">Жауаптарды тексеру</button></div>
+    <div class="feedback" id="feedback-work1"></div>
+  </div>
+  <div class="next-card">
+    <div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div>
+    <div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді тексеріп, жауап бетіне өт.</p></div>
+    <div class="next-actions"><button class="complete-btn" onclick="completeSection('work1')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('answers1',document.querySelector('.side-menu-btn[data-tab=answers1]'))">Жауаптарын көру <i class="fa-solid fa-arrow-right"></i></button></div>
+  </div>
+</div>
+
+<div class="content-card tab-content" id="answers1" style="display:none;">
+  <div class="content-header"><h2>1-бөлім шығарылу жолы мен жауаптары</h2><div class="content-badge"><i class='fa-solid fa-circle-check'></i> Жауап</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/control_work_8/8.4.jpg" class="lesson-infographic-img" alt="1-бөлім шығарылу жолы мен жауаптары"></div>
+  <div class="next-card">
+    <div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div>
+    <div class="next-text"><h3>Келесі қадам</h3><p>Жауаптарды қарап, келесі бөлімге өт.</p></div>
+    <div class="next-actions"><button class="complete-btn" onclick="completeSection('answers1')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('work2',document.querySelector('.side-menu-btn[data-tab=work2]'))">Келесі бөлім <i class="fa-solid fa-arrow-right"></i></button></div>
+  </div>
+</div>
+
+<div class="content-card tab-content" id="work2" style="display:none;">
+  <div class="content-header"><h2>2-бөлім сәйкестендіру тапсырмалары</h2><div class="content-badge"><i class='fa-solid fa-file-pen'></i> 16–20</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/control_work_8/8.2.jpg" class="lesson-infographic-img" alt="2-бөлім сәйкестендіру тапсырмалары"></div>
+  <div class="answer-sheet">
+    <div class="answer-head"><div><h3>Жауап парағы</h3><p>5 сұраққа A/B/C/D жауаптарын белгіле. Әр сұрақтың мәтіні мен варианттары толық берілген.</p></div><div class="answer-score" id="score-work2">0 / 5</div></div>
+    <div class="answer-grid detailed-answer-grid" id="grid-work2"></div>
+    <div class="actions"><button class="action-btn check" onclick="checkAnswers('work2')">Жауаптарды тексеру</button></div>
+    <div class="feedback" id="feedback-work2"></div>
+  </div>
+  <div class="next-card">
+    <div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div>
+    <div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді тексеріп, жауап бетіне өт.</p></div>
+    <div class="next-actions"><button class="complete-btn" onclick="completeSection('work2')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('answers2',document.querySelector('.side-menu-btn[data-tab=answers2]'))">Жауаптарын көру <i class="fa-solid fa-arrow-right"></i></button></div>
+  </div>
+</div>
+
+<div class="content-card tab-content" id="answers2" style="display:none;">
+  <div class="content-header"><h2>2-бөлім шығарылу жолы мен жауаптары</h2><div class="content-badge"><i class='fa-solid fa-circle-check'></i> Жауап</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/control_work_8/8.5.jpg" class="lesson-infographic-img" alt="2-бөлім шығарылу жолы мен жауаптары"></div>
+  <div class="next-card">
+    <div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div>
+    <div class="next-text"><h3>Келесі қадам</h3><p>Жауаптарды қарап, келесі бөлімге өт.</p></div>
+    <div class="next-actions"><button class="complete-btn" onclick="completeSection('answers2')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('work3',document.querySelector('.side-menu-btn[data-tab=work3]'))">Келесі бөлім <i class="fa-solid fa-arrow-right"></i></button></div>
+  </div>
+</div>
+
+<div class="content-card tab-content" id="work3" style="display:none;">
+  <div class="content-header"><h2>3-бөлім сурет бойынша талдау</h2><div class="content-badge"><i class='fa-solid fa-file-pen'></i> 21–25</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/control_work_8/8.3.jpg" class="lesson-infographic-img" alt="3-бөлім сурет бойынша талдау"></div>
+  <div class="answer-sheet">
+    <div class="answer-head"><div><h3>Жауап парағы</h3><p>5 сұраққа A/B/C/D жауаптарын белгіле. Әр сұрақтың мәтіні мен варианттары толық берілген.</p></div><div class="answer-score" id="score-work3">0 / 5</div></div>
+    <div class="answer-grid detailed-answer-grid" id="grid-work3"></div>
+    <div class="actions"><button class="action-btn check" onclick="checkAnswers('work3')">Жауаптарды тексеру</button></div>
+    <div class="feedback" id="feedback-work3"></div>
+  </div>
+  <div class="next-card">
+    <div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div>
+    <div class="next-text"><h3>Келесі қадам</h3><p>Бөлімді тексеріп, жауап бетіне өт.</p></div>
+    <div class="next-actions"><button class="complete-btn" onclick="completeSection('work3')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="next-btn" onclick="showTab('answers3',document.querySelector('.side-menu-btn[data-tab=answers3]'))">Жауаптарын көру <i class="fa-solid fa-arrow-right"></i></button></div>
+  </div>
+</div>
+
+<div class="content-card tab-content" id="answers3" style="display:none;">
+  <div class="content-header"><h2>3-бөлім шығарылу жолы мен жауаптары</h2><div class="content-badge"><i class='fa-solid fa-circle-check'></i> Жауап</div></div>
+  <div class="infographic-frame"><img src="../../image/advanced/control_work_8/8.6.jpg" class="lesson-infographic-img" alt="3-бөлім шығарылу жолы мен жауаптары"></div>
+  <div class="next-card">
+    <div class="next-icon"><i class="fa-solid fa-arrow-turn-down"></i></div>
+    <div class="next-text"><h3>Соңғы қадам</h3><p>Бақылау жұмысын аяқта.</p></div>
+    <div class="next-actions"><button class="complete-btn" onclick="completeSection('answers3')">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button><button class="finish-btn locked" onclick="finishLesson()">Бақылауды аяқтау <i class="fa-solid fa-check"></i></button></div>
+  </div>
+</div>
+
+<div class="main-card">
+  <div class="result-box">
+    <div><div style="font-weight:750;color:#0d47a1;margin-bottom:5px;">Бақылау нәтижесі</div><div class="result-stars" id="resultStars">☆☆☆☆☆</div><div style="font-size:13px;color:#475569;font-weight:650;" id="resultSub">Тапсырмалар тексерілсін.</div></div>
+    <div class="result-xp" id="resultXp">+0 XP</div>
+  </div>
+</div>
+</section>
+</main>
+
+<div class="helper-modal-backdrop" id="helperModal"><div class="helper-modal">
+  <div class="helper-head"><div><h2>Көмекші құралдар</h2><p>Есептеу, жазу, сызу және уақыт бақылау үшін.</p></div><button class="helper-close" onclick="closeHelperTools()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="helper-tabs"><button class="helper-tab active" onclick="openHelperTab('calc',this)">Калькулятор</button><button class="helper-tab" onclick="openHelperTab('note',this)">Жазу</button><button class="helper-tab" onclick="openHelperTab('draw',this)">Сызу тақтасы</button><button class="helper-tab" onclick="openHelperTab('timer',this)">Таймер</button></div>
+  <div class="helper-panel active" id="helper-calc"><input class="calc-display" id="calcDisplay" value="0" readonly><div class="calc-grid"><button onclick="calcClear()">C</button><button onclick="calcBack()">⌫</button><button onclick="calcAdd('/')">÷</button><button onclick="calcAdd('*')">×</button><button onclick="calcAdd('7')">7</button><button onclick="calcAdd('8')">8</button><button onclick="calcAdd('9')">9</button><button onclick="calcAdd('-')">−</button><button onclick="calcAdd('4')">4</button><button onclick="calcAdd('5')">5</button><button onclick="calcAdd('6')">6</button><button onclick="calcAdd('+')">+</button><button onclick="calcAdd('1')">1</button><button onclick="calcAdd('2')">2</button><button onclick="calcAdd('3')">3</button><button class="equal" onclick="calcEqual()">=</button><button onclick="calcAdd('0')">0</button><button onclick="calcAdd('.')">.</button><button onclick="calcAdd('(')">(</button><button onclick="calcAdd(')')">)</button></div></div>
+  <div class="helper-panel" id="helper-note"><textarea class="helper-note" id="helperNote" placeholder="Берілгені, формула, қысқа есептеу жаз..."></textarea><button class="tool-action secondary" onclick="clearNote()">Тазалау</button><button class="tool-action" onclick="saveNote()">Сақтау</button></div>
+  <div class="helper-panel" id="helper-draw"><canvas class="draw-board" id="drawBoard"></canvas><button class="tool-action secondary" onclick="clearDraw()">Тазалау</button></div>
+  <div class="helper-panel" id="helper-timer"><div class="timer-screen" id="timerScreen">15:00</div><div class="timer-presets"><button onclick="setTimerMinutes(10)">10 мин</button><button onclick="setTimerMinutes(15)">15 мин</button><button onclick="setTimerMinutes(20)">20 мин</button></div><button class="tool-action" onclick="startTimer()">Бастау</button><button class="tool-action" onclick="pauseTimer()">Тоқтату</button><button class="tool-action secondary" onclick="resetTimer()">Қайта</button></div>
+</div></div>
+<div class="floating-timer" id="floatingTimer"><i class="fa-solid fa-stopwatch"></i><span id="floatingTimerText">15:00</span></div>
+
+<script>
+const lessonId="advanced-control-8", lessonNumber=8, maxStars=5, maxXP=20;
+const lessonSections=["work1","answers1","work2","answers2","work3","answers3"];
+const taskGroups=["work1","work2","work3"];
+const answerQuestions={"work1": [{"text": "Механикалық толқын дегеніміз:", "options": {"A": "Зат тасымалы", "B": "Энергияның таралуы", "C": "Қызу процесі", "D": "Диффузия"}}, {"text": "Толқын ұзындығының белгіленуі:", "options": {"A": "T", "B": "ν", "C": "λ", "D": "A"}}, {"text": "Толқын жылдамдығының формуласы:", "options": {"A": "F = ma", "B": "v = λν", "C": "p = ρgh", "D": "A = Fs"}}, {"text": "Көлденең толқынға мысал:", "options": {"A": "Дыбыс", "B": "Арқан толқыны", "C": "Серіппедегі сығылу", "D": "Ауа"}}, {"text": "Қума толқынға мысал:", "options": {"A": "Су толқыны", "B": "Арқан", "C": "Дыбыс", "D": "Жарық"}}, {"text": "Дыбыс толқыны қандай толқын?", "options": {"A": "Көлденең", "B": "Қума", "C": "Электромагниттік", "D": "Жарық"}}, {"text": "Дыбыстың ауадағы жылдамдығы жуықтап:", "options": {"A": "34 м/с", "B": "340 м/с", "C": "3400 м/с", "D": "34 000 м/с"}}, {"text": "Доплер эффектісі дегеніміз:", "options": {"A": "Толқынның жойылуы", "B": "Жиіліктің өзгеріп қабылдануы", "C": "Интерференция", "D": "Дифракция"}}, {"text": "Интерференция дегеніміз:", "options": {"A": "Толқындардың қабаттасуы", "B": "Толқынның сынуы", "C": "Толқынның жұтылуы", "D": "Дыбыстың таралуы"}}, {"text": "Дифракция дегеніміз:", "options": {"A": "Толқынның кедергіні айналып өтуі", "B": "Толқынның жұтылуы", "C": "Резонанс", "D": "Шағылу"}}, {"text": "Тұрғын толқын пайда болады:", "options": {"A": "Бір толқыннан", "B": "Қарама-қарсы бағыттағы екі толқыннан", "C": "Дыбыстан", "D": "Вакуумда"}}, {"text": "Резонанс кезінде:", "options": {"A": "Амплитуда азаяды", "B": "Өзгермейді", "C": "Максимум мәнге жетеді", "D": "Нөлге тең"}}, {"text": "λ = 4 м, ν = 5 Гц. Толқын жылдамдығы қандай?", "options": {"A": "10 м/с", "B": "15 м/с", "C": "20 м/с", "D": "25 м/с"}}, {"text": "v = 24 м/с, ν = 6 Гц. Толқын ұзындығы қандай?", "options": {"A": "2 м", "B": "4 м", "C": "6 м", "D": "8 м"}}, {"text": "ν = 10 Гц болса, период T қандай?", "options": {"A": "0,1 с", "B": "0,2 с", "C": "1 с", "D": "10 с"}}], "work2": [{"text": "Формуланы сәйкестендір: 1) v = λν; 2) λ = v/ν; 3) T = 1/ν; 4) ν = 1/T; 5) ω = ω₀. Таңдау: A) Толқын ұзындығы, B) Толқын жылдамдығы, C) Период, D) Жиілік, E) Резонанс шарты.", "options": {"A": "1-B, 2-A, 3-C, 4-D, 5-E", "B": "1-A, 2-B, 3-C, 4-D, 5-E", "C": "1-B, 2-C, 3-A, 4-D, 5-E", "D": "1-E, 2-A, 3-C, 4-D, 5-B"}}, {"text": "Құбылысты сәйкестендір: 1) Сирена дыбысының өзгеруі; 2) Су бетіндегі екі толқынның қосылуы; 3) Кедергіні айналып өту; 4) Арқандағы толқын; 5) Дыбыс толқыны. Таңдау: A) Көлденең толқын, B) Қума толқын, C) Доплер эффектісі, D) Интерференция, E) Дифракция.", "options": {"A": "1-C, 2-D, 3-E, 4-A, 5-B", "B": "1-D, 2-C, 3-E, 4-A, 5-B", "C": "1-C, 2-D, 3-A, 4-E, 5-B", "D": "1-B, 2-D, 3-E, 4-A, 5-C"}}, {"text": "Терминдерді сәйкестендір: 1) Толқын ұзындығы; 2) Толқын жылдамдығы; 3) Интерференция; 4) Дифракция; 5) Резонанс. Таңдау: A) Толқындардың қабаттасуы, B) Амплитуданың күрт артуы, C) Екі өркеш аралығы, D) Толқынның таралу жылдамдығы, E) Кедергіні айналып өту.", "options": {"A": "1-C, 2-D, 3-A, 4-E, 5-B", "B": "1-D, 2-C, 3-A, 4-E, 5-B", "C": "1-C, 2-D, 3-E, 4-A, 5-B", "D": "1-B, 2-D, 3-A, 4-E, 5-C"}}, {"text": "Өлшем бірліктерін сәйкестендір: 1) Толқын ұзындығы; 2) Жылдамдық; 3) Жиілік; 4) Период; 5) Бұрыштық жиілік. Таңдау: A) рад/с, B) м, C) м/с, D) Гц, E) с.", "options": {"A": "1-B, 2-C, 3-D, 4-E, 5-A", "B": "1-C, 2-B, 3-D, 4-E, 5-A", "C": "1-B, 2-C, 3-E, 4-D, 5-A", "D": "1-A, 2-C, 3-D, 4-E, 5-B"}}, {"text": "Сурет бойынша сәйкестендір: 1) Арқандағы толқын; 2) Серіппедегі сығылу; 3) Дыбыс көзі; 4) Су бетіндегі екі толқын; 5) Камертон. Таңдау: A) Интерференция, B) Дыбыс көзі, C) Көлденең толқын, D) Қума толқын, E) Резонанс мысалы.", "options": {"A": "1-C, 2-D, 3-B, 4-A, 5-E", "B": "1-D, 2-C, 3-B, 4-A, 5-E", "C": "1-C, 2-D, 3-A, 4-B, 5-E", "D": "1-E, 2-D, 3-B, 4-A, 5-C"}}], "work3": [{"text": "Екі нүктеден таралған толқындардан суретте қандай құбылыс байқалады?", "options": {"A": "Дифракция", "B": "Интерференция", "C": "Резонанс", "D": "Доплер эффектісі"}}, {"text": "Арқан бойымен таралып жатқан толқын қандай толқынға жатады?", "options": {"A": "Қума толқын", "B": "Көлденең толқын", "C": "Тұрғын толқын", "D": "Электромагниттік толқын"}}, {"text": "Серіппе бойындағы толқынның таралу бағыты көрсетілген. Бұл толқынның түрі:", "options": {"A": "Көлденең толқын", "B": "Қума толқын", "C": "Тұрғын толқын", "D": "Дифракция"}}, {"text": "Толқындардың кедергідегі саңылаудан өтіп, жан-жаққа таралуы қандай құбылыс?", "options": {"A": "Интерференция", "B": "Дифракция", "C": "Резонанс", "D": "Доплер эффектісі"}}, {"text": "Суретте жіптегі тұрғын толқын көрсетілген. Белгілендердің мағынасы дұрыс көрсетілген нұсқаны таңдаңыз.", "options": {"A": "A – түйін, N – амплитудасы ең үлкен нүкте", "B": "A – амплитуда, N – түйін", "C": "A – амплитудасы ең үлкен нүкте, N – түйін", "D": "A – период, N – амплитуда"}}]};
+const correctAnswers={"work1": {"1": "B", "2": "C", "3": "B", "4": "B", "5": "C", "6": "B", "7": "B", "8": "B", "9": "A", "10": "A", "11": "B", "12": "C", "13": "C", "14": "B", "15": "A"}, "work2": {"1": "A", "2": "A", "3": "A", "4": "A", "5": "A"}, "work3": {"1": "B", "2": "B", "3": "B", "4": "B", "5": "C"}};
+let answers=JSON.parse(localStorage.getItem(lessonId+"-answers")||"{}");
+
+function getProgress(){return JSON.parse(localStorage.getItem("progress_"+lessonId)||'{"completedSections":[]}')}
+function saveProgress(p){localStorage.setItem("progress_"+lessonId,JSON.stringify(p))}
+function checkedKey(group){return `${lessonId}-${group}-checked`}
+function scoreKey(group){return `${lessonId}-${group}-score`}
+function resultVisibleKey(){return `${lessonId}-result-visible`}
+function toggleSidebar(){document.body.classList.toggle("lesson-sidebar-collapsed");localStorage.setItem("advancedSidebarCollapsed",document.body.classList.contains("lesson-sidebar-collapsed")?"1":"0")}
+
+function showTab(id,btn){
+  const map={answers1:"work1",answers2:"work2",answers3:"work3"};
+  if(map[id] && localStorage.getItem(checkedKey(map[id]))!=="1"){
+    const target=map[id];
+    const fb=document.getElementById("feedback-"+target);
+    if(fb){fb.className="feedback warn";fb.textContent="Жауаптарды көру үшін алдымен осы бөлімнің барлық сұрағына жауап беріп, «Жауаптарды тексеру» батырмасын бас.";}
+    id=target;
+    btn=document.querySelector(`.side-menu-btn[data-tab="${target}"]`);
+  }
+  document.querySelectorAll(".tab-content").forEach(x=>x.style.display="none");
+  document.getElementById(id).style.display="block";
+  document.querySelectorAll(".side-menu-btn").forEach(x=>x.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function completeSection(id){
+  if(taskGroups.includes(id) && localStorage.getItem(checkedKey(id))!=="1"){
+    const fb=document.getElementById("feedback-"+id);
+    if(fb){fb.className="feedback warn";fb.textContent="Алдымен барлық сұраққа жауап беріп, «Жауаптарды тексеру» батырмасын бас.";}
+    return;
+  }
+  const p=getProgress();
+  if(!Array.isArray(p.completedSections))p.completedSections=[];
+  if(!p.completedSections.includes(id))p.completedSections.push(id);
+  saveProgress(p);updateUI();
+}
+function buildGrid(group){
+  const grid=document.getElementById("grid-"+group);
+  if(!grid)return;
+  grid.innerHTML="";
+  const qs=answerQuestions[group]||[];
+  qs.forEach((item,idx)=>{
+    const q=idx+1;
+    const row=document.createElement("div");
+    row.className="answer-row question-card";
+    row.dataset.q=q;
+    row.dataset.group=group;
+    const letters=Object.keys(item.options||{});
+    const opts=letters.map(letter=>`<button data-value="${letter}" onclick="selectAnswer('${group}',${q},'${letter}')"><b>${letter})</b> ${(item.options||{})[letter]||""}</button>`).join("");
+    row.innerHTML=`<div class="question-top"><span class="qnum">${q}</span><div class="question-title">${item.text}</div></div><div class="option-buttons">${opts}</div>`;
+    grid.appendChild(row);
+  });
+}
+function selectAnswer(group,q,a){
+  if(localStorage.getItem(checkedKey(group))==="1")return;
+  if(!answers[group])answers[group]={};
+  answers[group][q]=a;
+  localStorage.setItem(lessonId+"-answers",JSON.stringify(answers));
+  renderAnswers(group);
+}
+function renderAnswers(group){
+  const checked=localStorage.getItem(checkedKey(group))==="1";
+  document.querySelectorAll(`.answer-row[data-group="${group}"]`).forEach(row=>{
+    const q=row.dataset.q, sel=answers[group]?.[q], cor=correctAnswers[group]?.[q];
+    row.classList.toggle("checked",checked);
+    row.querySelectorAll("button").forEach(b=>{
+      const v=b.dataset.value||b.textContent.trim();
+      b.disabled=checked;
+      b.classList.remove("selected","correct","wrong");
+      if(v===sel)b.classList.add("selected");
+      if(checked && v===cor)b.classList.add("correct");
+      if(checked && v===sel && sel!==cor)b.classList.add("wrong");
+    });
+  });
+}
+function checkAnswers(group){
+  const rows=document.querySelectorAll(`.answer-row[data-group="${group}"]`);
+  let answered=0,score=0;
+  rows.forEach(row=>{
+    const q=row.dataset.q, sel=answers[group]?.[q], cor=correctAnswers[group]?.[q];
+    if(sel)answered++;
+    if(sel===cor)score++;
+  });
+  const fb=document.getElementById("feedback-"+group);
+  if(answered<rows.length){
+    if(fb){fb.className="feedback warn";fb.textContent=`Алдымен барлық сұраққа жауап белгіле. Белгіленгені: ${answered} / ${rows.length}.`;}
+    renderAnswers(group);updateUI();return;
+  }
+  localStorage.setItem(scoreKey(group),String(score));
+  localStorage.setItem(checkedKey(group),"1");
+  localStorage.setItem(resultVisibleKey(),"1");
+  document.getElementById("score-"+group).textContent=score+" / "+rows.length;
+  if(fb){fb.className="feedback success";fb.textContent=`Нәтиже: ${score} / ${rows.length}. Бұл бөлім тексерілді. Енді жауаптарын көруге болады.`;}
+  renderAnswers(group);completeSection(group);updateUI();
+}
+function calcStars(){
+  let score=0,total=0;
+  taskGroups.forEach(g=>{score+=Number(localStorage.getItem(scoreKey(g))||0);total+=(answerQuestions[g]||[]).length;});
+  if(score===0||total===0)return 0;
+  const pct=score/total;
+  if(pct>=.9)return 5;
+  if(pct>=.8)return 4;
+  if(pct>=.7)return 3;
+  if(pct>=.5)return 2;
+  return 1;
+}
+function calcXP(stars){return Math.round((stars/maxStars)*maxXP)||0}
+function starText(s){let out="";for(let i=1;i<=maxStars;i++)out+=i<=s?"⭐":"☆";return out}
+function updateUI(){
+  const p=getProgress();
+  if(!Array.isArray(p.completedSections))p.completedSections=[];
+  const done=p.completedSections.length,percent=Math.round(done/lessonSections.length*100);
+  document.getElementById("sidePercent").textContent=percent+"%";
+  document.getElementById("bigPercent").textContent=percent+"%";
+  document.getElementById("smallProgress").textContent=done+" / "+lessonSections.length+" бөлім";
+  document.getElementById("sideFill").style.width=percent+"%";
+  const circle=document.querySelector(".circle");
+  if(circle)circle.style.background=`conic-gradient(#38bdf8 ${percent*3.6}deg, rgba(255,255,255,.22) 0deg)`;
+  lessonSections.forEach(s=>{const b=document.querySelector(`.side-menu-btn[data-tab="${s}"]`);if(b)b.classList.toggle("section-done",p.completedSections.includes(s));});
+  const stars=calcStars(),xp=calcXP(stars);
+  document.getElementById("resultStars").textContent=starText(stars);
+  document.getElementById("resultXp").textContent="+"+xp+" XP";
+  document.getElementById("resultSub").textContent=`Жұлдыз: ${stars} / ${maxStars}`;
+  const resultBox=document.querySelector(".result-box");
+  if(resultBox)resultBox.classList.toggle("show",localStorage.getItem(resultVisibleKey())==="1");
+  document.querySelectorAll(".finish-side,.finish-btn").forEach(b=>{
+    const ok=lessonSections.every(s=>p.completedSections.includes(s));
+    b.classList.toggle("locked",!ok);
+    b.classList.toggle("unlocked",ok);
+  });
+}
+function finishLesson(){
+  const p=getProgress();
+  if(!lessonSections.every(s=>p.completedSections.includes(s))){alert("Бақылауды аяқтау үшін барлық бөлімдерді аяқта.");return;}
+  const stars=calcStars(),xp=calcXP(stars);
+  localStorage.setItem(lessonId+"-stars",String(stars));
+  localStorage.setItem(lessonId+"-xp",String(xp));
+  localStorage.setItem("advanced_control_8_passed","1");
+  localStorage.setItem("advanced_control_work_8_passed","1");
+  localStorage.setItem("control_work_8_passed","1");
+  let user=JSON.parse(localStorage.getItem("physxUser")||'{"studyLevel":"advanced","progress":{"points":0,"lessonsCompleted":[]}}');
+  if(!user.progress)user.progress={points:0,lessonsCompleted:[]};
+  if(!Array.isArray(user.progress.lessonsCompleted))user.progress.lessonsCompleted=[];
+  if(!user.progress.lessonsCompleted.includes(lessonId)){
+    user.progress.lessonsCompleted.push(lessonId);
+    user.progress.points=(user.progress.points||0)+xp;
+    alert(`Бақылау аяқталды! ${starText(stars)} +${xp} XP`);
+  }else alert("Бұл бақылау бұрын аяқталған.");
+  localStorage.setItem("physxUser",JSON.stringify(user));
+  location.href="../../levels_map.html";
+}
+
+function openHelperTools(){document.getElementById("helperModal").classList.add("show");loadNote();initDrawBoard()}
+function closeHelperTools(){document.getElementById("helperModal").classList.remove("show")}
+function openHelperTab(name,btn){document.querySelectorAll(".helper-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".helper-tab").forEach(t=>t.classList.remove("active"));document.getElementById("helper-"+name).classList.add("active");btn.classList.add("active");if(name==="draw")setTimeout(initDrawBoard,80)}
+let calcExpression="";
+function calcRender(){document.getElementById("calcDisplay").value=calcExpression||"0"}
+function calcAdd(v){calcExpression+=v;calcRender()}
+function calcClear(){calcExpression="";calcRender()}
+function calcBack(){calcExpression=calcExpression.slice(0,-1);calcRender()}
+function calcEqual(){try{const safe=calcExpression.replace(/[^0-9+\-*/().]/g,"");calcExpression=String(Function('"use strict"; return ('+safe+')')())}catch(e){calcExpression="Қате";setTimeout(calcClear,900)}calcRender()}
+function noteKey(){return "physx_note_"+location.pathname}
+function loadNote(){const n=document.getElementById("helperNote");if(n)n.value=localStorage.getItem(noteKey())||""}
+function saveNote(){const n=document.getElementById("helperNote");if(n){localStorage.setItem(noteKey(),n.value);alert("Жазба сақталды.")}}
+function clearNote(){const n=document.getElementById("helperNote");if(n)n.value="";localStorage.removeItem(noteKey())}
+let drawReady=false,drawing=false;
+function initDrawBoard(){const c=document.getElementById("drawBoard");if(!c||drawReady)return;const r=c.getBoundingClientRect();c.width=Math.max(300,Math.floor(r.width));c.height=Math.max(220,Math.floor(r.height));const ctx=c.getContext("2d");ctx.lineWidth=3;ctx.lineCap="round";ctx.strokeStyle="#145cff";function pos(e){const rr=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-rr.left,y:p.clientY-rr.top}}function start(e){e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)}function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()}function end(){drawing=false}c.addEventListener("mousedown",start);c.addEventListener("mousemove",move);window.addEventListener("mouseup",end);c.addEventListener("touchstart",start,{passive:false});c.addEventListener("touchmove",move,{passive:false});c.addEventListener("touchend",end);drawReady=true}
+function clearDraw(){const c=document.getElementById("drawBoard");if(!c)return;c.getContext("2d").clearRect(0,0,c.width,c.height)}
+let timerSeconds=15*60,timerDefault=15*60,timerInterval=null;
+function formatTimer(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function updateTimerView(){const text=formatTimer(timerSeconds);document.getElementById("timerScreen").textContent=text;document.getElementById("floatingTimerText").textContent=text}
+function setTimerMinutes(min){timerDefault=min*60;timerSeconds=timerDefault;pauseTimer();updateTimerView()}
+function startTimer(){document.getElementById("floatingTimer").classList.add("show");if(timerInterval)return;timerInterval=setInterval(()=>{if(timerSeconds>0){timerSeconds--;updateTimerView()}else{pauseTimer();alert("Уақыт аяқталды!")}},1000)}
+function pauseTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
+function resetTimer(){pauseTimer();timerSeconds=timerDefault;updateTimerView()}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  if(localStorage.getItem("advancedSidebarCollapsed")==="1")document.body.classList.add("lesson-sidebar-collapsed");
+  taskGroups.forEach(g=>{buildGrid(g);renderAnswers(g);});
+  updateUI();updateTimerView();
+  document.querySelector('.side-menu-btn[data-tab="work1"]')?.classList.add("active");
+  const user=JSON.parse(localStorage.getItem("physxUser")||"{}");
+  if(localStorage.getItem("physxUserRole")==="teacher"||localStorage.getItem("physxRole")==="teacher"||user.role==="teacher")document.body.classList.add("teacher-mode");
+});
+</script>
+</body>
+</html>
